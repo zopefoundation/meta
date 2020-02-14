@@ -66,9 +66,9 @@ try:
     call('git', 'co', '-b', branch_name)
     call('git', 'add', 'setup.cfg', 'tox.ini', '.gitignore', '.travis.yml')
     call('git', 'ci', '-m', f'Configuring for {config_type}')
+    call('git', 'push', '--set-upstream', 'origin', branch_name)
     print()
-    print('If everything went fine up to here call:')
-    print(f' git push --set-upstream origin {branch_name}')
-    print('Then create a PR, using the URL shown by the `git push` call.')
+    print('If everything went fine up to here:')
+    print('Create a PR, using the URL shown above.')
 finally:
     os.chdir(cwd)

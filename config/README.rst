@@ -70,3 +70,4 @@ After running the script you should manually do the following steps:
    the package on TravisCI).
 2. Make sure the package is activated on https://coveralls.io by trying to add
    the repository name and making it active.
+3. Check in possible changes in the zopefoundation/meta repository.
