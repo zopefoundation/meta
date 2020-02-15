@@ -1,5 +1,4 @@
 # This runs the minimal tests without PyPy (e. g. for Zope dependencies)
-
 language: python
 python:
     - 2.7
