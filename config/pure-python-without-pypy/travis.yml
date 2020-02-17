@@ -1,5 +1,5 @@
-# This runs the tests without PyPy (e. g. for Zope dependencies)
-
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/pure-python-without-pypy
 language: python
 python:
   - 2.7

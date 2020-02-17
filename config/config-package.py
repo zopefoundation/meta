@@ -45,18 +45,10 @@ else:
     with open(config_type_path / 'packages.txt', 'a') as f:
         f.write(f'{path.name}\n')
 
-
-travis_yml = f'''\
-version: ~> 1.0
-language: python
-import: zopefoundation/meta:config/{config_type}/travis.yml
-'''
-
 shutil.copy(config_type_path / 'setup.cfg', path)
 shutil.copy(config_type_path / 'tox.ini', path)
 shutil.copy(config_type_path / 'gitignore', path / '.gitignore')
-with open(path / '.travis.yml', 'w') as f:
-    f.write(travis_yml)
+shutil.copy(config_type_path / 'travis.yml', path / '.travis.yml')
 
 cwd = os.getcwd()
 branch_name = f'config-with-{config_type}'
