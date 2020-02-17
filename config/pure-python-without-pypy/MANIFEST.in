@@ -1,0 +1,4 @@
+include *.rst
+include *.txt
+include buildout.cfg
+include tox.ini

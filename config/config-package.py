@@ -48,25 +48,31 @@ else:
 
 shutil.copy(config_type_path / 'setup.cfg', path)
 shutil.copy(config_type_path / 'tox.ini', path)
+shutil.copy(config_type_path / 'MANIFEST.in', path)
 shutil.copy(config_type_path / 'gitignore', path / '.gitignore')
 shutil.copy(config_type_path / 'travis.yml', path / '.travis.yml')
+
 
 cwd = os.getcwd()
 branch_name = f'config-with-{config_type}'
 try:
     os.chdir(path)
+    if pathlib.Path('.coveragerc').exists():
+        call('git', 'rm', '.coveragerc')
+    if pathlib.Path('bootstrap.py').exists():
+        call('git', 'rm', 'bootstrap.py')
     call('tox')
     branches = call(
         'git', 'branch', '--format', '%(refname:short)',
         capture_output=True).stdout.splitlines()
-    print(branches)
     if branch_name in branches:
         call('git', 'co', branch_name)
         updating = True
     else:
         call('git', 'co', '-b', branch_name)
         updating = False
-    call('git', 'add', 'setup.cfg', 'tox.ini', '.gitignore', '.travis.yml')
+    call('git', 'add',
+         'setup.cfg', 'tox.ini', '.gitignore', '.travis.yml', 'MANIFEST.in')
     call('git', 'ci', '-m', f'Configuring for {config_type}')
     call('git', 'push', '--set-upstream', 'origin', branch_name)
     print()

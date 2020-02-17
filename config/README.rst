@@ -28,6 +28,10 @@ Each directory contains the following files:
 * gitignore
 
   - This file is copied to `.gitignore`.
+* MANIFEST.in
+
+  - Configuration file for the MANIFEST to include all needed files in sdist
+    and wheel.
 * setup.cfg
 
     - common setup.cfg, which should be copied to the repository of the
@@ -38,7 +42,7 @@ Each directory contains the following files:
       package
 * travis.yml
 
-    - Importable config for TravisCI, usage see below.
+    - Config for TravisCI.
 
 Usage
 -----
@@ -53,14 +57,10 @@ The script does the following steps:
 
 1. Add the package name to `packages.txt` of the selected configuration type if
    it is not yet added.
-2. Copy `setup.cfg`, `tox.ini` and `.gitignore` to the repository.
-3. Edit `.travis.yml` to contain the following lines::
-
-     version: ~> 1.0
-     language: python
-     import: zopefoundation/meta:config/<type>/travis.yml
-
-   Where `<type>` is the name of the used directory.
+2. Copy `setup.cfg`, `tox.ini`, `.travis_yml`, `MANIFEST.in` and `.gitignore`
+   to the repository.
+3. Remove a possibly existing `.coveragerc` and `bootstrap.py`. (Coverage is
+   now configured in `setup.cfg`.)
 4. Run the tests via: ``tox``
 5. Create a branch and a pull request.
 
