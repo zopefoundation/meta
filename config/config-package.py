@@ -7,15 +7,16 @@ import subprocess
 import sys
 
 
-def call(*args):
+def call(*args, capture_output=False):
     """Call `args` as a subprocess.
 
     If it fails exit the process.
     """
-    result = subprocess.run(args)
+    result = subprocess.run(args, capture_output=capture_output, text=True)
     if result.returncode != 0:
         print('ABORTING: Please fix the errors shown above.')
         sys.exit(result.returncode)
+    return result
 
 
 parser = argparse.ArgumentParser(
@@ -55,12 +56,24 @@ branch_name = f'config-with-{config_type}'
 try:
     os.chdir(path)
     call('tox')
-    call('git', 'co', '-b', branch_name)
+    branches = call(
+        'git', 'branch', '--format', '%(refname:short)',
+        capture_output=True).stdout.splitlines()
+    print(branches)
+    if branch_name in branches:
+        call('git', 'co', branch_name)
+        updating = True
+    else:
+        call('git', 'co', '-b', branch_name)
+        updating = False
     call('git', 'add', 'setup.cfg', 'tox.ini', '.gitignore', '.travis.yml')
     call('git', 'ci', '-m', f'Configuring for {config_type}')
     call('git', 'push', '--set-upstream', 'origin', branch_name)
     print()
     print('If everything went fine up to here:')
-    print('Create a PR, using the URL shown above.')
+    if updating:
+        print('Updated the previously created PR.')
+    else:
+        print('Create a PR, using the URL shown above.')
 finally:
     os.chdir(cwd)

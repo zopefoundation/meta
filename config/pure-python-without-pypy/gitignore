@@ -12,6 +12,6 @@ develop-eggs/
 dist/
 htmlcov/
 lib/
-lib64/
+lib64
 parts/
 pyvenv.cfg

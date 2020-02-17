@@ -71,3 +71,10 @@ After running the script you should manually do the following steps:
 2. Make sure the package is activated on https://coveralls.io by trying to add
    the repository name and making it active.
 3. Check in possible changes in the zopefoundation/meta repository.
+
+
+Hints
+-----
+
+* Calling ``config-package.py`` again updates a previously created pull request
+  if there are changes made in the files ``config-package.py`` touches.
