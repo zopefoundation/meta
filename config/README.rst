@@ -25,6 +25,10 @@ Each directory contains the following files:
 
     - This file lists the packages which use the configuration in the
       directory.
+* editorconfig
+
+  - This file is copied to `.editorconfig` and allows developers to have a
+    common editor configuration experience in all repos.
 * gitignore
 
   - This file is copied to `.gitignore`.
