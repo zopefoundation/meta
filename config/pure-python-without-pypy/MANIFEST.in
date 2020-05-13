@@ -1,3 +1,5 @@
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/pure-python-without-pypy
 include *.rst
 include *.txt
 include buildout.cfg
