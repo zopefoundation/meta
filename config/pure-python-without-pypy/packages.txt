@@ -3,3 +3,4 @@
 # described in README.rst
 zLOG
 zc.beforestorage
+z3c.layer.pagelet
