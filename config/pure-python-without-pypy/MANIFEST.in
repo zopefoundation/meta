@@ -5,6 +5,10 @@ include *.txt
 include buildout.cfg
 include tox.ini
 
+exclude MANIFEST.in
+
+recursive-include src *.pt
 recursive-include src *.rst
 recursive-include src *.txt
 recursive-include src *.xml
+recursive-include src *.zcml
