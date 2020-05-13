@@ -1,5 +1,10 @@
 Config
-======
+
+Purpose
+-------
+
+Bring the configuration of the zopefoundation packages into a common state and
+keep it there.
 
 Types
 -----
