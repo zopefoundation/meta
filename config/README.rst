@@ -99,3 +99,6 @@ Hints
 
 * Calling ``config-package.py`` again updates a previously created pull request
   if there are changes made in the files ``config-package.py`` touches.
+
+* Call ``bin/check-python-versions <path-to-package> -h`` to see how to fix
+  version mismatches in the *lint* tox environment.
