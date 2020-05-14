@@ -25,6 +25,11 @@ parser = argparse.ArgumentParser(
     description='Use configuration for a package.')
 parser.add_argument(
     'path', type=str, help='path to the repository to be configured')
+parser.add_argument(
+    '--no-push',
+    dest='no_push',
+    action='store_true',
+    help='Prevent direct push.')
 parser.add_argument('type', choices=['pure-python',
                                      'pure-python-without-pypy'],
                     help='type of the config to be used, see README.rst')
@@ -78,7 +83,8 @@ try:
          'setup.cfg', 'tox.ini', '.gitignore', '.travis.yml', 'MANIFEST.in',
          '.editorconfig')
     call('git', 'ci', '-m', f'Configuring for {config_type}')
-    call('git', 'push', '--set-upstream', 'origin', branch_name)
+    if not args.no_push:
+        call('git', 'push', '--set-upstream', 'origin', branch_name)
     print()
     print('If everything went fine up to here:')
     if updating:
