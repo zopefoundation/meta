@@ -5,6 +5,7 @@
 *.pyc
 *.pyo
 .coverage
+.coverage.*
 .installed.cfg
 .mr.developer.cfg
 .tox/
@@ -14,6 +15,7 @@ build/
 coverage.xml
 develop-eggs/
 dist/
+docs/_build
 eggs/
 htmlcov/
 lib/
