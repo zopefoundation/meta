@@ -89,8 +89,6 @@ with open(tox_ini_path, 'w') as f_:
         coverage_report_options = ''
     f_.write(tox_ini.format(coverage_report_options=coverage_report_options))
 
-with open(meta_cfg_path, 'w') as meta_f:
-    meta_cfg.write(meta_f)
 
 cwd = os.getcwd()
 branch_name = f'config-with-{config_type}'
@@ -101,6 +99,15 @@ try:
     if pathlib.Path('bootstrap.py').exists():
         call('git', 'rm', 'bootstrap.py')
     call(pathlib.Path(cwd) / 'bin' / 'tox', '-pall')
+
+    # Modify files with user interaction only after all tests are green.
+    with open('.meta.cfg', 'w') as meta_f:
+        meta_f.write(
+            '# Generated from:\n'
+            '# https://github.com/zopefoundation/meta/tree/master/config/'
+            f'{config_type}\n')
+        meta_cfg.write(meta_f)
+
     branches = call(
         'git', 'branch', '--format', '%(refname:short)',
         capture_output=True).stdout.splitlines()
