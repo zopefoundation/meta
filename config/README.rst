@@ -8,6 +8,7 @@ Purpose
 Bring the configuration of the zopefoundation packages into a common state and
 keep it there.
 
+
 Types
 -----
 
@@ -16,12 +17,13 @@ packages:
 
 * pure-python
 
-    - Configuration for a pure python package which supports PyPy.
+  - Configuration for a pure python package which supports PyPy.
 
 * pure-python-without-pypy
 
-    - Configuration for a pure python package which does not supports PyPy,
-      e. g. the packages Zope depends on.
+  - Configuration for a pure python package which does not supports PyPy,
+    e. g. the packages Zope depends on.
+
 
 Contents
 --------
@@ -30,30 +32,37 @@ Each directory contains the following files:
 
 * packages.txt
 
-    - This file lists the packages which use the configuration in the
-      directory.
+  - This file lists the packages which use the configuration in the
+    directory.
+
 * editorconfig
 
   - This file is copied to `.editorconfig` and allows developers to have a
     common editor configuration experience in all repos.
+
 * gitignore
 
   - This file is copied to `.gitignore`.
+
 * MANIFEST.in
 
   - Configuration file for the MANIFEST to include all needed files in sdist
     and wheel.
+
 * setup.cfg
 
-    - common setup.cfg, which should be copied to the repository of the
-      package
+  - common setup.cfg, which should be copied to the repository of the
+    package
+
 * tox.ini
 
-    - tox configuration, which should be copied to the repository of the
-      package
+  - tox configuration, which should be copied to the repository of the
+    package
+
 * travis.yml
 
-    - Config for TravisCI.
+  - Config for TravisCI.
+
 
 Usage
 -----
@@ -63,8 +72,8 @@ Preparation
 
 The script needs a ``venv`` with some packages installed::
 
-   $ python3.8 -m venv .
-   $ bin/pip install -r requirements.txt
+    $ python3.8 -m venv .
+    $ bin/pip install -r requirements.txt
 
 To use the configuration provided here in a package call the following script::
 
@@ -74,12 +83,12 @@ See ``--help`` for details.
 
 The script does the following steps:
 
-1. Add the package name to `packages.txt` of the selected configuration type if
-   it is not yet added.
-2. Copy `setup.cfg`, `tox.ini`, `.travis_yml`, `MANIFEST.in` and `.gitignore`
-   to the repository.
-3. Remove a possibly existing `.coveragerc` and `bootstrap.py`. (Coverage is
-   now configured in `setup.cfg`.)
+1. Add the package name to ``packages.txt`` of the selected configuration type
+   if it is not yet added.
+2. Copy ``setup.cfg``, ``tox.ini``, ``.travis.yml``, ``MANIFEST.in`` and
+   ``.gitignore`` to the repository.
+3. Remove a possibly existing ``.coveragerc`` and ``bootstrap.py``. (Coverage
+   is now configured in ``setup.cfg``.)
 4. Run the tests via: ``tox``
 5. Create a branch and a pull request.
 
@@ -112,7 +121,7 @@ commit id of the *meta* repository at the time of the run. This file is
 generated during the configuration run, if it does not exit or at least gets
 updated.
 
-  .. code-block:: ini
+.. code-block:: ini
 
     [meta]
     template = pure-python
