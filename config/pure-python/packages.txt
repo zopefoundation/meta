@@ -3,3 +3,5 @@
 # described in README.rst
 zope.authentication
 z3c.wizard
+zope.browsermenu
+zope.app.publication
