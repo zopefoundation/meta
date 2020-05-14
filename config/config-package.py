@@ -15,7 +15,9 @@ def call(*args, capture_output=False):
     result = subprocess.run(args, capture_output=capture_output, text=True)
     if result.returncode != 0:
         print('ABORTING: Please fix the errors shown above.')
-        sys.exit(result.returncode)
+        print('Proceed anyway (y/N)?', end=' ')
+        if input().lower() != 'y':
+            sys.exit(result.returncode)
     return result
 
 
