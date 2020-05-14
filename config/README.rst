@@ -94,6 +94,15 @@ After running the script you should manually do the following steps:
 4. Check in possible changes in the zopefoundation/meta repository.
 
 
+CLI arguments
++++++++++++++
+
+The following arguments are supported.
+
+--no-push
+  Avoid pushing at the end of the configuration run.
+
+
 Options
 +++++++
 
