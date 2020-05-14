@@ -83,7 +83,7 @@ with open(tox_ini_path) as f_:
 
 with open(tox_ini_path, 'w') as f_:
     # initialize configuration if not already present
-    fail_under = meta_opts.setdefault('fail-under', 0)
+    fail_under = meta_opts.setdefault('fail-under', '0')
     f_.write(tox_ini.format(
         coverage_report_options=f'--fail-under={fail_under}'))
 
