@@ -82,12 +82,10 @@ with open(tox_ini_path) as f_:
     tox_ini = f_.read()
 
 with open(tox_ini_path, 'w') as f_:
-    fail_under = meta_opts.get('fail-under', '')
-    if fail_under:
-        coverage_report_options = f'--fail-under={fail_under}'
-    else:
-        coverage_report_options = ''
-    f_.write(tox_ini.format(coverage_report_options=coverage_report_options))
+    # initialize configuration if not already present
+    fail_under = meta_opts.setdefault('fail-under', 0)
+    f_.write(tox_ini.format(
+        coverage_report_options=f'--fail-under={fail_under}'))
 
 
 cwd = os.getcwd()
