@@ -62,7 +62,7 @@ try:
         call('git', 'rm', '.coveragerc')
     if pathlib.Path('bootstrap.py').exists():
         call('git', 'rm', 'bootstrap.py')
-    call('tox')
+    call(pathlib.Path(cwd) / 'bin' / 'tox', '-pall')
     branches = call(
         'git', 'branch', '--format', '%(refname:short)',
         capture_output=True).stdout.splitlines()

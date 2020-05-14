@@ -1,4 +1,6 @@
+======
 Config
+======
 
 Purpose
 -------
@@ -56,9 +58,17 @@ Each directory contains the following files:
 Usage
 -----
 
+Preparation
++++++++++++
+
+The script needs a ``venv`` with some packages installed::
+
+   $ python3.8 -m venv .
+   $ bin/pip install -r requirements.txt
+
 To use the configuration provided here in a package call the following script::
 
-    $ ./config-package.py <path-to-package> <config-type-name>
+    $ bin/python config-package.py <path-to-package> <config-type-name>
 
 See ``--help`` for details.
 
@@ -75,11 +85,13 @@ The script does the following steps:
 
 After running the script you should manually do the following steps:
 
-1. Make sure TravisCI runs the ``master`` branch once a week. (See settings of
+1. Check for changes in the updated repository and for the need of a change log
+   entry over there.
+2. Make sure TravisCI runs the ``master`` branch once a week. (See settings of
    the package on TravisCI).
-2. Make sure the package is activated on https://coveralls.io by trying to add
+3. Make sure the package is activated on https://coveralls.io by trying to add
    the repository name and making it active.
-3. Check in possible changes in the zopefoundation/meta repository.
+4. Check in possible changes in the zopefoundation/meta repository.
 
 
 Hints
