@@ -6,6 +6,7 @@ include buildout.cfg
 include tox.ini
 
 exclude MANIFEST.in
+exclude .meta.cfg
 
 recursive-include src *.pt
 recursive-include src *.rst

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from configparser import ConfigParser
 import argparse
 import os
 import pathlib
@@ -48,6 +49,20 @@ else:
     with open(config_type_path / 'packages.txt', 'a') as f:
         f.write(f'{path.name}\n')
 
+
+# Read and update meta configuration
+meta_cfg = ConfigParser()
+meta_cfg_path = path / '.meta.cfg'
+if meta_cfg_path.exists():
+    meta_cfg.read(meta_cfg_path)
+else:
+    meta_cfg['meta'] = {}
+meta_opts = meta_cfg['meta']
+meta_opts['template'] = config_type
+meta_opts['commit-id'] = call(
+    'git', 'log', '-n1', '--format=format:%H', capture_output=True).stdout
+
+# Copy template files
 shutil.copy(config_type_path / 'setup.cfg', path)
 shutil.copy(config_type_path / 'tox.ini', path)
 shutil.copy(config_type_path / 'MANIFEST.in', path)
@@ -55,6 +70,22 @@ shutil.copy(config_type_path / 'editorconfig', path / '.editorconfig')
 shutil.copy(config_type_path / 'gitignore', path / '.gitignore')
 shutil.copy(config_type_path / 'travis.yml', path / '.travis.yml')
 
+
+# Modify templates with meta options.
+tox_ini_path = path / 'tox.ini'
+with open(tox_ini_path) as f_:
+    tox_ini = f_.read()
+
+with open(tox_ini_path, 'w') as f_:
+    fail_under = meta_opts.get('fail-under', '')
+    if fail_under:
+        coverage_report_options = f'--fail-under={fail_under}'
+    else:
+        coverage_report_options = ''
+    f_.write(tox_ini.format(coverage_report_options=coverage_report_options))
+
+with open(meta_cfg_path, 'w') as meta_f:
+    meta_cfg.write(meta_f)
 
 cwd = os.getcwd()
 branch_name = f'config-with-{config_type}'
@@ -76,7 +107,7 @@ try:
         updating = False
     call('git', 'add',
          'setup.cfg', 'tox.ini', '.gitignore', '.travis.yml', 'MANIFEST.in',
-         '.editorconfig')
+         '.editorconfig', '.meta.cfg')
     call('git', 'ci', '-m', f'Configuring for {config_type}')
     call('git', 'push', '--set-upstream', 'origin', branch_name)
     print()

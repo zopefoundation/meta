@@ -1,3 +1,4 @@
 config/pyvenv.cfg
-config/bin
-config/lib
+config/bin/
+config/lib/
+config/lib64/

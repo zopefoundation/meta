@@ -94,8 +94,38 @@ After running the script you should manually do the following steps:
 4. Check in possible changes in the zopefoundation/meta repository.
 
 
+Options
++++++++
+
+It is possible to configure a deliberately small set of options a `.meta.cfg`
+inside the package repository. This file also stores the template name and
+commit id of the *meta* repository at the time of the run.
+
+  .. code-block:: ini
+
+    [meta]
+    template = pure-python
+    commit-id = < commit-hash >
+    fail-under = 98
+
+
+Meta Options
+------------
+
+template
+  Name of the template, the configuration was run.
+  Currently read-only.
+
+commit-id
+  Commit of the meta repository, which was used for the last configuration run.
+  Currently read-only.
+
+fail-under
+  A minimal value of code coverage below which a test failure is issued.
+
+
 Hints
------
++++++
 
 * Calling ``config-package.py`` again updates a previously created pull request
   if there are changes made in the files ``config-package.py`` touches.
