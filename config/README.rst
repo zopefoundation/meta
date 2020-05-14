@@ -103,6 +103,38 @@ The following arguments are supported.
   Avoid pushing at the end of the configuration run.
 
 
+Options
++++++++
+
+It is possible to configure a deliberately small set of options a `.meta.cfg`
+inside the package repository. This file also stores the template name and
+commit id of the *meta* repository at the time of the run. This file is
+generated during the configuration run, if it does not exit or at least gets
+updated.
+
+  .. code-block:: ini
+
+    [meta]
+    template = pure-python
+    commit-id = < commit-hash >
+    fail-under = 98
+
+
+Meta Options
+------------
+
+template
+  Name of the template, the configuration was run.
+  Currently read-only.
+
+commit-id
+  Commit of the meta repository, which was used for the last configuration run.
+  Currently read-only.
+
+fail-under
+  A minimal value of code coverage below which a test failure is issued.
+
+
 Hints
 -----
 

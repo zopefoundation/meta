@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from configparser import ConfigParser
 import argparse
 import os
 import pathlib
@@ -53,12 +54,38 @@ else:
     with open(config_type_path / 'packages.txt', 'a') as f:
         f.write(f'{path.name}\n')
 
+
+# Read and update meta configuration
+meta_cfg = ConfigParser()
+meta_cfg_path = path / '.meta.cfg'
+if meta_cfg_path.exists():
+    meta_cfg.read(meta_cfg_path)
+else:
+    meta_cfg['meta'] = {}
+meta_opts = meta_cfg['meta']
+meta_opts['template'] = config_type
+meta_opts['commit-id'] = call(
+    'git', 'log', '-n1', '--format=format:%H', capture_output=True).stdout
+
+# Copy template files
 shutil.copy(config_type_path / 'setup.cfg', path)
 shutil.copy(config_type_path / 'tox.ini', path)
 shutil.copy(config_type_path / 'MANIFEST.in', path)
 shutil.copy(config_type_path / 'editorconfig', path / '.editorconfig')
 shutil.copy(config_type_path / 'gitignore', path / '.gitignore')
 shutil.copy(config_type_path / 'travis.yml', path / '.travis.yml')
+
+
+# Modify templates with meta options.
+tox_ini_path = path / 'tox.ini'
+with open(tox_ini_path) as f_:
+    tox_ini = f_.read()
+
+with open(tox_ini_path, 'w') as f_:
+    # initialize configuration if not already present
+    fail_under = meta_opts.setdefault('fail-under', 0)
+    f_.write(tox_ini.format(
+        coverage_report_options=f'--fail-under={fail_under}'))
 
 
 cwd = os.getcwd()
@@ -70,6 +97,15 @@ try:
     if pathlib.Path('bootstrap.py').exists():
         call('git', 'rm', 'bootstrap.py')
     call(pathlib.Path(cwd) / 'bin' / 'tox', '-pall')
+
+    # Modify files with user interaction only after all tests are green.
+    with open('.meta.cfg', 'w') as meta_f:
+        meta_f.write(
+            '# Generated from:\n'
+            '# https://github.com/zopefoundation/meta/tree/master/config/'
+            f'{config_type}\n')
+        meta_cfg.write(meta_f)
+
     branches = call(
         'git', 'branch', '--format', '%(refname:short)',
         capture_output=True).stdout.splitlines()
@@ -81,7 +117,7 @@ try:
         updating = False
     call('git', 'add',
          'setup.cfg', 'tox.ini', '.gitignore', '.travis.yml', 'MANIFEST.in',
-         '.editorconfig')
+         '.editorconfig', '.meta.cfg')
     call('git', 'ci', '-m', f'Configuring for {config_type}')
     if not args.no_push:
         call('git', 'push', '--set-upstream', 'origin', branch_name)
