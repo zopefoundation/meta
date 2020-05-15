@@ -110,15 +110,15 @@ try:
         'git', 'branch', '--format', '%(refname:short)',
         capture_output=True).stdout.splitlines()
     if branch_name in branches:
-        call('git', 'co', branch_name)
+        call('git', 'checkout', branch_name)
         updating = True
     else:
-        call('git', 'co', '-b', branch_name)
+        call('git', 'checkout', '-b', branch_name)
         updating = False
     call('git', 'add',
          'setup.cfg', 'tox.ini', '.gitignore', '.travis.yml', 'MANIFEST.in',
          '.editorconfig', '.meta.cfg')
-    call('git', 'ci', '-m', f'Configuring for {config_type}')
+    call('git', 'commit', '-m', f'Configuring for {config_type}')
     if not args.no_push:
         call('git', 'push', '--set-upstream', 'origin', branch_name)
     print()
