@@ -8,6 +8,12 @@ import subprocess
 import sys
 
 
+META_HINT = """\
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/{config_type}
+"""
+
+
 def call(*args, capture_output=False):
     """Call `args` as a subprocess.
 
@@ -20,6 +26,16 @@ def call(*args, capture_output=False):
         if input().lower() != 'y':
             sys.exit(result.returncode)
     return result
+
+
+def copy_with_meta(source, destination, config_type):
+    """Copy the source file to destination and a hint of origin."""
+    with open(source) as f_:
+        f_data = f_.read()
+
+    with open(destination, 'w') as f_:
+        f_.write(META_HINT.format(config_type=config_type))
+        f_.write(f_data)
 
 
 parser = argparse.ArgumentParser(
@@ -39,6 +55,7 @@ parser.add_argument('type', choices=['pure-python',
 args = parser.parse_args()
 path = pathlib.Path(args.path)
 config_type = args.type
+default_path = pathlib.Path(__file__).parent / 'default'
 config_type_path = pathlib.Path(__file__).parent / config_type
 
 if not (path / '.git').exists():
@@ -68,11 +85,15 @@ meta_opts['commit-id'] = call(
     'git', 'log', '-n1', '--format=format:%H', capture_output=True).stdout
 
 # Copy template files
-shutil.copy(config_type_path / 'setup.cfg', path)
+copy_with_meta(
+    default_path / 'setup.cfg', path / 'setup.cfg', config_type)
+copy_with_meta(
+    default_path / 'MANIFEST.in', path / 'MANIFEST.in', config_type)
+copy_with_meta(
+    default_path / 'editorconfig', path / '.editorconfig', config_type)
+copy_with_meta(
+    default_path / 'gitignore', path / '.gitignore', config_type)
 shutil.copy(config_type_path / 'tox.ini', path)
-shutil.copy(config_type_path / 'MANIFEST.in', path)
-shutil.copy(config_type_path / 'editorconfig', path / '.editorconfig')
-shutil.copy(config_type_path / 'gitignore', path / '.gitignore')
 shutil.copy(config_type_path / 'travis.yml', path / '.travis.yml')
 
 

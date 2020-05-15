@@ -1,5 +1,3 @@
-# Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/pure-python
 *.egg-info/
 *.profraw
 *.pyc
