@@ -5,3 +5,4 @@ zope.authentication
 z3c.wizard
 zope.browsermenu
 zope.app.publication
+zope.app.broken
