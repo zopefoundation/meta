@@ -117,7 +117,7 @@ try:
         call('git', 'rm', '.coveragerc')
     if pathlib.Path('bootstrap.py').exists():
         call('git', 'rm', 'bootstrap.py')
-    call(pathlib.Path(cwd) / 'bin' / 'tox', '-pall')
+    call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
 
     # Modify files with user interaction only after all tests are green.
     with open('.meta.cfg', 'w') as meta_f:
