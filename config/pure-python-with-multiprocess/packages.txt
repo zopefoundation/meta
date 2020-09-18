@@ -1,10 +1,4 @@
 # Packages configured for the pure python version are listed here.
 # Do not edit the file by hand but use the script config-package.py as
 # described in README.rst
-zope.authentication
-z3c.wizard
-zope.browsermenu
-zope.app.publication
-zope.app.broken
-zope.app.appsetup
-zope.browser
+z3c.recipe.tag

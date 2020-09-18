@@ -2,8 +2,7 @@ include *.rst
 include *.txt
 include buildout.cfg
 include tox.ini
-
-exclude MANIFEST.in
+include .coveragerc
 
 recursive-include docs *.bat
 recursive-include docs *.py

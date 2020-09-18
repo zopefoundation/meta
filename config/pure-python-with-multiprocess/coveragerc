@@ -1,0 +1,11 @@
+[run]
+source = {package_name}
+plugins = coverage_python_version
+branch = true
+parallel = true
+
+[paths]
+source =
+    src/
+    .tox/*/lib/python*/site-packages/
+    .tox/pypy*/site-packages/

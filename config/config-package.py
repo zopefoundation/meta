@@ -28,13 +28,15 @@ def call(*args, capture_output=False):
     return result
 
 
-def copy_with_meta(source, destination, config_type):
+def copy_with_meta(source, destination, config_type, **kw):
     """Copy the source file to destination and a hint of origin."""
     with open(source) as f_:
         f_data = f_.read()
 
     with open(destination, 'w') as f_:
         f_.write(META_HINT.format(config_type=config_type))
+        if kw:
+            f_data = f_data.format(**kw)
         f_.write(f_data)
 
 
@@ -48,6 +50,7 @@ parser.add_argument(
     action='store_true',
     help='Prevent direct push.')
 parser.add_argument('type', choices=['pure-python',
+                                     'pure-python-with-multiprocess',
                                      'pure-python-without-pypy'],
                     help='type of the config to be used, see README.rst')
 
@@ -96,6 +99,16 @@ copy_with_meta(
 shutil.copy(config_type_path / 'tox.ini', path)
 shutil.copy(config_type_path / 'travis.yml', path / '.travis.yml')
 
+add_coveragerc = False
+rm_coveragerc = False
+if (config_type_path / 'coveragerc').exists():
+    copy_with_meta(
+        config_type_path / 'coveragerc', path / '.coveragerc', config_type,
+        package_name=path.name)
+    add_coveragerc = True
+elif (path / '.coveragerc').exists():
+    rm_coveragerc = True
+
 
 # Modify templates with meta options.
 tox_ini_path = path / 'tox.ini'
@@ -113,8 +126,6 @@ cwd = os.getcwd()
 branch_name = f'config-with-{config_type}'
 try:
     os.chdir(path)
-    if pathlib.Path('.coveragerc').exists():
-        call('git', 'rm', '.coveragerc')
     if pathlib.Path('bootstrap.py').exists():
         call('git', 'rm', 'bootstrap.py')
     call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
@@ -139,6 +150,10 @@ try:
     call('git', 'add',
          'setup.cfg', 'tox.ini', '.gitignore', '.travis.yml', 'MANIFEST.in',
          '.editorconfig', '.meta.cfg')
+    if rm_coveragerc:
+        call('git', 'rm', '.coveragerc')
+    if add_coveragerc:
+        call('git', 'add', '.coveragerc')
     call('git', 'commit', '-m', f'Configuring for {config_type}')
     if not args.no_push:
         call('git', 'push', '--set-upstream', 'origin', branch_name)
