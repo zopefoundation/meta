@@ -8,4 +8,3 @@ zope.app.publication
 zope.app.broken
 zope.app.appsetup
 zope.browser
-z3c.recipe.tag

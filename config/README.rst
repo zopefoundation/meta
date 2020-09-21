@@ -15,6 +15,12 @@ Types
 This directory contains the configuration directories for different types of
 packages:
 
+* buildout-recipe
+
+  - Configuration for a zc.buildout recipe. It is tested using multiple
+    processes, so coverage has to be configured in a special way. (Supports
+    pure python packages which also run on PyPy.)
+
 * pure-python
 
   - Configuration for a pure python package which supports PyPy.
