@@ -9,3 +9,16 @@ source =
     src/
     .tox/*/lib/python*/site-packages/
     .tox/pypy*/site-packages/
+
+[report]
+precision = 2
+exclude_lines =
+    pragma: nocover
+    except ImportError:
+    raise NotImplementedError
+    if __name__ == '__main__':
+    self.fail
+    raise AssertionError
+
+[html]
+directory = htmlcov
