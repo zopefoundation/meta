@@ -49,10 +49,14 @@ parser.add_argument(
     dest='no_push',
     action='store_true',
     help='Prevent direct push.')
-parser.add_argument('type', choices=['pure-python',
-                                     'pure-python-with-multiprocess',
-                                     'pure-python-without-pypy'],
-                    help='type of the config to be used, see README.rst')
+parser.add_argument(
+    'type',
+     choices=[
+        'buildout-recipe',
+        'pure-python',
+        'pure-python-without-pypy',
+    ],
+    help='type of the config to be used, see README.rst')
 
 
 args = parser.parse_args()

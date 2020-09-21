@@ -1,5 +1,5 @@
 # Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/pure-python-with-multiprocess
+# https://github.com/zopefoundation/meta/tree/master/config/buildout-recipe
 language: python
 python:
   - 2.7
