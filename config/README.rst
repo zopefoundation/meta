@@ -25,7 +25,6 @@ packages:
 
   - Configuration for a pure python package which supports PyPy.
 
-
 * pure-python-without-pypy
 
   - Configuration for a pure python package which does not supports PyPy,
