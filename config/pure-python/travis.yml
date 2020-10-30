@@ -1,9 +1,10 @@
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/pure-python
 language: python
+dist: focal
 python:
   - 2.7
-  - pypy
+  - pypy2
   - 3.5
   - 3.6
   - 3.7
