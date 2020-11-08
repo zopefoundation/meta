@@ -15,10 +15,10 @@ python:
 matrix:
   include:
     - name: "lint"
-      python: 3.7
+      python: "3.7"
       env: TOXENV="lint"
     - name: "coverage"
-      python: 3.7
+      python: "3.7"
       env: TOXENV="coverage"
       after_success:
         - coveralls
