@@ -13,6 +13,7 @@ source =
 [report]
 precision = 2
 exclude_lines =
+    pragma: no cover
     pragma: nocover
     except ImportError:
     raise NotImplementedError
