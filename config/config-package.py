@@ -101,7 +101,9 @@ copy_with_meta(
 copy_with_meta(
     default_path / 'gitignore', path / '.gitignore', config_type)
 shutil.copy(config_type_path / 'tox.ini', path)
-shutil.copy(config_type_path / 'travis.yml', path / '.travis.yml')
+workflows = path / '.github' / 'workflows'
+workflows.mkdir(parents=True, exist_ok=True)
+shutil.copy(config_type_path / 'tests.yml', workflows / 'tests.yml')
 
 add_coveragerc = False
 rm_coveragerc = False
@@ -132,6 +134,8 @@ try:
     os.chdir(path)
     if pathlib.Path('bootstrap.py').exists():
         call('git', 'rm', 'bootstrap.py')
+    if pathlib.Path('.travis.yml').exists():
+        call('git', 'rm', '.travis.yml')
     call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
 
     # Modify files with user interaction only after all tests are green.
@@ -152,8 +156,8 @@ try:
         call('git', 'checkout', '-b', branch_name)
         updating = False
     call('git', 'add',
-         'setup.cfg', 'tox.ini', '.gitignore', '.travis.yml', 'MANIFEST.in',
-         '.editorconfig', '.meta.cfg')
+         'setup.cfg', 'tox.ini', '.gitignore', '.github/workflows/tests.yml',
+         'MANIFEST.in', '.editorconfig', '.meta.cfg')
     if rm_coveragerc:
         call('git', 'rm', '.coveragerc')
     if add_coveragerc:
