@@ -106,7 +106,7 @@ meta_opts['with-pypy'] = str(with_pypy)
 
 # Copy template files
 copy_with_meta(
-    default_path / 'setup.cfg', path / 'setup.cfg', config_type)
+    config_type_path / 'setup.cfg', path / 'setup.cfg', config_type)
 copy_with_meta(
     default_path / 'MANIFEST.in', path / 'MANIFEST.in', config_type)
 copy_with_meta(
