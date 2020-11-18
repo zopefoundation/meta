@@ -12,6 +12,12 @@ META_HINT = """\
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 """
+TESTS_MATRIX_PYPY = """
+        - ["pypy2", "pypy"]
+        - ["pypy3", "pypy3"]"""
+TOX_INI_PYPY = """
+    pypy,
+    pypy3,"""
 
 
 def call(*args, capture_output=False):
@@ -50,11 +56,16 @@ parser.add_argument(
     action='store_true',
     help='Prevent direct push.')
 parser.add_argument(
+    '--with-pypy',
+    dest='with_pypy',
+    action='store_true',
+    default=False,
+    help='Activate PyPy support if not already configured in .meta.cfg.')
+parser.add_argument(
     'type',
      choices=[
         'buildout-recipe',
         'pure-python',
-        'pure-python-without-pypy',
     ],
     help='type of the config to be used, see README.rst')
 
@@ -90,6 +101,8 @@ meta_opts = meta_cfg['meta']
 meta_opts['template'] = config_type
 meta_opts['commit-id'] = call(
     'git', 'log', '-n1', '--format=format:%H', capture_output=True).stdout
+with_pypy = meta_opts.getboolean('with-pypy', False) or args.with_pypy
+meta_opts['with-pypy'] = str(with_pypy)
 
 # Copy template files
 copy_with_meta(
@@ -100,10 +113,8 @@ copy_with_meta(
     default_path / 'editorconfig', path / '.editorconfig', config_type)
 copy_with_meta(
     default_path / 'gitignore', path / '.gitignore', config_type)
-shutil.copy(config_type_path / 'tox.ini', path)
 workflows = path / '.github' / 'workflows'
 workflows.mkdir(parents=True, exist_ok=True)
-shutil.copy(config_type_path / 'tests.yml', workflows / 'tests.yml')
 
 add_coveragerc = False
 rm_coveragerc = False
@@ -116,17 +127,31 @@ elif (path / '.coveragerc').exists():
     rm_coveragerc = True
 
 
-# Modify templates with meta options.
-tox_ini_path = path / 'tox.ini'
-with open(tox_ini_path) as f_:
+# Modify tox.ini with meta options.
+with open(config_type_path / 'tox.ini.in') as f_:
     tox_ini = f_.read()
 
-with open(tox_ini_path, 'w') as f_:
+with open(path / 'tox.ini', 'w') as f_:
     # initialize configuration if not already present
     fail_under = meta_opts.setdefault('fail-under', '0')
-    f_.write(tox_ini.format(
-        coverage_report_options=f'--fail-under={fail_under}'))
+    if with_pypy:
+        additional_environs = TOX_INI_PYPY
+    else:
+        additional_environs = ''
+    f_.write(tox_ini % dict(
+        coverage_report_options=f'--fail-under={fail_under}',
+        additional_environs=additional_environs))
 
+# Modify GHA config with meta options.
+with open(default_path / 'tests.yml.in') as f_:
+    tests_yml = f_.read()
+
+with open(workflows / 'tests.yml', 'w') as f_:
+    if with_pypy:
+        additional_config = TESTS_MATRIX_PYPY
+    else:
+        additional_config = ''
+    f_.write(tests_yml % dict(additional_config=additional_config))
 
 cwd = os.getcwd()
 branch_name = f'config-with-{config_type}'

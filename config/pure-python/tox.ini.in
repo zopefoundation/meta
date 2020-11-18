@@ -4,13 +4,11 @@
 envlist =
     lint,
     py27,
-    pypy2,
     py35,
     py36,
     py37,
     py38,
-    py39,
-    pypy3,
+    py39,%(additional_environs)s
     coverage
 
 [testenv]
@@ -45,7 +43,7 @@ deps =
 commands =
     coverage run -m zope.testrunner --test-path=src []
     coverage html
-    coverage report -m {coverage_report_options}
+    coverage report -m %(coverage_report_options)s
 
 [coverage:run]
 branch = True

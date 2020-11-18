@@ -9,3 +9,4 @@ zope.app.broken
 zope.app.appsetup
 zope.browser
 zope.dublincore
+zLOG

@@ -25,11 +25,6 @@ packages:
 
   - Configuration for a pure python package which supports PyPy.
 
-* pure-python-without-pypy
-
-  - Configuration for a pure python package which does not supports PyPy,
-    e. g. the packages Zope depends on.
-
 
 Contents
 --------
@@ -117,6 +112,8 @@ The following arguments are supported.
 --no-push
   Avoid pushing at the end of the configuration run.
 
+--with-pypy
+  Enable PyPy support. (Only needed one time as it is stored in .meta.cfg.)
 
 Options
 +++++++
