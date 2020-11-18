@@ -10,3 +10,6 @@ zope.app.appsetup
 zope.browser
 zope.dublincore
 zLOG
+zc.beforestorage
+z3c.layer.pagelet
+zope.mkzeoinstance
