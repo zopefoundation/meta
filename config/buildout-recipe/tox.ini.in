@@ -34,7 +34,7 @@ commands =
 [testenv:coverage]
 basepython = python3
 setenv =
-    COVERAGE_PROCESS_START={{toxinidir}}/.coveragerc
+    COVERAGE_PROCESS_START={toxinidir}/.coveragerc
 deps =
     coverage
     coverage-python-version
@@ -44,4 +44,4 @@ commands =
     coverage run -m zope.testrunner --test-path=src []
     coverage combine
     coverage html
-    coverage report -m {coverage_report_options}
+    coverage report -m %(coverage_report_options)s
