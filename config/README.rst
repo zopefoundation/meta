@@ -146,6 +146,12 @@ commit-id
 fail-under
   A minimal value of code coverage below which a test failure is issued.
 
+with-pypy
+  Does the package support PyPy: True/False
+
+additional-manifest-rules
+  Additional rules to be added at the end of the MANIFEST.in file. The rules
+  needs to start at the next line.
 
 Hints
 -----

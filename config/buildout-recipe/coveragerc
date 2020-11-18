@@ -1,5 +1,5 @@
 [run]
-source = {package_name}
+source = %(package_name)s
 plugins = coverage_python_version
 branch = true
 parallel = true
