@@ -1,5 +1,3 @@
-# Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/buildout-recipe
 [tox]
 envlist =
     lint,
@@ -33,15 +31,10 @@ commands =
     check-manifest
     check-python-versions
 
-[flake8]
-doctests = 1
-# provided to doctests by buildoutSetUp()
-builtins = write, system, cat, join
-
 [testenv:coverage]
 basepython = python3
 setenv =
-    COVERAGE_PROCESS_START={{toxinidir}}/.coveragerc
+    COVERAGE_PROCESS_START={toxinidir}/.coveragerc
 deps =
     coverage
     coverage-python-version
@@ -51,4 +44,4 @@ commands =
     coverage run -m zope.testrunner --test-path=src []
     coverage combine
     coverage html
-    coverage report -m {coverage_report_options}
+    coverage report -m %(coverage_report_options)s

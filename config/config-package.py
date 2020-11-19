@@ -12,6 +12,12 @@ META_HINT = """\
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 """
+TESTS_MATRIX_PYPY = """
+        - ["pypy2", "pypy"]
+        - ["pypy3", "pypy3"]"""
+TOX_INI_PYPY = """
+    pypy,
+    pypy3,"""
 
 
 def call(*args, capture_output=False):
@@ -29,14 +35,17 @@ def call(*args, capture_output=False):
 
 
 def copy_with_meta(source, destination, config_type, **kw):
-    """Copy the source file to destination and a hint of origin."""
+    """Copy the source file to destination and a hint of origin.
+
+    If kwargs are given they are used as template arguments.
+    """
     with open(source) as f_:
         f_data = f_.read()
 
     with open(destination, 'w') as f_:
         f_.write(META_HINT.format(config_type=config_type))
         if kw:
-            f_data = f_data.format(**kw)
+            f_data = f_data % kw
         f_.write(f_data)
 
 
@@ -50,11 +59,16 @@ parser.add_argument(
     action='store_true',
     help='Prevent direct push.')
 parser.add_argument(
+    '--with-pypy',
+    dest='with_pypy',
+    action='store_true',
+    default=False,
+    help='Activate PyPy support if not already configured in .meta.cfg.')
+parser.add_argument(
     'type',
      choices=[
         'buildout-recipe',
         'pure-python',
-        'pure-python-without-pypy',
     ],
     help='type of the config to be used, see README.rst')
 
@@ -90,20 +104,18 @@ meta_opts = meta_cfg['meta']
 meta_opts['template'] = config_type
 meta_opts['commit-id'] = call(
     'git', 'log', '-n1', '--format=format:%H', capture_output=True).stdout
+with_pypy = meta_opts.getboolean('with-pypy', False) or args.with_pypy
+meta_opts['with-pypy'] = str(with_pypy)
 
 # Copy template files
 copy_with_meta(
-    default_path / 'setup.cfg', path / 'setup.cfg', config_type)
-copy_with_meta(
-    default_path / 'MANIFEST.in', path / 'MANIFEST.in', config_type)
+    config_type_path / 'setup.cfg', path / 'setup.cfg', config_type)
 copy_with_meta(
     default_path / 'editorconfig', path / '.editorconfig', config_type)
 copy_with_meta(
     default_path / 'gitignore', path / '.gitignore', config_type)
-shutil.copy(config_type_path / 'tox.ini', path)
 workflows = path / '.github' / 'workflows'
 workflows.mkdir(parents=True, exist_ok=True)
-shutil.copy(config_type_path / 'tests.yml', workflows / 'tests.yml')
 
 add_coveragerc = False
 rm_coveragerc = False
@@ -116,16 +128,33 @@ elif (path / '.coveragerc').exists():
     rm_coveragerc = True
 
 
-# Modify templates with meta options.
-tox_ini_path = path / 'tox.ini'
-with open(tox_ini_path) as f_:
-    tox_ini = f_.read()
+# Modify tox.ini with meta options.
+fail_under = meta_opts.setdefault('fail-under', '0')
+if with_pypy:
+    additional_environs = TOX_INI_PYPY
+else:
+    additional_environs = ''
+copy_with_meta(
+    config_type_path / 'tox.ini.in', path / 'tox.ini', config_type,
+    coverage_report_options=f'--fail-under={fail_under}',
+    additional_environs=additional_environs)
 
-with open(tox_ini_path, 'w') as f_:
-    # initialize configuration if not already present
-    fail_under = meta_opts.setdefault('fail-under', '0')
-    f_.write(tox_ini.format(
-        coverage_report_options=f'--fail-under={fail_under}'))
+
+# Modify GHA config with meta options.
+if with_pypy:
+    additional_config = TESTS_MATRIX_PYPY
+else:
+    additional_config = ''
+copy_with_meta(
+    default_path / 'tests.yml.in', workflows / 'tests.yml', config_type,
+    additional_config=additional_config)
+
+
+# Modify MANIFEST.in with meta options
+additional_manifest_rules = meta_opts.get('additional-manifest-rules', '')
+copy_with_meta(
+    default_path / 'MANIFEST.in', path / 'MANIFEST.in', config_type,
+    additional_rules=additional_manifest_rules)
 
 
 cwd = os.getcwd()

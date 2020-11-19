@@ -25,11 +25,6 @@ packages:
 
   - Configuration for a pure python package which supports PyPy.
 
-* pure-python-without-pypy
-
-  - Configuration for a pure python package which does not supports PyPy,
-    e. g. the packages Zope depends on.
-
 
 Contents
 --------
@@ -117,6 +112,8 @@ The following arguments are supported.
 --no-push
   Avoid pushing at the end of the configuration run.
 
+--with-pypy
+  Enable PyPy support. (Only needed one time as it is stored in .meta.cfg.)
 
 Options
 +++++++
@@ -149,6 +146,12 @@ commit-id
 fail-under
   A minimal value of code coverage below which a test failure is issued.
 
+with-pypy
+  Does the package support PyPy: True/False
+
+additional-manifest-rules
+  Additional rules to be added at the end of the MANIFEST.in file. The rules
+  needs to start at the next line.
 
 Hints
 -----
