@@ -16,3 +16,4 @@ zope.mkzeoinstance
 grokcore.component
 zc.relationship
 bobo
+megrok.strictrequire
