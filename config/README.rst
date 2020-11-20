@@ -132,6 +132,7 @@ updated. Example:
     commit-id = < commit-hash >
     fail-under = 98
     with-pypy = False
+    with-docs = True
     additional-manifest-rules =
 
 
@@ -151,6 +152,9 @@ fail-under
 
 with-pypy
   Does the package support PyPy: True/False
+
+with-docs
+  Build the documentation via sphinx: True/False
 
 additional-manifest-rules
   Additional rules to be added at the end of the MANIFEST.in file.

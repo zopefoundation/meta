@@ -24,6 +24,9 @@ jobs:
         - ["pypy2", "pypy"]
         - ["pypy3", "pypy3"]
 {% endif %}
+{% if with_docs %}
+        - ["3.8",   "docs"]
+{% endif %}
         - ["3.8",   "coverage"]
 
     runs-on: ubuntu-latest

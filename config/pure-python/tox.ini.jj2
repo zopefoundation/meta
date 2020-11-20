@@ -11,6 +11,9 @@ envlist =
     pypy,
     pypy3,
 {% endif %}
+{% if with_docs %}
+    docs,
+{% endif %}
     coverage
 
 [testenv]
@@ -33,6 +36,14 @@ commands =
     check-manifest
     check-python-versions
 
+{% if with_docs %}
+[testenv:docs]
+basepython = python3
+extras = docs
+commands =
+    sphinx-build -b html -d docs/_build/doctrees docs docs/_build/html
+
+{% endif %}
 [testenv:coverage]
 basepython = python3
 deps =
