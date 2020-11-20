@@ -13,9 +13,6 @@ META_HINT = """\
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 """
-TESTS_MATRIX_PYPY = """
-        - ["pypy2", "pypy"]
-        - ["pypy3", "pypy3"]"""
 
 
 def call(*args, capture_output=False):
