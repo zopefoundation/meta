@@ -22,7 +22,14 @@ deps =
     zope.testrunner
 commands =
     zope-testrunner --test-path=src []
-extras = test
+{% if with_sphinx_doctests %}
+    sphinx-build -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
+{% endif %}
+extras =
+    test
+{% if with_sphinx_doctests %}
+    docs
+{% endif %}
 
 [testenv:lint]
 basepython = python3
@@ -39,9 +46,16 @@ commands =
 {% if with_docs %}
 [testenv:docs]
 basepython = python3
-extras = docs
+extras =
+{% if with_sphinx_doctests %}
+    test
+{% endif %}
+    docs
 commands =
     sphinx-build -b html -d docs/_build/doctrees docs docs/_build/html
+{% if with_sphinx_doctests %}
+    sphinx-build -b doctest -d docs/_build/doctrees docs docs/_build/doctest
+{% endif %}
 
 {% endif %}
 [testenv:coverage]
