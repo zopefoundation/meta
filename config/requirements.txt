@@ -1,2 +1,3 @@
 check-python-versions
 tox
+Jinja2

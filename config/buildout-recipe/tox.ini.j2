@@ -6,7 +6,11 @@ envlist =
     py36,
     py37,
     py38,
-    py39,%(additional_environs)s
+    py39,
+{% if with_pypy %}
+    pypy,
+    pypy3,
+{% endif %}
     coverage
 
 [testenv]
@@ -31,30 +35,15 @@ commands =
 
 [testenv:coverage]
 basepython = python3
+setenv =
+    COVERAGE_PROCESS_START={toxinidir}/.coveragerc
 deps =
     coverage
     coverage-python-version
     zope.testrunner
 commands =
+    coverage erase
     coverage run -m zope.testrunner --test-path=src []
+    coverage combine
     coverage html
-    coverage report -m %(coverage_report_options)s
-
-[coverage:run]
-branch = True
-plugins = coverage_python_version
-source = src
-
-[coverage:report]
-precision = 2
-exclude_lines =
-    pragma: no cover
-    pragma: nocover
-    except ImportError:
-    raise NotImplementedError
-    if __name__ == '__main__':
-    self.fail
-    raise AssertionError
-
-[coverage:html]
-directory = htmlcov
+    coverage report -m --fail-under=%(fail_under)s

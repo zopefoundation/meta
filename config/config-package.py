@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from configparser import ConfigParser
 import argparse
+import jinja2
 import os
 import pathlib
 import shutil
@@ -12,12 +13,6 @@ META_HINT = """\
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 """
-TESTS_MATRIX_PYPY = """
-        - ["pypy2", "pypy"]
-        - ["pypy3", "pypy3"]"""
-TOX_INI_PYPY = """
-    pypy,
-    pypy3,"""
 
 
 def call(*args, capture_output=False):
@@ -34,19 +29,15 @@ def call(*args, capture_output=False):
     return result
 
 
-def copy_with_meta(source, destination, config_type, **kw):
+def copy_with_meta(template_name, destination, config_type, **kw):
     """Copy the source file to destination and a hint of origin.
 
     If kwargs are given they are used as template arguments.
     """
-    with open(source) as f_:
-        f_data = f_.read()
-
     with open(destination, 'w') as f_:
         f_.write(META_HINT.format(config_type=config_type))
-        if kw:
-            f_data = f_data % kw
-        f_.write(f_data)
+        template = jinja_env.get_template(template_name)
+        f_.write(template.render(**kw))
 
 
 parser = argparse.ArgumentParser(
@@ -78,6 +69,14 @@ path = pathlib.Path(args.path)
 config_type = args.type
 default_path = pathlib.Path(__file__).parent / 'default'
 config_type_path = pathlib.Path(__file__).parent / config_type
+jinja_env = jinja2.Environment(
+    loader=jinja2.FileSystemLoader([config_type_path, default_path]),
+    variable_start_string='%(',
+    variable_end_string=')s',
+    keep_trailing_newline=True,
+    trim_blocks=True,
+    lstrip_blocks=True,
+)
 
 if not (path / '.git').exists():
     raise ValueError('The `path` has to point to a git clone of a repository')
@@ -108,54 +107,38 @@ with_pypy = meta_opts.getboolean('with-pypy', False) or args.with_pypy
 meta_opts['with-pypy'] = str(with_pypy)
 
 # Copy template files
-copy_with_meta(
-    config_type_path / 'setup.cfg', path / 'setup.cfg', config_type)
-copy_with_meta(
-    default_path / 'editorconfig', path / '.editorconfig', config_type)
-copy_with_meta(
-    default_path / 'gitignore', path / '.gitignore', config_type)
+copy_with_meta('setup.cfg', path / 'setup.cfg', config_type)
+copy_with_meta('editorconfig', path / '.editorconfig', config_type)
+copy_with_meta('gitignore', path / '.gitignore', config_type)
 workflows = path / '.github' / 'workflows'
 workflows.mkdir(parents=True, exist_ok=True)
 
 add_coveragerc = False
 rm_coveragerc = False
-if (config_type_path / 'coveragerc').exists():
+if (config_type_path / 'coveragerc.j2').exists():
     copy_with_meta(
-        config_type_path / 'coveragerc', path / '.coveragerc', config_type,
+        'coveragerc.j2', path / '.coveragerc', config_type,
         package_name=path.name)
     add_coveragerc = True
 elif (path / '.coveragerc').exists():
     rm_coveragerc = True
 
 
-# Modify tox.ini with meta options.
 fail_under = meta_opts.setdefault('fail-under', '0')
-if with_pypy:
-    additional_environs = TOX_INI_PYPY
-else:
-    additional_environs = ''
 copy_with_meta(
-    config_type_path / 'tox.ini.in', path / 'tox.ini', config_type,
-    coverage_report_options=f'--fail-under={fail_under}',
-    additional_environs=additional_environs)
-
-
-# Modify GHA config with meta options.
-if with_pypy:
-    additional_config = TESTS_MATRIX_PYPY
-else:
-    additional_config = ''
+    'tox.ini.j2', path / 'tox.ini', config_type,
+    fail_under=fail_under, with_pypy=with_pypy)
 copy_with_meta(
-    default_path / 'tests.yml.in', workflows / 'tests.yml', config_type,
-    additional_config=additional_config)
+    'tests.yml.j2', workflows / 'tests.yml', config_type,
+    with_pypy=with_pypy)
 
 
 # Modify MANIFEST.in with meta options
-additional_manifest_rules = meta_opts.get('additional-manifest-rules', '')
+additional_manifest_rules = meta_opts.get(
+    'additional-manifest-rules', '').strip()
 copy_with_meta(
-    default_path / 'MANIFEST.in', path / 'MANIFEST.in', config_type,
+    'MANIFEST.in.j2', path / 'MANIFEST.in', config_type,
     additional_rules=additional_manifest_rules)
-
 
 cwd = os.getcwd()
 branch_name = f'config-with-{config_type}'

@@ -29,7 +29,8 @@ packages:
 Contents
 --------
 
-Each directory contains the following files:
+Each directory contains the following files if they differ from the default
+(stored in a directory named ``default``):
 
 * packages.txt
 
@@ -45,7 +46,7 @@ Each directory contains the following files:
 
   - This file is copied to `.gitignore`.
 
-* MANIFEST.in
+* MANIFEST.in.jj2
 
   - Configuration file for the MANIFEST to include all needed files in sdist
     and wheel.
@@ -55,14 +56,14 @@ Each directory contains the following files:
   - common setup.cfg, which should be copied to the repository of the
     package
 
-* tox.ini
+* tox.ini.jj2
 
   - tox configuration, which should be copied to the repository of the
     package
 
-* travis.yml
+* tests.yml.jj2
 
-  - Config for TravisCI.
+  - Configuration for GitHub actions.
 
 
 Usage
@@ -86,22 +87,22 @@ The script does the following steps:
 
 1. Add the package name to ``packages.txt`` of the selected configuration type
    if it is not yet added.
-2. Copy ``setup.cfg``, ``tox.ini``, ``.travis.yml``, ``MANIFEST.in`` and
+2. Copy ``setup.cfg``, ``tox.ini``, ``tests.yml``, ``MANIFEST.in`` and
    ``.gitignore`` to the repository.
 3. Remove a possibly existing ``.coveragerc`` and ``bootstrap.py``. (Coverage
-   is now configured in ``setup.cfg``.)
+   is now configured in ``tox.ini`` for packages which are no buildout
+   recipes.)
 4. Run the tests via: ``tox``
-5. Create a branch and a pull request.
+5. Create a branch and a pull request. (Prevent pushing to GitHub using the
+   command line switch ``--no-push``.)
 
 After running the script you should manually do the following steps:
 
 1. Check for changes in the updated repository and for the need of a change log
    entry over there.
-2. Make sure TravisCI runs the ``master`` branch once a week. (See settings of
-   the package on TravisCI).
-3. Make sure the package is activated on https://coveralls.io by trying to add
+2. Make sure the package is activated on https://coveralls.io by trying to add
    the repository name and making it active.
-4. Check in possible changes in the zopefoundation/meta repository.
+3. Check in possible changes in the zopefoundation/meta repository.
 
 
 CLI arguments
@@ -122,7 +123,7 @@ It is possible to configure a deliberately small set of options a `.meta.cfg`
 inside the package repository. This file also stores the template name and
 commit id of the *meta* repository at the time of the run. This file is
 generated during the configuration run, if it does not exit or at least gets
-updated.
+updated. Example:
 
 .. code-block:: ini
 
@@ -130,6 +131,8 @@ updated.
     template = pure-python
     commit-id = < commit-hash >
     fail-under = 98
+    with-pypy = False
+    additional-manifest-rules =
 
 
 Meta Options
@@ -150,8 +153,7 @@ with-pypy
   Does the package support PyPy: True/False
 
 additional-manifest-rules
-  Additional rules to be added at the end of the MANIFEST.in file. The rules
-  needs to start at the next line.
+  Additional rules to be added at the end of the MANIFEST.in file.
 
 Hints
 -----
