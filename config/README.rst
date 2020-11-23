@@ -117,11 +117,11 @@ The following arguments are supported.
   Enable PyPy support. (Only needed one time as it is stored in .meta.cfg.)
 
 --with-docs
-  Enable building the documentation using sphinx. (Only needed one time as it
+  Enable building the documentation using Sphinx. (Only needed one time as it
   is stored in .meta.cfg.)
 
 --with-sphinx-doctests
-  Enable running the documentation as doctest using sphinx. (Only needed one
+  Enable running the documentation as doctest using Sphinx. (Only needed one
   time as it is stored in .meta.cfg.)
 
 Options
@@ -163,10 +163,10 @@ with-pypy
   Does the package support PyPy: True/False
 
 with-docs
-  Build the documentation via sphinx: True/False
+  Build the documentation via Sphinx: True/False
 
 with-sphinx-doctests
-  Run the documentation as doctest using sphinx: True/False
+  Run the documentation as doctest using Sphinx: True/False
 
 additional-manifest-rules
   Additional rules to be added at the end of the MANIFEST.in file.
