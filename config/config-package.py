@@ -133,9 +133,9 @@ workflows.mkdir(parents=True, exist_ok=True)
 
 add_coveragerc = False
 rm_coveragerc = False
-if (config_type_path / 'coveragerc.jj2').exists():
+if (config_type_path / 'coveragerc.j2').exists():
     copy_with_meta(
-        'coveragerc.jj2', path / '.coveragerc', config_type,
+        'coveragerc.j2', path / '.coveragerc', config_type,
         package_name=path.name)
     add_coveragerc = True
 elif (path / '.coveragerc').exists():
@@ -144,11 +144,11 @@ elif (path / '.coveragerc').exists():
 
 fail_under = meta_opts.setdefault('fail-under', '0')
 copy_with_meta(
-    'tox.ini.jj2', path / 'tox.ini', config_type,
+    'tox.ini.j2', path / 'tox.ini', config_type,
     fail_under=fail_under, with_pypy=with_pypy,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests)
 copy_with_meta(
-    'tests.yml.jj2', workflows / 'tests.yml', config_type,
+    'tests.yml.j2', workflows / 'tests.yml', config_type,
     with_pypy=with_pypy, with_docs=with_docs)
 
 
@@ -156,7 +156,7 @@ copy_with_meta(
 additional_manifest_rules = meta_opts.get(
     'additional-manifest-rules', '').strip()
 copy_with_meta(
-    'MANIFEST.in.jj2', path / 'MANIFEST.in', config_type,
+    'MANIFEST.in.j2', path / 'MANIFEST.in', config_type,
     additional_rules=additional_manifest_rules)
 
 cwd = os.getcwd()
