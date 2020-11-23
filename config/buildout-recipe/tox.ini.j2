@@ -11,6 +11,9 @@ envlist =
     pypy,
     pypy3,
 {% endif %}
+{% if with_docs %}
+    docs,
+{% endif %}
     coverage
 
 [testenv]
@@ -19,7 +22,14 @@ deps =
     zope.testrunner
 commands =
     zope-testrunner --test-path=src []
-extras = test
+{% if with_sphinx_doctests %}
+    sphinx-build -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
+{% endif %}
+extras =
+    test
+{% if with_sphinx_doctests %}
+    docs
+{% endif %}
 
 [testenv:lint]
 basepython = python3
@@ -33,6 +43,20 @@ commands =
     check-manifest
     check-python-versions
 
+{% if with_docs %}
+[testenv:docs]
+basepython = python3
+{% if not with_sphinx_doctests %}
+extras =
+    docs
+{% endif %}
+commands =
+    sphinx-build -b html -d docs/_build/doctrees docs docs/_build/html
+{% if with_sphinx_doctests %}
+    sphinx-build -b doctest -d docs/_build/doctrees docs docs/_build/doctest
+{% endif %}
+
+{% endif %}
 [testenv:coverage]
 basepython = python3
 setenv =
@@ -44,6 +68,9 @@ deps =
 commands =
     coverage erase
     coverage run -m zope.testrunner --test-path=src []
+{% if with_sphinx_doctests %}
+    coverage run -a -m sphinx -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
+{% endif %}
     coverage combine
     coverage html
     coverage report -m --fail-under=%(fail_under)s

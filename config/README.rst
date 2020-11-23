@@ -116,6 +116,14 @@ The following arguments are supported.
 --with-pypy
   Enable PyPy support. (Only needed one time as it is stored in .meta.cfg.)
 
+--with-docs
+  Enable building the documentation using Sphinx. (Only needed one time as it
+  is stored in .meta.cfg.)
+
+--with-sphinx-doctests
+  Enable running the documentation as doctest using Sphinx. (Only needed one
+  time as it is stored in .meta.cfg.)
+
 Options
 +++++++
 
@@ -132,6 +140,8 @@ updated. Example:
     commit-id = < commit-hash >
     fail-under = 98
     with-pypy = False
+    with-docs = True
+    with-sphinx-doctests = False
     additional-manifest-rules =
 
 
@@ -151,6 +161,12 @@ fail-under
 
 with-pypy
   Does the package support PyPy: True/False
+
+with-docs
+  Build the documentation via Sphinx: True/False
+
+with-sphinx-doctests
+  Run the documentation as doctest using Sphinx: True/False
 
 additional-manifest-rules
   Additional rules to be added at the end of the MANIFEST.in file.
