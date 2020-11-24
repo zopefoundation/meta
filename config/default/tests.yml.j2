@@ -14,14 +14,18 @@ jobs:
         config:
         # [Python version, tox env]
         - ["3.8",   "lint"]
+{% if with_py2 %}
         - ["2.7",   "py27"]
         - ["3.5",   "py35"]
+{% endif %}
         - ["3.6",   "py36"]
         - ["3.7",   "py37"]
         - ["3.8",   "py38"]
         - ["3.9",   "py39"]
-{% if with_pypy %}
+{% if with_pypy and with_py2 %}
         - ["pypy2", "pypy"]
+{% endif %}
+{% if with_pypy %}
         - ["pypy3", "pypy3"]
 {% endif %}
 {% if with_docs %}

@@ -116,6 +116,11 @@ The following arguments are supported.
 --with-pypy
   Enable PyPy support. (Only needed one time as it is stored in .meta.cfg.)
 
+--without-py2
+  The package does not support Python 2, so do not test for it. Also drops
+  support for PyPy2 and Python 3.5 (Only needed one time as it is stored in
+  .meta.cfg.)
+
 --with-docs
   Enable building the documentation using Sphinx. (Only needed one time as it
   is stored in .meta.cfg.)
@@ -123,6 +128,7 @@ The following arguments are supported.
 --with-sphinx-doctests
   Enable running the documentation as doctest using Sphinx. (Only needed one
   time as it is stored in .meta.cfg.)
+
 
 Options
 +++++++
@@ -142,6 +148,7 @@ updated. Example:
     with-pypy = False
     with-docs = True
     with-sphinx-doctests = False
+    without-py2 = False
     additional-manifest-rules =
 
 
@@ -161,6 +168,9 @@ fail-under
 
 with-pypy
   Does the package support PyPy: True/False
+
+without-py2
+  Do not run the tests on Python 2, PyPy2 and Python 3.5: True/False
 
 with-docs
   Build the documentation via Sphinx: True/False

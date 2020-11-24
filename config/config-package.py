@@ -56,6 +56,13 @@ parser.add_argument(
     default=False,
     help='Activate PyPy support if not already configured in .meta.cfg.')
 parser.add_argument(
+    '--without-py2',
+    dest='without_py2',
+    action='store_true',
+    default=False,
+    help='Disable Python 2 support if not already configured in .meta.cfg.'
+    ' Also disables support for PyPy2 and Python 3.5.')
+parser.add_argument(
     '--with-docs',
     dest='with_docs',
     action='store_true',
@@ -118,6 +125,9 @@ meta_opts['commit-id'] = call(
     'git', 'log', '-n1', '--format=format:%H', capture_output=True).stdout
 with_pypy = meta_opts.getboolean('with-pypy', False) or args.with_pypy
 meta_opts['with-pypy'] = str(with_pypy)
+without_py2 = meta_opts.getboolean('without-py2', False) or args.without_py2
+meta_opts['without-py2'] = str(without_py2)
+with_py2 = not without_py2
 with_docs = meta_opts.getboolean('with-docs', False) or args.with_docs
 meta_opts['with-docs'] = str(with_docs)
 with_sphinx_doctests = meta_opts.getboolean(
@@ -145,11 +155,11 @@ elif (path / '.coveragerc').exists():
 fail_under = meta_opts.setdefault('fail-under', '0')
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
-    fail_under=fail_under, with_pypy=with_pypy,
+    fail_under=fail_under, with_pypy=with_pypy, with_py2=with_py2,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests)
 copy_with_meta(
     'tests.yml.j2', workflows / 'tests.yml', config_type,
-    with_pypy=with_pypy, with_docs=with_docs)
+    with_pypy=with_pypy, with_py2=with_py2, with_docs=with_docs)
 
 
 # Modify MANIFEST.in with meta options
