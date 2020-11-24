@@ -116,6 +116,11 @@ The following arguments are supported.
 --with-pypy
   Enable PyPy support. (Only needed one time as it is stored in .meta.cfg.)
 
+--without-legacy-python
+  The package does not support Python versions which reached their end-of-life.
+  (Currently this means dropping support for Python 2.7 and 3.5.) This as well
+  drops support for PyPy2. (Only needed one time as it is stored in .meta.cfg.)
+
 --with-docs
   Enable building the documentation using Sphinx. (Only needed one time as it
   is stored in .meta.cfg.)
@@ -123,6 +128,7 @@ The following arguments are supported.
 --with-sphinx-doctests
   Enable running the documentation as doctest using Sphinx. (Only needed one
   time as it is stored in .meta.cfg.)
+
 
 Options
 +++++++
@@ -142,7 +148,10 @@ updated. Example:
     with-pypy = False
     with-docs = True
     with-sphinx-doctests = False
+    with-legacy-python = True
     additional-manifest-rules =
+    additional-flake8-config =
+      ignore = D203
 
 
 Meta Options
@@ -162,6 +171,9 @@ fail-under
 with-pypy
   Does the package support PyPy: True/False
 
+with-legacy-python
+  Run the tests even on Python 2.7, PyPy2 and Python 3.5: True/False
+
 with-docs
   Build the documentation via Sphinx: True/False
 
@@ -170,6 +182,11 @@ with-sphinx-doctests
 
 additional-manifest-rules
   Additional rules to be added at the end of the MANIFEST.in file.
+
+additional-flake8-config
+  Additional configuration options be added at the end of the flake8
+  configuration section in ``setup.cfg``.
+
 
 Hints
 -----

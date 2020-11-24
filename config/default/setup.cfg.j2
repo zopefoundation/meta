@@ -3,12 +3,21 @@ universal = 1
 
 [flake8]
 doctests = 1
+{% if config_type == 'buildout-recipe' %}
 # provided to doctests by buildoutSetUp()
 builtins = write, system, cat, join
+{% endif %}
+{% if additional_flake8_config %}
+%(additional_flake8_config)s
+{% endif %}
 
 [check-manifest]
 ignore =
     .editorconfig
     .meta.cfg
+{% if with_docs %}
     docs/_build/html/_sources/*
+{% endif %}
+{% if with_sphinx_doctests %}
     docs/_build/doctest/*
+{% endif %}

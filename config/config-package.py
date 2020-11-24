@@ -37,7 +37,7 @@ def copy_with_meta(template_name, destination, config_type, **kw):
     with open(destination, 'w') as f_:
         f_.write(META_HINT.format(config_type=config_type))
         template = jinja_env.get_template(template_name)
-        f_.write(template.render(**kw))
+        f_.write(template.render(config_type=config_type, **kw))
 
 
 parser = argparse.ArgumentParser(
@@ -55,6 +55,14 @@ parser.add_argument(
     action='store_true',
     default=False,
     help='Activate PyPy support if not already configured in .meta.cfg.')
+parser.add_argument(
+    '--without-legacy-python',
+    dest='with_legacy_python',
+    action='store_false',
+    default=None,
+    help='Disable support for Python versions which reached their end-of-life.'
+    ' (aka 2.7 and 3.5) if not already configured in .meta.cfg.'
+    ' Also disables support for PyPy2.')
 parser.add_argument(
     '--with-docs',
     dest='with_docs',
@@ -118,6 +126,11 @@ meta_opts['commit-id'] = call(
     'git', 'log', '-n1', '--format=format:%H', capture_output=True).stdout
 with_pypy = meta_opts.getboolean('with-pypy', False) or args.with_pypy
 meta_opts['with-pypy'] = str(with_pypy)
+if args.with_legacy_python is None:
+    with_legacy_python = meta_opts.getboolean('with-legacy-python', True)
+else:
+    with_legacy_python = args.with_legacy_python
+meta_opts['with-legacy-python'] = str(with_legacy_python)
 with_docs = meta_opts.getboolean('with-docs', False) or args.with_docs
 meta_opts['with-docs'] = str(with_docs)
 with_sphinx_doctests = meta_opts.getboolean(
@@ -125,7 +138,11 @@ with_sphinx_doctests = meta_opts.getboolean(
 meta_opts['with-sphinx-doctests'] = str(with_sphinx_doctests)
 
 # Copy template files
-copy_with_meta('setup.cfg', path / 'setup.cfg', config_type)
+additional_flake8_config = meta_opts.get(
+    'additional-flake8-config', '').strip()
+copy_with_meta('setup.cfg.j2', path / 'setup.cfg', config_type,
+               additional_flake8_config=additional_flake8_config,
+               with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests)
 copy_with_meta('editorconfig', path / '.editorconfig', config_type)
 copy_with_meta('gitignore', path / '.gitignore', config_type)
 workflows = path / '.github' / 'workflows'
@@ -146,10 +163,12 @@ fail_under = meta_opts.setdefault('fail-under', '0')
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
     fail_under=fail_under, with_pypy=with_pypy,
+    with_legacy_python=with_legacy_python,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests)
 copy_with_meta(
     'tests.yml.j2', workflows / 'tests.yml', config_type,
-    with_pypy=with_pypy, with_docs=with_docs)
+    with_pypy=with_pypy, with_legacy_python=with_legacy_python,
+    with_docs=with_docs)
 
 
 # Modify MANIFEST.in with meta options
