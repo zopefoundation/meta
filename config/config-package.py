@@ -37,7 +37,7 @@ def copy_with_meta(template_name, destination, config_type, **kw):
     with open(destination, 'w') as f_:
         f_.write(META_HINT.format(config_type=config_type))
         template = jinja_env.get_template(template_name)
-        f_.write(template.render(**kw))
+        f_.write(template.render(config_type=config_type, **kw))
 
 
 parser = argparse.ArgumentParser(
@@ -138,7 +138,11 @@ with_sphinx_doctests = meta_opts.getboolean(
 meta_opts['with-sphinx-doctests'] = str(with_sphinx_doctests)
 
 # Copy template files
-copy_with_meta('setup.cfg', path / 'setup.cfg', config_type)
+additional_flake8_config = meta_opts.get(
+    'additional-flake8-config', '').strip()
+copy_with_meta('setup.cfg.j2', path / 'setup.cfg', config_type,
+               additional_flake8_config=additional_flake8_config,
+               with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests)
 copy_with_meta('editorconfig', path / '.editorconfig', config_type)
 copy_with_meta('gitignore', path / '.gitignore', config_type)
 workflows = path / '.github' / 'workflows'

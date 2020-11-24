@@ -150,6 +150,8 @@ updated. Example:
     with-sphinx-doctests = False
     with-legacy-python = True
     additional-manifest-rules =
+    additional-flake8-config =
+      ignore = D203
 
 
 Meta Options
@@ -180,6 +182,11 @@ with-sphinx-doctests
 
 additional-manifest-rules
   Additional rules to be added at the end of the MANIFEST.in file.
+
+additional-flake8-config
+  Additional configuration options be added at the end of the flake8
+  configuration section in ``setup.cfg``.
+
 
 Hints
 -----
