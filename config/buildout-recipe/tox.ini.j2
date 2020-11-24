@@ -1,7 +1,7 @@
 [tox]
 envlist =
     lint,
-{% if with_py2 %}
+{% if with_legacy_python %}
     py27,
     py35,
 {% endif %}
@@ -9,7 +9,7 @@ envlist =
     py37,
     py38,
     py39,
-{% if with_pypy and with_py2 %}
+{% if with_pypy and with_legacy_python %}
     pypy,
 {% endif %}
 {% if with_pypy %}

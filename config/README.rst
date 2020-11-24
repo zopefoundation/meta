@@ -116,10 +116,10 @@ The following arguments are supported.
 --with-pypy
   Enable PyPy support. (Only needed one time as it is stored in .meta.cfg.)
 
---without-py2
-  The package does not support Python 2, so do not test for it. Also drops
-  support for PyPy2 and Python 3.5 (Only needed one time as it is stored in
-  .meta.cfg.)
+--without-legacy-python
+  The package does not support Python versions which reached their end-of-life.
+  (Currently this means dropping support for Python 2.7 and 3.5.) This as well
+  drops support for PyPy2. (Only needed one time as it is stored in .meta.cfg.)
 
 --with-docs
   Enable building the documentation using Sphinx. (Only needed one time as it
@@ -148,7 +148,7 @@ updated. Example:
     with-pypy = False
     with-docs = True
     with-sphinx-doctests = False
-    without-py2 = False
+    with-legacy-python = True
     additional-manifest-rules =
 
 
@@ -169,8 +169,8 @@ fail-under
 with-pypy
   Does the package support PyPy: True/False
 
-without-py2
-  Do not run the tests on Python 2, PyPy2 and Python 3.5: True/False
+with-legacy-python
+  Run the tests even on Python 2.7, PyPy2 and Python 3.5: True/False
 
 with-docs
   Build the documentation via Sphinx: True/False
