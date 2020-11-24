@@ -140,9 +140,13 @@ meta_opts['with-sphinx-doctests'] = str(with_sphinx_doctests)
 # Copy template files
 additional_flake8_config = meta_opts.get(
     'additional-flake8-config', '').strip()
-copy_with_meta('setup.cfg.j2', path / 'setup.cfg', config_type,
-               additional_flake8_config=additional_flake8_config,
-               with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests)
+additional_check_manifest_ignores = meta_opts.get(
+    'additional-check-manifest-ignores', '').strip()
+copy_with_meta(
+    'setup.cfg.j2', path / 'setup.cfg', config_type,
+    additional_flake8_config=additional_flake8_config,
+    additional_check_manifest_ignores=additional_check_manifest_ignores,
+    with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests)
 copy_with_meta('editorconfig', path / '.editorconfig', config_type)
 copy_with_meta('gitignore', path / '.gitignore', config_type)
 workflows = path / '.github' / 'workflows'
