@@ -186,15 +186,14 @@ try:
         call('git', 'rm', 'bootstrap.py')
     if pathlib.Path('.travis.yml').exists():
         call('git', 'rm', '.travis.yml')
-    call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
-
-    # Modify files with user interaction only after all tests are green.
     with open('.meta.cfg', 'w') as meta_f:
         meta_f.write(
             '# Generated from:\n'
             '# https://github.com/zopefoundation/meta/tree/master/config/'
             f'{config_type}\n')
         meta_cfg.write(meta_f)
+
+    call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
 
     branches = call(
         'git', 'branch', '--format', '%(refname:short)',
