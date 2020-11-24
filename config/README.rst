@@ -152,6 +152,7 @@ updated. Example:
     additional-manifest-rules =
     additional-flake8-config =
       ignore = D203
+    additional-check-manifest-ignores =
 
 
 Meta Options
@@ -187,6 +188,9 @@ additional-flake8-config
   Additional configuration options be added at the end of the flake8
   configuration section in ``setup.cfg``.
 
+additional-check-manifest-ignores
+  Additional files to be ignored by ``check-manifest`` via its section in
+  ``setup.cfg``
 
 Hints
 -----

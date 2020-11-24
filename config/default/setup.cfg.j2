@@ -21,3 +21,8 @@ ignore =
 {% if with_sphinx_doctests %}
     docs/_build/doctest/*
 {% endif %}
+{% if additional_check_manifest_ignores %}
+{% for line in additional_check_manifest_ignores.splitlines() %}
+    %(line)s
+{% endfor %}
+{% endif %}
