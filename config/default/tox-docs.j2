@@ -1,0 +1,14 @@
+{% if with_docs %}
+
+[testenv:docs]
+basepython = python3
+{% if not with_sphinx_doctests %}
+extras =
+    docs
+{% endif %}
+commands =
+    sphinx-build -b html -d docs/_build/doctrees docs docs/_build/html
+{% if with_sphinx_doctests %}
+    sphinx-build -b doctest -d docs/_build/doctrees docs docs/_build/doctest
+{% endif %}
+{% endif %}

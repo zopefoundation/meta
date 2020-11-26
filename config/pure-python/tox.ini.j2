@@ -1,66 +1,8 @@
-[tox]
-envlist =
-    lint,
-{% if with_legacy_python %}
-    py27,
-    py35,
-{% endif %}
-    py36,
-    py37,
-    py38,
-    py39,
-{% if with_pypy and with_legacy_python %}
-    pypy,
-{% endif %}
-{% if with_pypy %}
-    pypy3,
-{% endif %}
-{% if with_docs %}
-    docs,
-{% endif %}
-    coverage
-
-[testenv]
-usedevelop = true
-deps =
-    zope.testrunner
-commands =
-    zope-testrunner --test-path=src []
-{% if with_sphinx_doctests %}
-    sphinx-build -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
-{% endif %}
-extras =
-    test
-{% if with_sphinx_doctests %}
-    docs
-{% endif %}
-
-[testenv:lint]
-basepython = python3
-skip_install = true
-deps =
-    flake8
-    check-manifest
-    check-python-versions
-commands =
-    flake8 src setup.py
-    check-manifest
-    check-python-versions
-
-{% if with_docs %}
-[testenv:docs]
-basepython = python3
-{% if not with_sphinx_doctests %}
-extras =
-    docs
-{% endif %}
-commands =
-    sphinx-build -b html -d docs/_build/doctrees docs docs/_build/html
-{% if with_sphinx_doctests %}
-    sphinx-build -b doctest -d docs/_build/doctrees docs docs/_build/doctest
-{% endif %}
-
-{% endif %}
+{% set with_coverage = True %}
+{% include 'tox-envlist.j2' %}
+{% include 'tox-testenv.j2' %}
+{% include 'tox-lint.j2' %}
+{% include 'tox-docs.j2' %}
 [testenv:coverage]
 basepython = python3
 deps =
