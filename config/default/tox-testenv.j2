@@ -1,0 +1,15 @@
+
+[testenv]
+usedevelop = true
+deps =
+    zope.testrunner
+commands =
+    zope-testrunner --test-path=src []
+{% if with_sphinx_doctests %}
+    sphinx-build -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
+{% endif %}
+extras =
+    test
+{% if with_sphinx_doctests %}
+    docs
+{% endif %}
