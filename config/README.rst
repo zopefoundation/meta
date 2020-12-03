@@ -142,14 +142,14 @@ updated. Example:
 .. code-block:: ini
 
     [meta]
-    template = pure-python
-    commit-id = < commit-hash >
+    template = "pure-python"
+    commit-id = "< commit-hash >"
 
     [python]
-    with-legacy-python = True
-    with-pypy = False
-    with-docs = True
-    with-sphinx-doctests = False
+    with-legacy-python = true
+    with-pypy = false
+    with-docs = true
+    with-sphinx-doctests = false
 
     [coverage]
     fail-under = 98
@@ -191,16 +191,16 @@ Python options
 ``````````````
 
 with-legacy-python
-  Run the tests even on Python 2.7, PyPy2 and Python 3.5: True/False
+  Run the tests even on Python 2.7, PyPy2 and Python 3.5: true/false
 
 with-pypy
-  Does the package support PyPy: True/False
+  Does the package support PyPy: true/false
 
 with-docs
-  Build the documentation via Sphinx: True/False
+  Build the documentation via Sphinx: true/false
 
 with-sphinx-doctests
-  Run the documentation as doctest using Sphinx: True/False
+  Run the documentation as doctest using Sphinx: true/false
 
 
 Coverage options
