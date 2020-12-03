@@ -17,6 +17,6 @@ recursive-include src *.rst
 recursive-include src *.txt
 recursive-include src *.xml
 recursive-include src *.zcml
-{% if additional_rules %}
-%(additional_rules)s
-{% endif %}
+{% for line in additional_rules %}
+%(line)s
+{% endfor %}

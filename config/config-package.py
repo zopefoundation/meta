@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-from configparser import ConfigParser
 import argparse
+import collections
 import jinja2
 import os
 import pathlib
 import shutil
 import subprocess
 import sys
+import toml
 
 
 META_HINT = """\
@@ -40,6 +41,30 @@ def copy_with_meta(template_name, destination, config_type, **kw):
         f_.write(template.render(config_type=config_type, **kw))
 
 
+class TomlArraySeparatorEncoderWithNewline(toml.TomlArraySeparatorEncoder):
+    """Special version indenting the first element of and array.
+
+    Ignores the separator argument to the constructor.
+    """
+
+    def dump_list(self, v):
+        t = []
+        retval = "[\n    "  # changed from original
+        for u in v:
+            t.append(self.dump_value(u))
+        while t != []:
+            s = []
+            for u in t:
+                if isinstance(u, list):
+                    for r in u:
+                        s.append(r)
+                else:
+                    retval += u + ",\n    "  # changed from original
+            t = s
+        retval += "]"
+        return retval
+
+
 parser = argparse.ArgumentParser(
     description='Use configuration for a package.')
 parser.add_argument(
@@ -54,28 +79,28 @@ parser.add_argument(
     dest='with_pypy',
     action='store_true',
     default=False,
-    help='Activate PyPy support if not already configured in .meta.cfg.')
+    help='Activate PyPy support if not already configured in .meta.toml.')
 parser.add_argument(
     '--without-legacy-python',
     dest='with_legacy_python',
     action='store_false',
     default=None,
     help='Disable support for Python versions which reached their end-of-life.'
-    ' (aka 2.7 and 3.5) if not already configured in .meta.cfg.'
+    ' (aka 2.7 and 3.5) if not already configured in .meta.toml.'
     ' Also disables support for PyPy2.')
 parser.add_argument(
     '--with-docs',
     dest='with_docs',
     action='store_true',
     default=False,
-    help='Activate building docs if not already configured in .meta.cfg.')
+    help='Activate building docs if not already configured in .meta.toml.')
 parser.add_argument(
     '--with-sphinx-doctests',
     dest='with_sphinx_doctests',
     action='store_true',
     default=False,
     help='Activate running doctests with sphinx if not already configured in'
-         ' .meta.cfg.')
+         ' .meta.toml.')
 parser.add_argument(
     'type',
      choices=[
@@ -114,34 +139,32 @@ else:
 
 
 # Read and update meta configuration
-meta_cfg = ConfigParser()
-meta_cfg_path = path / '.meta.cfg'
-if meta_cfg_path.exists():
-    meta_cfg.read(meta_cfg_path)
+meta_toml_path = path / '.meta.toml'
+if meta_toml_path.exists():
+    meta_cfg = toml.load(meta_toml_path)
+    meta_cfg = collections.defaultdict(dict, **meta_cfg)
 else:
-    meta_cfg['meta'] = {}
-meta_opts = meta_cfg['meta']
-meta_opts['template'] = config_type
-meta_opts['commit-id'] = call(
+    meta_cfg = meta_dict_factory()
+meta_cfg['meta']['template'] = config_type
+meta_cfg['meta']['commit-id'] = call(
     'git', 'log', '-n1', '--format=format:%H', capture_output=True).stdout
-with_pypy = meta_opts.getboolean('with-pypy', False) or args.with_pypy
-meta_opts['with-pypy'] = str(with_pypy)
+with_pypy = meta_cfg['python'].get('with-pypy', False) or args.with_pypy
+meta_cfg['python']['with-pypy'] = with_pypy
 if args.with_legacy_python is None:
-    with_legacy_python = meta_opts.getboolean('with-legacy-python', True)
+    with_legacy_python = meta_cfg['python'].get('with-legacy-python', True)
 else:
     with_legacy_python = args.with_legacy_python
-meta_opts['with-legacy-python'] = str(with_legacy_python)
-with_docs = meta_opts.getboolean('with-docs', False) or args.with_docs
-meta_opts['with-docs'] = str(with_docs)
-with_sphinx_doctests = meta_opts.getboolean(
+meta_cfg['python']['with-legacy-python'] = with_legacy_python
+with_docs = meta_cfg['python'].get('with-docs', False) or args.with_docs
+meta_cfg['python']['with-docs'] = with_docs
+with_sphinx_doctests = meta_cfg['python'].get(
     'with-sphinx-doctests', False) or args.with_sphinx_doctests
-meta_opts['with-sphinx-doctests'] = str(with_sphinx_doctests)
+meta_cfg['python']['with-sphinx-doctests'] = with_sphinx_doctests
 
 # Copy template files
-additional_flake8_config = meta_opts.get(
-    'additional-flake8-config', '').strip()
-additional_check_manifest_ignores = meta_opts.get(
-    'additional-check-manifest-ignores', '').strip()
+additional_flake8_config = meta_cfg['flake8'].get('additional-config', [])
+additional_check_manifest_ignores = meta_cfg['check-manifest'].get(
+    'additional-ignores', [])
 copy_with_meta(
     'setup.cfg.j2', path / 'setup.cfg', config_type,
     additional_flake8_config=additional_flake8_config,
@@ -163,7 +186,7 @@ elif (path / '.coveragerc').exists():
     rm_coveragerc = True
 
 
-fail_under = meta_opts.setdefault('fail-under', '0')
+fail_under = meta_cfg['coverage'].setdefault('fail-under', 0)
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
     fail_under=fail_under, with_pypy=with_pypy,
@@ -176,8 +199,7 @@ copy_with_meta(
 
 
 # Modify MANIFEST.in with meta options
-additional_manifest_rules = meta_opts.get(
-    'additional-manifest-rules', '').strip()
+additional_manifest_rules = meta_cfg['manifest'].get('additional-rules', [])
 copy_with_meta(
     'MANIFEST.in.j2', path / 'MANIFEST.in', config_type,
     additional_rules=additional_manifest_rules)
@@ -190,12 +212,15 @@ try:
         call('git', 'rm', 'bootstrap.py')
     if pathlib.Path('.travis.yml').exists():
         call('git', 'rm', '.travis.yml')
-    with open('.meta.cfg', 'w') as meta_f:
+    # Remove empty sections:
+    meta_cfg = {k: v  for k, v in meta_cfg.items() if v}
+    with open('.meta.toml', 'w') as meta_f:
         meta_f.write(
             '# Generated from:\n'
             '# https://github.com/zopefoundation/meta/tree/master/config/'
             f'{config_type}\n')
-        meta_cfg.write(meta_f)
+        toml.dump(
+            meta_cfg, meta_f, TomlArraySeparatorEncoderWithNewline())
 
     call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
 
@@ -210,7 +235,7 @@ try:
         updating = False
     call('git', 'add',
          'setup.cfg', 'tox.ini', '.gitignore', '.github/workflows/tests.yml',
-         'MANIFEST.in', '.editorconfig', '.meta.cfg')
+         'MANIFEST.in', '.editorconfig', '.meta.toml')
     if rm_coveragerc:
         call('git', 'rm', '.coveragerc')
     if add_coveragerc:

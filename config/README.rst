@@ -133,7 +133,7 @@ The following arguments are supported.
 Options
 +++++++
 
-It is possible to configure a deliberately small set of options a `.meta.cfg`
+It is possible to configure some options in a `.meta.toml` file
 inside the package repository. This file also stores the template name and
 commit id of the *meta* repository at the time of the run. This file is
 generated during the configuration run, if it does not exit or at least gets
@@ -144,19 +144,39 @@ updated. Example:
     [meta]
     template = pure-python
     commit-id = < commit-hash >
-    fail-under = 98
+
+    [python]
+    with-legacy-python = True
     with-pypy = False
     with-docs = True
     with-sphinx-doctests = False
-    with-legacy-python = True
-    additional-manifest-rules =
-    additional-flake8-config =
-      ignore = D203
-    additional-check-manifest-ignores =
 
+    [coverage]
+    fail-under = 98
+
+    [flake8]
+    additional-config = [
+        "# E221 multiple spaces before operator",
+        "# E222 multiple spaces after operator",
+        "per-file-ignores =",
+        "    src/foo/bar.py: E221 E222"
+        "ignore = D203",
+    ]
+
+    [manifest]
+    additional-rules = [
+        "include *.foo",
+        "include *.bar",
+        ]
+
+    [check-manifest]
+    additional-ignores = [
+        "docs/html/*",
+        "docs/source/_static/*",
+        ]
 
 Meta Options
-------------
+````````````
 
 template
   Name of the template, the configuration was run.
@@ -166,14 +186,15 @@ commit-id
   Commit of the meta repository, which was used for the last configuration run.
   Currently read-only.
 
-fail-under
-  A minimal value of code coverage below which a test failure is issued.
 
-with-pypy
-  Does the package support PyPy: True/False
+Python options
+``````````````
 
 with-legacy-python
   Run the tests even on Python 2.7, PyPy2 and Python 3.5: True/False
+
+with-pypy
+  Does the package support PyPy: True/False
 
 with-docs
   Build the documentation via Sphinx: True/False
@@ -181,16 +202,39 @@ with-docs
 with-sphinx-doctests
   Run the documentation as doctest using Sphinx: True/False
 
-additional-manifest-rules
-  Additional rules to be added at the end of the MANIFEST.in file.
 
-additional-flake8-config
+Coverage options
+````````````````
+
+fail-under
+  A minimal value of code coverage below which a test failure is issued.
+
+
+Flake8 options
+--------------
+
+additional-config
   Additional configuration options be added at the end of the flake8
-  configuration section in ``setup.cfg``.
+  configuration section in ``setup.cfg``. *Caution:* This option has to be a
+  list of strings so the leading white spaces and comments are preserved when
+  writing the value to ``setup.cfg``.
 
-additional-check-manifest-ignores
+
+Manifest options
+````````````````
+
+additional-rules
+  Additional rules to be added at the end of the MANIFEST.in file. This option
+  has to be a list of strings.
+
+
+Check-manifest options
+``````````````````````
+
+additional-ignores
   Additional files to be ignored by ``check-manifest`` via its section in
-  ``setup.cfg``
+  ``setup.cfg``. This option has to be a list of strings.
+
 
 Hints
 -----
