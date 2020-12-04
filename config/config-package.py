@@ -47,9 +47,17 @@ class TomlArraySeparatorEncoderWithNewline(toml.TomlArraySeparatorEncoder):
     Ignores the separator argument to the constructor.
     """
 
+    def __init__(self, _dict=dict, preserve=False, separator=",",
+                 indent_first_line=False):
+        super(TomlArraySeparatorEncoderWithNewline, self).__init__(
+            _dict=_dict, preserve=preserve, separator=separator)
+        self.indent_first_line = indent_first_line
+
     def dump_list(self, v):
         t = []
-        retval = "[\n    "  # changed from original
+        retval = "["
+        if self.indent_first_line:
+            retval += self.separator.strip(',')
         for u in v:
             t.append(self.dump_value(u))
         while t != []:
@@ -59,9 +67,9 @@ class TomlArraySeparatorEncoderWithNewline(toml.TomlArraySeparatorEncoder):
                     for r in u:
                         s.append(r)
                 else:
-                    retval += u + ",\n    "  # changed from original
+                    retval += " " + u + self.separator
             t = s
-        retval += "]"
+        retval += " ]"
         return retval
 
 
@@ -220,7 +228,9 @@ try:
             '# https://github.com/zopefoundation/meta/tree/master/config/'
             f'{config_type}\n')
         toml.dump(
-            meta_cfg, meta_f, TomlArraySeparatorEncoderWithNewline())
+            meta_cfg, meta_f,
+            TomlArraySeparatorEncoderWithNewline(
+                separator=',\n   ', indent_first_line=True))
 
     call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
 
