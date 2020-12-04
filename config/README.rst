@@ -159,9 +159,9 @@ updated. Example:
         "# E221 multiple spaces before operator",
         "# E222 multiple spaces after operator",
         "per-file-ignores =",
-        "    src/foo/bar.py: E221 E222"
+        "    src/foo/bar.py: E221 E222",
         "ignore = D203",
-    ]
+        ]
 
     [manifest]
     additional-rules = [
