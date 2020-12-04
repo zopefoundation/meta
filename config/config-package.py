@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
 import jinja2
@@ -39,39 +40,6 @@ def copy_with_meta(template_name, destination, config_type, **kw):
         f_.write(META_HINT.format(config_type=config_type))
         template = jinja_env.get_template(template_name)
         f_.write(template.render(config_type=config_type, **kw))
-
-
-class TomlArraySeparatorEncoderWithNewline(toml.TomlArraySeparatorEncoder):
-    """Special version indenting the first element of and array.
-
-    After https://github.com/uiri/toml/pull/343 is merged an released we can
-    use the upstream version here.
-    """
-
-    def __init__(self, _dict=dict, preserve=False, separator=",",
-                 indent_first_line=False):
-        super(TomlArraySeparatorEncoderWithNewline, self).__init__(
-            _dict=_dict, preserve=preserve, separator=separator)
-        self.indent_first_line = indent_first_line
-
-    def dump_list(self, v):
-        t = []
-        retval = "["
-        if self.indent_first_line:
-            retval += self.separator.strip(',')
-        for u in v:
-            t.append(self.dump_value(u))
-        while t != []:
-            s = []
-            for u in t:
-                if isinstance(u, list):
-                    for r in u:
-                        s.append(r)
-                else:
-                    retval += " " + u + self.separator
-            t = s
-        retval += " ]"
-        return retval
 
 
 parser = argparse.ArgumentParser(
@@ -134,7 +102,7 @@ jinja_env = jinja2.Environment(
 )
 
 if not (path / '.git').exists():
-    raise ValueError('The `path` has to point to a git clone of a repository')
+    raise ValueError('`path` does not point to a git clone of a repository!')
 
 with open(config_type_path / 'packages.txt') as f:
     known_packages = f.read().splitlines()

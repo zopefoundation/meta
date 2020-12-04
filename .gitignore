@@ -1,7 +1,8 @@
-config/pyvenv.cfg
+config/__pycache__/
 config/bin/
 config/lib/
 config/lib64/
+config/pyvenv.cfg
 
 # lib64 is a symlink on Ubuntu, so we need it without the trailing slash
 config/lib64
