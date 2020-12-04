@@ -44,7 +44,8 @@ def copy_with_meta(template_name, destination, config_type, **kw):
 class TomlArraySeparatorEncoderWithNewline(toml.TomlArraySeparatorEncoder):
     """Special version indenting the first element of and array.
 
-    Ignores the separator argument to the constructor.
+    After https://github.com/uiri/toml/pull/343 is merged an released we can
+    use the upstream version here.
     """
 
     def __init__(self, _dict=dict, preserve=False, separator=",",
