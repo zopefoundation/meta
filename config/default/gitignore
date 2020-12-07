@@ -6,6 +6,7 @@
 .coverage.*
 .installed.cfg
 .mr.developer.cfg
+.eggs/
 .tox/
 __pycache__/
 bin/
