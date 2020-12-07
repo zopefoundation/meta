@@ -10,12 +10,13 @@ import sys
 import toml
 
 
-def call(*args, capture_output=False):
+def call(*args, capture_output=False, cwd=None):
     """Call `args` as a subprocess.
 
     If it fails exit the process.
     """
-    result = subprocess.run(args, capture_output=capture_output, text=True)
+    result = subprocess.run(
+        args, capture_output=capture_output, text=True, cwd=cwd)
     if result.returncode != 0:
         print('ABORTING: Please fix the errors shown above.')
         print('Proceed anyway (y/N)?', end=' ')
@@ -102,12 +103,21 @@ try:
     call('git', 'rm', '.meta.cfg')
     call('git', 'add', '.meta.toml')
     call('git', 'commit', '-m', f'Switching from .meta.cfg to .meta.toml.')
+    config_package_args = [
+        sys.executable,
+        'config-package.py',
+        path,
+        f'--branch={branch_name}',
+    ]
+    if args.no_push:
+        config_package_args.append('--no-push')
+    call(*config_package_args, cwd=cwd)
     print()
     print('Created resp. updated branch', end='')
-    if not args.no_push:
+    if args.no_push:
+        print(', but did not push upstream.')
+    else:
         call('git', 'push', '--set-upstream', 'origin', branch_name)
         print('and pushed upstream.')
-    else:
-        print(', but did not push upstream.')
 finally:
     os.chdir(cwd)

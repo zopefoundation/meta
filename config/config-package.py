@@ -79,31 +79,47 @@ parser.add_argument(
     help='Activate running doctests with sphinx if not already configured in'
          ' .meta.toml.')
 parser.add_argument(
-    'type',
+    '-t', '--type',
      choices=[
         'buildout-recipe',
         'pure-python',
     ],
-    help='type of the config to be used, see README.rst')
-
+    default=None,
+    dest='type',
+    help='type of the configuration to be used, see README.rst. Only required'
+         ' when running on a repository for the first time.')
+parser.add_argument(
+    '--branch',
+    dest='branch_name',
+    default=None,
+    help='Define a git branch name to be used for the changes. If not given'
+         ' it is constructed automatically and includes the configuration'
+         ' type')
 
 args = parser.parse_args()
 path = pathlib.Path(args.path)
-config_type = args.type
 default_path = pathlib.Path(__file__).parent / 'default'
-config_type_path = pathlib.Path(__file__).parent / config_type
-jinja_env = jinja2.Environment(
-    loader=jinja2.FileSystemLoader([config_type_path, default_path]),
-    variable_start_string='%(',
-    variable_end_string=')s',
-    keep_trailing_newline=True,
-    trim_blocks=True,
-    lstrip_blocks=True,
-)
 
 if not (path / '.git').exists():
     raise ValueError('`path` does not point to a git clone of a repository!')
 
+
+# Read and update meta configuration
+meta_toml_path = path / '.meta.toml'
+if meta_toml_path.exists():
+    meta_cfg = toml.load(meta_toml_path)
+    meta_cfg = collections.defaultdict(dict, **meta_cfg)
+else:
+    meta_cfg = meta_dict_factory()
+
+config_type = meta_cfg['meta'].get('template') or args.type
+
+if config_type is None:
+    raise ValueError(
+        'Configuration type not set. Please use `--type` to select it.')
+meta_cfg['meta']['template'] = config_type
+
+config_type_path = pathlib.Path(__file__).parent / config_type
 with open(config_type_path / 'packages.txt') as f:
     known_packages = f.read().splitlines()
 
@@ -114,15 +130,15 @@ else:
     with open(config_type_path / 'packages.txt', 'a') as f:
         f.write(f'{path.name}\n')
 
+jinja_env = jinja2.Environment(
+    loader=jinja2.FileSystemLoader([config_type_path, default_path]),
+    variable_start_string='%(',
+    variable_end_string=')s',
+    keep_trailing_newline=True,
+    trim_blocks=True,
+    lstrip_blocks=True,
+)
 
-# Read and update meta configuration
-meta_toml_path = path / '.meta.toml'
-if meta_toml_path.exists():
-    meta_cfg = toml.load(meta_toml_path)
-    meta_cfg = collections.defaultdict(dict, **meta_cfg)
-else:
-    meta_cfg = meta_dict_factory()
-meta_cfg['meta']['template'] = config_type
 meta_cfg['meta']['commit-id'] = call(
     'git', 'log', '-n1', '--format=format:%H', capture_output=True).stdout
 with_pypy = meta_cfg['python'].get('with-pypy', False) or args.with_pypy
@@ -182,7 +198,7 @@ copy_with_meta(
     additional_rules=additional_manifest_rules)
 
 cwd = os.getcwd()
-branch_name = f'config-with-{config_type}'
+branch_name = args.branch_name or f'config-with-{config_type}'
 try:
     os.chdir(path)
     if pathlib.Path('bootstrap.py').exists():

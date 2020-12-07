@@ -110,24 +110,33 @@ CLI arguments
 
 The following arguments are supported.
 
+--type
+  Define the configuration type (see `Types`_ section above) to be used for the
+  repository. (Only needed one time as it is stored in .meta.toml.)
+
 --no-push
   Avoid pushing at the end of the configuration run.
 
 --with-pypy
-  Enable PyPy support. (Only needed one time as it is stored in .meta.cfg.)
+  Enable PyPy support. (Only needed one time as it is stored in .meta.toml.)
 
 --without-legacy-python
   The package does not support Python versions which reached their end-of-life.
   (Currently this means dropping support for Python 2.7 and 3.5.) This as well
-  drops support for PyPy2. (Only needed one time as it is stored in .meta.cfg.)
+  drops support for PyPy2. (Only needed one time as it is stored in
+  .meta.toml.)
 
 --with-docs
   Enable building the documentation using Sphinx. (Only needed one time as it
-  is stored in .meta.cfg.)
+  is stored in .meta.toml.)
 
 --with-sphinx-doctests
   Enable running the documentation as doctest using Sphinx. (Only needed one
-  time as it is stored in .meta.cfg.)
+  time as it is stored in .meta.toml.)
+
+--branch
+  Define a specific git branch name to be created for the changes. By default
+  the script creates one which includes the name of the configuration type.
 
 
 Options
@@ -179,8 +188,8 @@ Meta Options
 ````````````
 
 template
-  Name of the template, the configuration was run.
-  Currently read-only.
+  Name of the configuration type, to be used as the template for the
+  repository. Currently read-only.
 
 commit-id
   Commit of the meta repository, which was used for the last configuration run.
