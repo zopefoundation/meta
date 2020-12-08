@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-from toml_encoder import TomlArraySeparatorEncoderWithNewline
+from shared.call import call
+from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
 import jinja2
 import os
 import pathlib
 import shutil
-import subprocess
-import sys
 import toml
 
 
@@ -15,21 +14,6 @@ META_HINT = """\
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 """
-
-
-def call(*args, capture_output=False):
-    """Call `args` as a subprocess.
-
-    If it fails exit the process.
-    """
-    result = subprocess.run(args, capture_output=capture_output, text=True)
-    if result.returncode != 0:
-        print('ABORTING: Please fix the errors shown above.')
-        print('Proceed anyway (y/N)?', end=' ')
-        if input().lower() != 'y':
-            sys.exit(result.returncode)
-    return result
-
 
 def copy_with_meta(template_name, destination, config_type, **kw):
     """Copy the source file to destination and a hint of origin.

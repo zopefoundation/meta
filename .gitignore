@@ -1,4 +1,4 @@
-config/__pycache__/
+__pycache__/
 config/bin/
 config/lib/
 config/lib64/
