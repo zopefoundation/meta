@@ -94,7 +94,7 @@ if meta_toml_path.exists():
     meta_cfg = toml.load(meta_toml_path)
     meta_cfg = collections.defaultdict(dict, **meta_cfg)
 else:
-    meta_cfg = meta_dict_factory()
+    meta_cfg = collections.defaultdict(dict)
 
 config_type = meta_cfg['meta'].get('template') or args.type
 
