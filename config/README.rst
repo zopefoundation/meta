@@ -253,3 +253,30 @@ Hints
 
 * Call ``bin/check-python-versions <path-to-package> -h`` to see how to fix
   version mismatches in the *lint* tox environment.
+
+
+Calling a script on multiple repositories
+-----------------------------------------
+
+The ``config-package.py`` script only runs on a single repository. To update
+multiple repositories at once you can use ``multi-call.py``. It runs a given
+script on all repositories listed in a ``packages.txt`` file.
+
+Usage
++++++
+
+To run a script on all packages listed in a ``packages.txt`` fike call
+``multi-call.py`` the following way::
+
+    $ bin/python multi-call.py <name-of-the-script.py> <path-to-packages.txt> <path-to-clones> <arguments-for-script>
+
+See ``--help`` for details.
+
+The script does the following steps:
+
+1. It does the following steps for each line in the given ``packages.txt``
+   which does not start with ``#``.
+2. Check if there is a repository in ``<path-to-clones>`` with the name of the
+   repository. If it does not exist: clone it. If it exists: clean the clone
+   from changes, switch to ``master`` branch and pull from origin.
+3. Call the given script with the package name and arguments for the script.
