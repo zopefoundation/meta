@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from shared.call import call
+from shared.path import change_dir
 from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
@@ -29,7 +30,7 @@ def copy_with_meta(template_name, destination, config_type, **kw):
 parser = argparse.ArgumentParser(
     description='Use configuration for a package.')
 parser.add_argument(
-    'path', type=str, help='path to the repository to be configured')
+    'path', type=pathlib.Path, help='path to the repository to be configured')
 parser.add_argument(
     '--no-push',
     dest='no_push',
@@ -81,7 +82,7 @@ parser.add_argument(
          ' type')
 
 args = parser.parse_args()
-path = pathlib.Path(args.path)
+path = args.path
 default_path = pathlib.Path(__file__).parent / 'default'
 
 if not (path / '.git').exists():
@@ -181,10 +182,8 @@ copy_with_meta(
     'MANIFEST.in.j2', path / 'MANIFEST.in', config_type,
     additional_rules=additional_manifest_rules)
 
-cwd = os.getcwd()
 branch_name = args.branch_name or f'config-with-{config_type}'
-try:
-    os.chdir(path)
+with change_dir(path) as cwd:
     if pathlib.Path('bootstrap.py').exists():
         call('git', 'rm', 'bootstrap.py')
     if pathlib.Path('.travis.yml').exists():
@@ -228,5 +227,3 @@ try:
         print('Updated the previously created PR.')
     else:
         print('Create a PR, using the URL shown above.')
-finally:
-    os.chdir(cwd)

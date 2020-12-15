@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from configparser import ConfigParser
 from shared.call import call
+from shared.path import change_dir
 from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
@@ -13,7 +14,7 @@ import toml
 parser = argparse.ArgumentParser(
     description='Convert the .meta.cfg in a package to a .meta.toml.')
 parser.add_argument(
-    'path', type=str, help='path to the repository to be changed')
+    'path', type=pathlib.Path, help='path to the repository to be changed')
 parser.add_argument(
     '--no-push',
     dest='no_push',
@@ -22,7 +23,7 @@ parser.add_argument(
 
 
 args = parser.parse_args()
-path = pathlib.Path(args.path)
+path = args.path
 meta_cfg_path = path / '.meta.cfg'
 
 if not (path / '.git').exists():
@@ -62,10 +63,8 @@ if check_manifest:
     dest['check-manifest']['additional-ignores'] = check_manifest.splitlines()
 
 
-cwd = os.getcwd()
 branch_name = f'covert.meta.cfg-to-.meta.toml'
-try:
-    os.chdir(path)
+with change_dir(path) as cwd:
     with open('.meta.toml', 'w') as meta_f:
         meta_f.write(
             '# Generated from:\n'
@@ -104,5 +103,3 @@ try:
     else:
         call('git', 'push', '--set-upstream', 'origin', branch_name)
         print('and pushed upstream.')
-finally:
-    os.chdir(cwd)
