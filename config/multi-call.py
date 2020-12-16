@@ -31,7 +31,7 @@ def path_factory(parameter_name, *, has_extension=None, is_dir=False):
 
 
 parser = argparse.ArgumentParser(
-    description='Call a script on all repositories listed in a package.txt.',
+    description='Call a script on all repositories listed in a packages.txt.',
     epilog='Additional optional arguments are passed directly to the script.')
 parser.add_argument(
     'script', type=path_factory('script', has_extension='.py'),

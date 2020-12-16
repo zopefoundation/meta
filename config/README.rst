@@ -265,7 +265,7 @@ script on all repositories listed in a ``packages.txt`` file.
 Usage
 +++++
 
-To run a script on all packages listed in a ``packages.txt`` fike call
+To run a script on all packages listed in a ``packages.txt`` file call
 ``multi-call.py`` the following way::
 
     $ bin/python multi-call.py <name-of-the-script.py> <path-to-packages.txt> <path-to-clones> <arguments-for-script>
@@ -280,3 +280,8 @@ The script does the following steps:
    repository. If it does not exist: clone it. If it exists: clean the clone
    from changes, switch to ``master`` branch and pull from origin.
 3. Call the given script with the package name and arguments for the script.
+
+.. caution::
+
+  Running this script discards any uncommitted changes in the repositories it
+  runs on! There is no undo for this operation.
