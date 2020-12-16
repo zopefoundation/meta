@@ -24,3 +24,9 @@ ignore =
 {% for line in additional_check_manifest_ignores %}
     %(line)s
 {% endfor %}
+{% if check_manifest_ignore_bad_ideas %}
+ignore-bad-ideas =
+  {% for line in check_manifest_ignore_bad_ideas %}
+    %(line)s
+  {% endfor %}
+{% endif %}

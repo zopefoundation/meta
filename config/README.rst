@@ -183,6 +183,9 @@ updated. Example:
         "docs/html/*",
         "docs/source/_static/*",
         ]
+    ignore-bad-ideas = [
+        "src/foo/bar.mo",
+        ]
 
 Meta Options
 ````````````
@@ -244,6 +247,8 @@ additional-ignores
   Additional files to be ignored by ``check-manifest`` via its section in
   ``setup.cfg``. This option has to be a list of strings.
 
+ignore-bad-ideas
+  Ignore bad idea files/directories matching these patterns.
 
 Hints
 -----
