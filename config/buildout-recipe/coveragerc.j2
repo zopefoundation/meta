@@ -13,13 +13,14 @@ source =
 [report]
 precision = 2
 exclude_lines =
+    except ImportError:
+    if __name__ == '__main__':
     pragma: no cover
     pragma: nocover
-    except ImportError:
-    raise NotImplementedError
-    if __name__ == '__main__':
-    self.fail
     raise AssertionError
+    raise NotImplementedError
+    raise unittest.Skip
+    self.fail\(
 
 [html]
 directory = htmlcov
