@@ -110,30 +110,39 @@ CLI arguments
 
 The following arguments are supported.
 
+--type
+  Define the configuration type (see `Types`_ section above) to be used for the
+  repository. (Only needed one time as it is stored in .meta.toml.)
+
 --no-push
   Avoid pushing at the end of the configuration run.
 
 --with-pypy
-  Enable PyPy support. (Only needed one time as it is stored in .meta.cfg.)
+  Enable PyPy support. (Only needed one time as it is stored in .meta.toml.)
 
 --without-legacy-python
   The package does not support Python versions which reached their end-of-life.
   (Currently this means dropping support for Python 2.7 and 3.5.) This as well
-  drops support for PyPy2. (Only needed one time as it is stored in .meta.cfg.)
+  drops support for PyPy2. (Only needed one time as it is stored in
+  .meta.toml.)
 
 --with-docs
   Enable building the documentation using Sphinx. (Only needed one time as it
-  is stored in .meta.cfg.)
+  is stored in .meta.toml.)
 
 --with-sphinx-doctests
   Enable running the documentation as doctest using Sphinx. (Only needed one
-  time as it is stored in .meta.cfg.)
+  time as it is stored in .meta.toml.)
+
+--branch
+  Define a specific git branch name to be created for the changes. By default
+  the script creates one which includes the name of the configuration type.
 
 
 Options
 +++++++
 
-It is possible to configure a deliberately small set of options a `.meta.cfg`
+It is possible to configure some options in a `.meta.toml` file
 inside the package repository. This file also stores the template name and
 commit id of the *meta* repository at the time of the run. This file is
 generated during the configuration run, if it does not exit or at least gets
@@ -142,55 +151,99 @@ updated. Example:
 .. code-block:: ini
 
     [meta]
-    template = pure-python
-    commit-id = < commit-hash >
-    fail-under = 98
-    with-pypy = False
-    with-docs = True
-    with-sphinx-doctests = False
-    with-legacy-python = True
-    additional-manifest-rules =
-    additional-flake8-config =
-      ignore = D203
-    additional-check-manifest-ignores =
+    template = "pure-python"
+    commit-id = "< commit-hash >"
 
+    [python]
+    with-legacy-python = true
+    with-pypy = false
+    with-docs = true
+    with-sphinx-doctests = false
+
+    [coverage]
+    fail-under = 98
+
+    [flake8]
+    additional-config = [
+        "# E221 multiple spaces before operator",
+        "# E222 multiple spaces after operator",
+        "per-file-ignores =",
+        "    src/foo/bar.py: E221 E222",
+        "ignore = D203",
+        ]
+
+    [manifest]
+    additional-rules = [
+        "include *.foo",
+        "include *.bar",
+        ]
+
+    [check-manifest]
+    additional-ignores = [
+        "docs/html/*",
+        "docs/source/_static/*",
+        ]
 
 Meta Options
-------------
+````````````
 
 template
-  Name of the template, the configuration was run.
-  Currently read-only.
+  Name of the configuration type, to be used as the template for the
+  repository. Currently read-only.
 
 commit-id
   Commit of the meta repository, which was used for the last configuration run.
   Currently read-only.
 
+
+Python options
+``````````````
+
+with-legacy-python
+  Run the tests even on Python 2.7, PyPy2 and Python 3.5: true/false
+
+with-pypy
+  Does the package support PyPy: true/false
+
+with-docs
+  Build the documentation via Sphinx: true/false
+
+with-sphinx-doctests
+  Run the documentation as doctest using Sphinx: true/false
+
+
+Coverage options
+````````````````
+
 fail-under
   A minimal value of code coverage below which a test failure is issued.
 
-with-pypy
-  Does the package support PyPy: True/False
 
-with-legacy-python
-  Run the tests even on Python 2.7, PyPy2 and Python 3.5: True/False
+Flake8 options
+--------------
 
-with-docs
-  Build the documentation via Sphinx: True/False
-
-with-sphinx-doctests
-  Run the documentation as doctest using Sphinx: True/False
-
-additional-manifest-rules
-  Additional rules to be added at the end of the MANIFEST.in file.
-
-additional-flake8-config
+additional-config
   Additional configuration options be added at the end of the flake8
-  configuration section in ``setup.cfg``.
+  configuration section in ``setup.cfg``. *Caution:* This option has to be a
+  list of strings so the leading white spaces and comments are preserved when
+  writing the value to ``setup.cfg``.
 
-additional-check-manifest-ignores
+
+Manifest options
+````````````````
+
+additional-rules
+  Additional rules to be added at the end of the MANIFEST.in file. This option
+  has to be a list of strings.
+
+
+Check-manifest options
+``````````````````````
+
+additional-ignores
   Additional files to be ignored by ``check-manifest`` via its section in
-  ``setup.cfg``
+  ``setup.cfg``. This option has to be a list of strings.
+
 
 Hints
 -----
@@ -200,3 +253,35 @@ Hints
 
 * Call ``bin/check-python-versions <path-to-package> -h`` to see how to fix
   version mismatches in the *lint* tox environment.
+
+
+Calling a script on multiple repositories
+-----------------------------------------
+
+The ``config-package.py`` script only runs on a single repository. To update
+multiple repositories at once you can use ``multi-call.py``. It runs a given
+script on all repositories listed in a ``packages.txt`` file.
+
+Usage
++++++
+
+To run a script on all packages listed in a ``packages.txt`` file call
+``multi-call.py`` the following way::
+
+    $ bin/python multi-call.py <name-of-the-script.py> <path-to-packages.txt> <path-to-clones> <arguments-for-script>
+
+See ``--help`` for details.
+
+The script does the following steps:
+
+1. It does the following steps for each line in the given ``packages.txt``
+   which does not start with ``#``.
+2. Check if there is a repository in ``<path-to-clones>`` with the name of the
+   repository. If it does not exist: clone it. If it exists: clean the clone
+   from changes, switch to ``master`` branch and pull from origin.
+3. Call the given script with the package name and arguments for the script.
+
+.. caution::
+
+  Running this script discards any uncommitted changes in the repositories it
+  runs on! There is no undo for this operation.

@@ -7,22 +7,20 @@ doctests = 1
 # provided to doctests by buildoutSetUp()
 builtins = write, system, cat, join
 {% endif %}
-{% if additional_flake8_config %}
-%(additional_flake8_config)s
-{% endif %}
+{% for line in additional_flake8_config %}
+%(line)s
+{% endfor %}
 
 [check-manifest]
 ignore =
     .editorconfig
-    .meta.cfg
+    .meta.toml
 {% if with_docs %}
     docs/_build/html/_sources/*
 {% endif %}
 {% if with_sphinx_doctests %}
     docs/_build/doctest/*
 {% endif %}
-{% if additional_check_manifest_ignores %}
-{% for line in additional_check_manifest_ignores.splitlines() %}
+{% for line in additional_check_manifest_ignores %}
     %(line)s
 {% endfor %}
-{% endif %}
