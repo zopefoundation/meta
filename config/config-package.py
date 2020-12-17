@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from shared.call import abort
 from shared.call import call
 from shared.path import change_dir
 from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
@@ -221,6 +222,10 @@ with change_dir(path) as cwd:
         call('git', 'rm', '.coveragerc')
     if add_coveragerc:
         call('git', 'add', '.coveragerc')
+    if not fail_under:
+        print('In .meta.toml in section [coverage] the option "fail-under" is'
+              ' 0. Please enter a valid minimum coverage and rerun.')
+        abort(1)
     call('git', 'commit', '-m', f'Configuring for {config_type}')
     if not args.no_push:
         call('git', 'push', '--set-upstream', 'origin', branch_name)
