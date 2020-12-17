@@ -19,3 +19,6 @@ bobo
 megrok.strictrequire
 importchecker
 cipher.lazydate
+cipher.longrequest
+grokcore.catalog
+grokcore.chameleon

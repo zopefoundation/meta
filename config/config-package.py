@@ -143,10 +143,13 @@ meta_cfg['python']['with-sphinx-doctests'] = with_sphinx_doctests
 additional_flake8_config = meta_cfg['flake8'].get('additional-config', [])
 additional_check_manifest_ignores = meta_cfg['check-manifest'].get(
     'additional-ignores', [])
+check_manifest_ignore_bad_ideas = meta_cfg['check-manifest'].get(
+    'ignore-bad-ideas', [])
 copy_with_meta(
     'setup.cfg.j2', path / 'setup.cfg', config_type,
     additional_flake8_config=additional_flake8_config,
     additional_check_manifest_ignores=additional_check_manifest_ignores,
+    check_manifest_ignore_bad_ideas=check_manifest_ignore_bad_ideas,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests)
 copy_with_meta('editorconfig', path / '.editorconfig', config_type)
 copy_with_meta('gitignore', path / '.gitignore', config_type)
