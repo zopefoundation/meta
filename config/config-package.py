@@ -184,7 +184,8 @@ copy_with_meta(
 additional_manifest_rules = meta_cfg['manifest'].get('additional-rules', [])
 copy_with_meta(
     'MANIFEST.in.j2', path / 'MANIFEST.in', config_type,
-    additional_rules=additional_manifest_rules)
+    additional_rules=additional_manifest_rules,
+    with_docs=with_docs)
 
 branch_name = args.branch_name or f'config-with-{config_type}'
 with change_dir(path) as cwd:

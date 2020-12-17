@@ -22,3 +22,12 @@ cipher.lazydate
 cipher.longrequest
 grokcore.catalog
 grokcore.chameleon
+grokcore.content
+grokcore.error
+grokcore.formlib
+grokcore.json
+grokcore.layout
+grokcore.message
+grokcore.startup
+grokcore.traverser
+grokcore.view
