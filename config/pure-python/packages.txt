@@ -31,3 +31,8 @@ grokcore.message
 grokcore.startup
 grokcore.traverser
 grokcore.view
+grokcore.viewlet
+grokcore.xmlrpc
+hurry.workflow
+pyramid_zope_request
+refline.srccheck

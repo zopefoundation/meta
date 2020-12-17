@@ -168,12 +168,15 @@ elif (path / '.coveragerc').exists():
     rm_coveragerc = True
 
 
+coverage_run_additional_config = meta_cfg['coverage-run'].get(
+    'additional-config', [])
 fail_under = meta_cfg['coverage'].setdefault('fail-under', 0)
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
     fail_under=fail_under, with_pypy=with_pypy,
     with_legacy_python=with_legacy_python,
-    with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests)
+    with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
+    coverage_run_additional_config=coverage_run_additional_config)
 copy_with_meta(
     'tests.yml.j2', workflows / 'tests.yml', config_type,
     with_pypy=with_pypy, with_legacy_python=with_legacy_python,

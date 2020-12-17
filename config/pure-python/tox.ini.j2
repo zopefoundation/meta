@@ -22,6 +22,9 @@ commands =
 branch = True
 plugins = coverage_python_version
 source = src
+{% for line in coverage_run_additional_config %}
+%(line)s
+{% endfor %}
 
 [coverage:report]
 precision = 2

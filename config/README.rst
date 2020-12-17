@@ -163,6 +163,13 @@ updated. Example:
     [coverage]
     fail-under = 98
 
+    [coverage-run]
+    additional-config = [
+        "omit =",
+        "    src/foo/bar.py",
+        ]
+
+
     [flake8]
     additional-config = [
         "# E221 multiple spaces before operator",
@@ -222,8 +229,16 @@ fail-under
   A minimal value of code coverage below which a test failure is issued.
 
 
+Coverage:run options
+````````````````````
+
+additional-config
+  Additional options for the ``[run]`` section of the coverage configuration.
+  This option has to be a list of strings.
+
+
 Flake8 options
---------------
+`````````````
 
 additional-config
   Additional configuration options be added at the end of the flake8
