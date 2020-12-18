@@ -196,6 +196,10 @@ with change_dir(path) as cwd:
         call('git', 'rm', 'bootstrap.py')
     if pathlib.Path('.travis.yml').exists():
         call('git', 'rm', '.travis.yml')
+    if rm_coveragerc:
+        call('git', 'rm', '.coveragerc')
+    if add_coveragerc:
+        call('git', 'add', '.coveragerc')
     # Remove empty sections:
     meta_cfg = {k: v  for k, v in meta_cfg.items() if v}
     with open('.meta.toml', 'w') as meta_f:
@@ -222,10 +226,6 @@ with change_dir(path) as cwd:
     call('git', 'add',
          'setup.cfg', 'tox.ini', '.gitignore', '.github/workflows/tests.yml',
          'MANIFEST.in', '.editorconfig', '.meta.toml')
-    if rm_coveragerc:
-        call('git', 'rm', '.coveragerc')
-    if add_coveragerc:
-        call('git', 'add', '.coveragerc')
     if not fail_under:
         print('In .meta.toml in section [coverage] the option "fail-under" is'
               ' 0. Please enter a valid minimum coverage and rerun.')
