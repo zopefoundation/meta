@@ -38,6 +38,13 @@ parser.add_argument(
     action='store_true',
     help='Prevent direct push.')
 parser.add_argument(
+    '--with-appveyor',
+    dest='with_appveyor',
+    action='store_true',
+    default=False,
+    help='Activate running tests on AppVeyor, too, if not already configured'
+         ' in .meta.toml.')
+parser.add_argument(
     '--with-pypy',
     dest='with_pypy',
     action='store_true',
@@ -127,6 +134,9 @@ jinja_env = jinja2.Environment(
 
 meta_cfg['meta']['commit-id'] = call(
     'git', 'log', '-n1', '--format=format:%H', capture_output=True).stdout
+with_appveyor = meta_cfg['python'].get(
+    'with-appveyor', False) or args.with_appveyor
+meta_cfg['python']['with-appveyor'] = with_appveyor
 with_pypy = meta_cfg['python'].get('with-pypy', False) or args.with_pypy
 meta_cfg['python']['with-pypy'] = with_pypy
 if args.with_legacy_python is None:
@@ -188,7 +198,14 @@ additional_manifest_rules = meta_cfg['manifest'].get('additional-rules', [])
 copy_with_meta(
     'MANIFEST.in.j2', path / 'MANIFEST.in', config_type,
     additional_rules=additional_manifest_rules,
-    with_docs=with_docs)
+    with_docs=with_docs, with_appveyor=with_appveyor)
+
+
+if with_appveyor:
+    copy_with_meta(
+        'appveyor.yml.j2', path / 'appveyor.yml', config_type,
+        with_legacy_python=with_legacy_python)
+
 
 branch_name = args.branch_name or f'config-with-{config_type}'
 with change_dir(path) as cwd:
@@ -200,6 +217,8 @@ with change_dir(path) as cwd:
         call('git', 'rm', '.coveragerc')
     if add_coveragerc:
         call('git', 'add', '.coveragerc')
+    if with_appveyor:
+        call('git', 'add', 'appveyor.yml')
     # Remove empty sections:
     meta_cfg = {k: v  for k, v in meta_cfg.items() if v}
     with open('.meta.toml', 'w') as meta_f:
