@@ -110,33 +110,36 @@ CLI arguments
 
 The following arguments are supported.
 
---type
-  Define the configuration type (see `Types`_ section above) to be used for the
-  repository. (Only needed one time as it is stored in .meta.toml.)
-
 --no-push
   Avoid pushing at the end of the configuration run.
-
---with-pypy
-  Enable PyPy support. (Only needed one time as it is stored in .meta.toml.)
-
---without-legacy-python
-  The package does not support Python versions which reached their end-of-life.
-  (Currently this means dropping support for Python 2.7 and 3.5.) This as well
-  drops support for PyPy2. (Only needed one time as it is stored in
-  .meta.toml.)
-
---with-docs
-  Enable building the documentation using Sphinx. (Only needed one time as it
-  is stored in .meta.toml.)
-
---with-sphinx-doctests
-  Enable running the documentation as doctest using Sphinx. (Only needed one
-  time as it is stored in .meta.toml.)
 
 --branch
   Define a specific git branch name to be created for the changes. By default
   the script creates one which includes the name of the configuration type.
+
+The following options are only needed one time as their values re stored in
+``.meta.toml.``.
+
+--type
+  Define the configuration type (see `Types`_ section above) to be used for the
+  repository.
+
+--with-appveyor
+  Enable running the tests on AppVeyor, too.
+
+--with-pypy
+  Enable PyPy support.
+
+--without-legacy-python
+  The package does not support Python versions which reached their end-of-life.
+  (Currently this means dropping support for Python 2.7 and 3.5.) This as well
+  drops support for PyPy2.
+
+--with-docs
+  Enable building the documentation using Sphinx.
+
+--with-sphinx-doctests
+  Enable running the documentation as doctest using Sphinx.
 
 
 Options
@@ -155,6 +158,7 @@ updated. Example:
     commit-id = "< commit-hash >"
 
     [python]
+    with-appveyor = false
     with-legacy-python = true
     with-pypy = false
     with-docs = true
@@ -208,6 +212,9 @@ commit-id
 
 Python options
 ``````````````
+
+with-appveyor
+  Run the tests also on AppVeyor: true/false
 
 with-legacy-python
   Run the tests even on Python 2.7, PyPy2 and Python 3.5: true/false
