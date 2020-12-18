@@ -41,3 +41,9 @@ z3c.csvvocabulary
 z3c.evalexception
 zope.sendmail
 zope.publisher
+z3c.formwidget.ckeditor
+z3c.layer.ready2go
+z3c.menu.ready2go
+z3c.sampledata
+z3c.testing
+z3c.traverser
