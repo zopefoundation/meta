@@ -201,9 +201,10 @@ copy_with_meta(
     with_docs=with_docs, with_appveyor=with_appveyor)
 
 
-copy_with_meta(
-    'appveyor.yml.j2', path / 'appveyor.yml', config_type,
-    with_legacy_python=with_legacy_python)
+if with_appveyor:
+    copy_with_meta(
+        'appveyor.yml.j2', path / 'appveyor.yml', config_type,
+        with_legacy_python=with_legacy_python)
 
 
 branch_name = args.branch_name or f'config-with-{config_type}'
