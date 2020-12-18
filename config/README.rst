@@ -238,7 +238,7 @@ additional-config
 
 
 Flake8 options
-`````````````
+``````````````
 
 additional-config
   Additional configuration options be added at the end of the flake8
