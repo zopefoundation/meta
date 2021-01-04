@@ -41,3 +41,4 @@ z3c.csvvocabulary
 z3c.evalexception
 zope.sendmail
 zope.publisher
+zope.testing
