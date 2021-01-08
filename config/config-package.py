@@ -180,6 +180,8 @@ elif (path / '.coveragerc').exists():
 
 coverage_run_additional_config = meta_cfg['coverage-run'].get(
     'additional-config', [])
+gha_additional_install = meta_cfg['github-actions'].get(
+    'additional-install', [])
 fail_under = meta_cfg['coverage'].setdefault('fail-under', 0)
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
@@ -190,7 +192,7 @@ copy_with_meta(
 copy_with_meta(
     'tests.yml.j2', workflows / 'tests.yml', config_type,
     with_pypy=with_pypy, with_legacy_python=with_legacy_python,
-    with_docs=with_docs)
+    with_docs=with_docs, gha_additional_install=gha_additional_install)
 
 
 # Modify MANIFEST.in with meta options

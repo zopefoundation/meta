@@ -198,6 +198,11 @@ updated. Example:
         "src/foo/bar.mo",
         ]
 
+    [github-actions]
+    additional-install = [
+        "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev"
+    ]
+
 Meta Options
 ````````````
 
@@ -271,6 +276,15 @@ additional-ignores
 
 ignore-bad-ideas
   Ignore bad idea files/directories matching these patterns.
+
+
+GitHub Actions options
+``````````````````````
+
+additional-install
+  Additional lines to be executed during the install dependencies step when
+  running the tests on GitHub Actions. This option has to be a list of strings.
+
 
 Hints
 -----
