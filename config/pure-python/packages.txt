@@ -47,3 +47,5 @@ z3c.menu.ready2go
 z3c.sampledata
 z3c.testing
 z3c.traverser
+zope.testing
+zope.schema
