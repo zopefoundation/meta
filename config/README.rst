@@ -200,7 +200,7 @@ updated. Example:
 
     [github-actions]
     additional-install = [
-        "sudo apt-get install libxml2-dev libxslt-dev"
+        "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev"
     ]
 
 Meta Options

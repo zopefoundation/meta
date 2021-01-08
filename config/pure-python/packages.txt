@@ -49,3 +49,7 @@ z3c.testing
 z3c.traverser
 zope.testing
 zope.schema
+zc.intid
+zc.queue
+zope.apidoc
+zope.app.authentication
