@@ -173,6 +173,11 @@ updated. Example:
         "    src/foo/bar.py",
         ]
 
+    [tox]
+    additional-testenv = [
+        "setenv =",
+        "    ZOPE_INTERFACE_STRICT_IRO=1",
+        ]
 
     [flake8]
     additional-config = [
@@ -237,6 +242,8 @@ with-sphinx-doctests
 Coverage options
 ````````````````
 
+The corresponding section is named: ``[coverage]``.
+
 fail-under
   A minimal value of code coverage below which a test failure is issued.
 
@@ -244,13 +251,25 @@ fail-under
 Coverage:run options
 ````````````````````
 
+The corresponding section is named: ``[coverage-run]``.
+
 additional-config
   Additional options for the ``[run]`` section of the coverage configuration.
   This option has to be a list of strings.
 
+tox.ini options
+```````````````
+
+The corresponding section is named: ``[tox]``.
+
+additional-testenv
+  Additional lines for the section ``[testenv]`` in ``tox.ini``.
+  This option has to be a list of strings.
 
 Flake8 options
 ``````````````
+
+The corresponding section is named: ``[flake8]``.
 
 additional-config
   Additional configuration options be added at the end of the flake8
@@ -262,6 +281,8 @@ additional-config
 Manifest options
 ````````````````
 
+The corresponding section is named: ``[manifest]``.
+
 additional-rules
   Additional rules to be added at the end of the MANIFEST.in file. This option
   has to be a list of strings.
@@ -269,6 +290,8 @@ additional-rules
 
 Check-manifest options
 ``````````````````````
+
+The corresponding section is named: ``[check-manifest]``.
 
 additional-ignores
   Additional files to be ignored by ``check-manifest`` via its section in
@@ -280,6 +303,8 @@ ignore-bad-ideas
 
 GitHub Actions options
 ``````````````````````
+
+The corresponding section is named: ``[github-actions]``.
 
 additional-install
   Additional lines to be executed during the install dependencies step when
