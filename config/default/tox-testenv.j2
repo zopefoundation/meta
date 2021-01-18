@@ -13,3 +13,6 @@ extras =
 {% if with_sphinx_doctests %}
     docs
 {% endif %}
+{% for line in additional_testenv %}
+%(line)s
+{% endfor %}
