@@ -218,7 +218,7 @@ updated. Example:
         ]
 
     [isort]
-    known_first_party = "Products.GenericSetup Products.CMFCore"
+    known_first_party = "Products.GenericSetup, Products.CMFCore"
 
     [github-actions]
     additional-install = [
