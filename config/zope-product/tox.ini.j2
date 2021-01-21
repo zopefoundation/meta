@@ -20,7 +20,7 @@ commands =
     %(line)s
   {% endfor %}
 {% else %}
-    {envbindir}/test -v []
+    {envbindir}/test {posargs:-cv}
 {% endif %}
 
 [testenv:lint]
@@ -69,7 +69,7 @@ commands =
 {% if coverage_command %}
     %(coverage_command)s
 {% else %}
-    coverage run {envbindir}/test -v []
+    coverage run {envbindir}/test {posargs:-cv}
 {% endif %}
     coverage html
     coverage report -m --fail-under=%(fail_under)s
