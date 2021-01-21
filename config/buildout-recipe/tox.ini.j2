@@ -14,7 +14,11 @@ deps =
     zope.testrunner
 commands =
     coverage erase
+{% if coverage_command %}
+    %(coverage_command)s
+{% else %}
     coverage run -m zope.testrunner --test-path=src []
+{% endif %}
 {% if with_sphinx_doctests %}
     coverage run -a -m sphinx -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
 {% endif %}

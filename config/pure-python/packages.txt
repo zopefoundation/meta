@@ -52,3 +52,7 @@ zc.intid
 zc.queue
 zope.apidoc
 zope.app.authentication
+zope.app.basicskin
+zope.app.catalog
+zope.app.content
+zope.app.error

@@ -23,7 +23,13 @@ packages:
 
 * pure-python
 
-  - Configuration for a pure python package which supports PyPy.
+  - Configuration for a pure python package.
+
+* zope-product
+
+  - Configuration for a pure python package which uses zc.buildout inside
+    ``tox.ini`` to be able to pin the installed dependency versions the same
+    way ``buildout.cfg`` does it.
 
 
 Contents
@@ -166,6 +172,7 @@ updated. Example:
 
     [coverage]
     fail-under = 98
+    tox-ini-command = "coverage run {envbindir}/test_with_gs []"
 
     [coverage-run]
     additional-config = [
@@ -174,6 +181,13 @@ updated. Example:
         ]
 
     [tox]
+    testenv-commands-pre = [
+        "{envbindir}/buildout -c ...",
+    ]
+    testenv-commands = [
+        "{envbindir}/test {posargs:-cv}",
+        "{envbindir}/test_with_gs {posargs:-cv}",
+    ]
     testenv-additional = [
         "setenv =",
         "    ZOPE_INTERFACE_STRICT_IRO=1",
@@ -202,6 +216,9 @@ updated. Example:
     ignore-bad-ideas = [
         "src/foo/bar.mo",
         ]
+
+    [isort]
+    known_first_party = "Products.GenericSetup Products.CMFCore"
 
     [github-actions]
     additional-install = [
@@ -247,6 +264,12 @@ The corresponding section is named: ``[coverage]``.
 fail-under
   A minimal value of code coverage below which a test failure is issued.
 
+tox-ini-command
+  This option replaces the coverage call in the section ``[testenv:coverage]``
+  in ``tox.ini``. *Caution:* only the actual call to collect the coverage data
+  is replaced the reporting calls are not changed. This option has to be a
+  string. If it is not set or empty the default is used.
+
 
 Coverage:run options
 ````````````````````
@@ -261,6 +284,14 @@ tox.ini options
 ```````````````
 
 The corresponding section is named: ``[tox]``.
+
+testenv-commands-pre
+  Replacement for the default ``commands_pre`` option in ``[testenv]`` of
+  ``tox.ini``. This option has to be a list of strings without indentation.
+
+testenv-commands
+  Replacement for the default ``commands`` option in ``[testenv]`` of
+  ``tox.ini``. This option has to be a list of strings without indentation.
 
 testenv-additional
   Additional lines for the section ``[testenv]`` in ``tox.ini``.
@@ -299,6 +330,19 @@ additional-ignores
 
 ignore-bad-ideas
   Ignore bad idea files/directories matching these patterns.
+
+Isort options
+`````````````
+
+The corresponding section is named: ``[isort]``.
+
+known_first_party
+  This options defines the value for ``known_first_party`` in the ``isort``
+  configuration. Please note the usage of underscores for the option name,
+  which used to be consistent with the name of the option in ``isort``.
+  This option has to be a single string. It defaults to the empty string.
+  (Currently only the configuration type ``zope-product`` supports ``isort``
+  configurations.)
 
 
 GitHub Actions options

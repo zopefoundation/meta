@@ -76,6 +76,7 @@ parser.add_argument(
      choices=[
         'buildout-recipe',
         'pure-python',
+        'zope-product',
     ],
     default=None,
     dest='type',
@@ -156,11 +157,13 @@ additional_check_manifest_ignores = meta_cfg['check-manifest'].get(
     'additional-ignores', [])
 check_manifest_ignore_bad_ideas = meta_cfg['check-manifest'].get(
     'ignore-bad-ideas', [])
+isort_known_first_party = meta_cfg['isort'].get('known_first_party', '')
 copy_with_meta(
     'setup.cfg.j2', path / 'setup.cfg', config_type,
     additional_flake8_config=additional_flake8_config,
     additional_check_manifest_ignores=additional_check_manifest_ignores,
     check_manifest_ignore_bad_ideas=check_manifest_ignore_bad_ideas,
+    isort_known_first_party=isort_known_first_party,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests)
 copy_with_meta('editorconfig', path / '.editorconfig', config_type)
 copy_with_meta('gitignore', path / '.gitignore', config_type)
@@ -181,12 +184,18 @@ elif (path / '.coveragerc').exists():
 coverage_run_additional_config = meta_cfg['coverage-run'].get(
     'additional-config', [])
 testenv_additional = meta_cfg['tox'].get('testenv-additional', [])
+testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
+testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
 fail_under = meta_cfg['coverage'].setdefault('fail-under', 0)
+coverage_command = meta_cfg['coverage'].get('tox-ini-command', '')
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
     fail_under=fail_under, with_pypy=with_pypy,
     with_legacy_python=with_legacy_python,
     testenv_additional=testenv_additional,
+    testenv_commands_pre=testenv_commands_pre,
+    testenv_commands=testenv_commands,
+    coverage_command=coverage_command,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
     coverage_run_additional_config=coverage_run_additional_config)
 

@@ -1,0 +1,22 @@
+
+[coverage:run]
+branch = True
+plugins = coverage_python_version
+source = src
+{% for line in coverage_run_additional_config %}
+%(line)s
+{% endfor %}
+
+[coverage:report]
+precision = 2
+exclude_lines =
+    pragma: no cover
+    pragma: nocover
+    except ImportError:
+    raise NotImplementedError
+    if __name__ == '__main__':
+    self.fail
+    raise AssertionError
+
+[coverage:html]
+directory = htmlcov
