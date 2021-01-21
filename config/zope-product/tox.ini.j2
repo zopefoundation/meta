@@ -30,9 +30,9 @@ allowlist_externals =
 commands_pre =
     mkdir -p {toxinidir}/parts/flake8
 commands =
-    - isort --check-only --diff {toxinidir}/src setup.py
-    - flake8 --format=html src setup.py
-    flake8 src setup.py
+    - isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py
+    - flake8 --format=html {toxinidir}/src {toxinidir}/setup.py
+    flake8 {toxinidir}/src {toxinidir}/setup.py
     check-manifest
     check-python-versions
 deps =
@@ -55,7 +55,7 @@ commands_pre =
 deps =
     isort
 commands =
-    isort {toxinidir}/src setup.py []
+    isort {toxinidir}/src {toxinidir}/setup.py []
 {% include 'tox-docs.j2' %}
 
 [testenv:coverage]
