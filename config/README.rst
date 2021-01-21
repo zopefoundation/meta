@@ -174,7 +174,7 @@ updated. Example:
         ]
 
     [tox]
-    additional-testenv = [
+    testenv-additional = [
         "setenv =",
         "    ZOPE_INTERFACE_STRICT_IRO=1",
         ]
@@ -262,7 +262,7 @@ tox.ini options
 
 The corresponding section is named: ``[tox]``.
 
-additional-testenv
+testenv-additional
   Additional lines for the section ``[testenv]`` in ``tox.ini``.
   This option has to be a list of strings.
 
