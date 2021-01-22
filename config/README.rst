@@ -46,7 +46,7 @@ Each directory contains the following files if they differ from the default
 
   - This file is copied to `.gitignore`.
 
-* MANIFEST.in.jj2
+* MANIFEST.in.j2
 
   - Configuration file for the MANIFEST to include all needed files in sdist
     and wheel.
@@ -56,12 +56,12 @@ Each directory contains the following files if they differ from the default
   - common setup.cfg, which should be copied to the repository of the
     package
 
-* tox.ini.jj2
+* tox.ini.j2
 
   - tox configuration, which should be copied to the repository of the
     package
 
-* tests.yml.jj2
+* tests.yml.j2
 
   - Configuration for GitHub actions.
 
