@@ -172,7 +172,6 @@ updated. Example:
 
     [coverage]
     fail-under = 98
-    tox-ini-command = "coverage run {envbindir}/test_with_gs []"
 
     [coverage-run]
     additional-config = [
@@ -192,6 +191,7 @@ updated. Example:
         "setenv =",
         "    ZOPE_INTERFACE_STRICT_IRO=1",
         ]
+    coverage-command = "coverage run {envbindir}/test_with_gs []"
 
     [flake8]
     additional-config = [
@@ -264,12 +264,6 @@ The corresponding section is named: ``[coverage]``.
 fail-under
   A minimal value of code coverage below which a test failure is issued.
 
-tox-ini-command
-  This option replaces the coverage call in the section ``[testenv:coverage]``
-  in ``tox.ini``. *Caution:* only the actual call to collect the coverage data
-  is replaced the reporting calls are not changed. This option has to be a
-  string. If it is not set or empty the default is used.
-
 
 Coverage:run options
 ````````````````````
@@ -296,6 +290,13 @@ testenv-commands
 testenv-additional
   Additional lines for the section ``[testenv]`` in ``tox.ini``.
   This option has to be a list of strings.
+
+coverage-command
+  This option replaces the coverage call in the section ``[testenv:coverage]``
+  in ``tox.ini``. *Caution:* only the actual call to collect the coverage data
+  is replaced. The calls to create the reporting are not changed. This option
+  has to be a string. If it is not set or empty the default is used.
+
 
 Flake8 options
 ``````````````

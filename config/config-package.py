@@ -187,7 +187,7 @@ testenv_additional = meta_cfg['tox'].get('testenv-additional', [])
 testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
 testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
 fail_under = meta_cfg['coverage'].setdefault('fail-under', 0)
-coverage_command = meta_cfg['coverage'].get('tox-ini-command', '')
+coverage_command = meta_cfg['tox'].get('coverage-command', '')
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
     fail_under=fail_under, with_pypy=with_pypy,
