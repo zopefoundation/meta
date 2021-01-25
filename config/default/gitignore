@@ -16,7 +16,6 @@ develop-eggs/
 dist/
 docs/_build
 eggs/
-htmlcov/
 lib/
 lib64
 parts/

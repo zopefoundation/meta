@@ -3,3 +3,4 @@
 # described in README.rst
 Products.MailHost
 Products.GenericSetup
+Products.ZCatalog

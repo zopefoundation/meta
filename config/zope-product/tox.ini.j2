@@ -44,7 +44,6 @@ deps =
     flake8-html
     # Useful flake8 plugins that are Python and Plone specific:
     flake8-coding
-    flake8-commas
     flake8-debugger
     flake8-string-format
     mccabe
@@ -61,11 +60,14 @@ commands =
 [testenv:coverage]
 basepython = python3
 skip_install = true
+allowlist_externals =
+    mkdir
 deps =
     {[testenv]deps}
     coverage
     coverage-python-version
 commands =
+    mkdir -p {toxinidir}/parts/htmlcov
 {% if coverage_command %}
     %(coverage_command)s
 {% else %}

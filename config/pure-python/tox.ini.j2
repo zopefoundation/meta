@@ -6,11 +6,14 @@
 
 [testenv:coverage]
 basepython = python3
+allowlist_externals =
+    mkdir
 deps =
     coverage
     coverage-python-version
     zope.testrunner
 commands =
+    mkdir -p {toxinidir}/parts/htmlcov
 {% if coverage_command %}
     %(coverage_command)s
 {% else %}
