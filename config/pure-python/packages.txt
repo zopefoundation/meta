@@ -62,3 +62,6 @@ zope.app.folder
 zope.app.generations
 zope.app.http
 zope.app.onlinehelp
+zope.app.pagetemplate
+zope.app.principalannotation
+zope.app.renderer
