@@ -1,0 +1,6 @@
+# Packages configured as Zope Product are listed here.
+# Do not edit the file by hand but use the script config-package.py as
+# described in README.rst
+Products.MailHost
+Products.GenericSetup
+Products.ZCatalog

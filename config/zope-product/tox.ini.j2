@@ -1,0 +1,78 @@
+{% set with_coverage = True %}
+{% include 'tox-envlist.j2' %}
+
+[testenv]
+skip_install = true
+deps =
+    zc.buildout
+commands_pre =
+{% if testenv_commands_pre %}
+  {% for line in testenv_commands_pre %}
+    %(line)s
+  {% endfor %}
+{% else %}
+    py27,py35: {envbindir}/buildout -nc {toxinidir}/buildout4.cfg buildout:directory={envdir} buildout:develop={toxinidir} install test
+    !py27-!py35: {envbindir}/buildout -nc {toxinidir}/buildout.cfg buildout:directory={envdir} buildout:develop={toxinidir} install test
+{% endif %}
+commands =
+{% if testenv_commands %}
+  {% for line in testenv_commands %}
+    %(line)s
+  {% endfor %}
+{% else %}
+    {envbindir}/test {posargs:-cv}
+{% endif %}
+
+[testenv:lint]
+basepython = python3
+allowlist_externals =
+    mkdir
+commands_pre =
+    mkdir -p {toxinidir}/parts/flake8
+commands =
+    - isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py
+    - flake8 --format=html {toxinidir}/src {toxinidir}/setup.py
+    flake8 {toxinidir}/src {toxinidir}/setup.py
+    check-manifest
+    check-python-versions
+deps =
+    check-manifest
+    check-python-versions
+    flake8
+    isort
+    # helper to generate HTML reports:
+    flake8-html
+    # Useful flake8 plugins that are Python and Plone specific:
+    flake8-coding
+    flake8-debugger
+    flake8-string-format
+    mccabe
+
+[testenv:isort-apply]
+basepython = python3
+commands_pre =
+deps =
+    isort
+commands =
+    isort {toxinidir}/src {toxinidir}/setup.py []
+{% include 'tox-docs.j2' %}
+
+[testenv:coverage]
+basepython = python3
+skip_install = true
+allowlist_externals =
+    mkdir
+deps =
+    {[testenv]deps}
+    coverage
+    coverage-python-version
+commands =
+    mkdir -p {toxinidir}/parts/htmlcov
+{% if coverage_command %}
+    %(coverage_command)s
+{% else %}
+    coverage run {envbindir}/test {posargs:-cv}
+{% endif %}
+    coverage html
+    coverage report -m --fail-under=%(fail_under)s
+{% include 'tox-coverage-config.j2' %}

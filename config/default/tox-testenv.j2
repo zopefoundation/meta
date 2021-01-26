@@ -3,6 +3,12 @@
 usedevelop = true
 deps =
     zope.testrunner
+{% if testenv_commands_pre %}
+commands_pre =
+  {% for line in testenv_commands_pre %}
+    %(line)s
+  {% endfor %}
+{% endif %}
 commands =
     zope-testrunner --test-path=src []
 {% if with_sphinx_doctests %}

@@ -7,6 +7,10 @@ doctests = 1
 # provided to doctests by buildoutSetUp()
 builtins = write, system, cat, join
 {% endif %}
+{% if config_type == 'zope-product' %}
+no-accept-encodings = True
+htmldir = parts/flake8
+{% endif %}
 {% for line in additional_flake8_config %}
 %(line)s
 {% endfor %}
@@ -29,4 +33,17 @@ ignore-bad-ideas =
   {% for line in check_manifest_ignore_bad_ideas %}
     %(line)s
   {% endfor %}
+{% endif %}
+{% if config_type == 'zope-product' %}
+
+[isort]
+force_single_line = True
+combine_as_imports = True
+sections = FUTURE,STDLIB,THIRDPARTY,ZOPE,FIRSTPARTY,LOCALFOLDER
+known_first_party = %(isort_known_first_party)s
+known_third_party = six, docutils, pkg_resources
+known_zope =
+default_section = ZOPE
+line_length = 79
+lines_after_imports = 2
 {% endif %}

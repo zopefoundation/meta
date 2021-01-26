@@ -6,36 +6,22 @@
 
 [testenv:coverage]
 basepython = python3
+allowlist_externals =
+    mkdir
 deps =
     coverage
     coverage-python-version
     zope.testrunner
 commands =
+    mkdir -p {toxinidir}/parts/htmlcov
+{% if coverage_command %}
+    %(coverage_command)s
+{% else %}
     coverage run -m zope.testrunner --test-path=src []
+{% endif %}
 {% if with_sphinx_doctests %}
     coverage run -a -m sphinx -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
 {% endif %}
     coverage html
     coverage report -m --fail-under=%(fail_under)s
-
-[coverage:run]
-branch = True
-plugins = coverage_python_version
-source = src
-{% for line in coverage_run_additional_config %}
-%(line)s
-{% endfor %}
-
-[coverage:report]
-precision = 2
-exclude_lines =
-    pragma: no cover
-    pragma: nocover
-    except ImportError:
-    raise NotImplementedError
-    if __name__ == '__main__':
-    self.fail
-    raise AssertionError
-
-[coverage:html]
-directory = htmlcov
+{% include 'tox-coverage-config.j2' %}
