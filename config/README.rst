@@ -221,12 +221,16 @@ updated. Example:
     known_first_party = "Products.GenericSetup, Products.CMFCore"
 
     [github-actions]
-    additional-install = [
-        "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev",
-    ]
     services = [
       "postgres:",
       "  image: postgres",
+    ]
+    steps-before-checkout = [
+        "- name: \"Set some Postgres settings\"",
+        "  run: ...",
+    ]
+    additional-install = [
+        "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev",
     ]
 
 Meta Options
@@ -355,13 +359,18 @@ GitHub Actions options
 
 The corresponding section is named: ``[github-actions]``.
 
+services
+  Lines which will be added in the services section of the GitHub Actions build
+  section. This option has to be a list of strings.
+
+steps-before-checkout
+  Add steps definitions to be inserted into ``tests.yml`` before the checkout
+  action i. e. as the first step. This option has to be a list of strings.
+
 additional-install
   Additional lines to be executed during the install dependencies step when
   running the tests on GitHub Actions. This option has to be a list of strings.
 
-services
-  Lines which will be added in the services section of the GitHub Actions build
-  section. This option has to be a list of strings.
 
 
 Hints
