@@ -222,7 +222,11 @@ updated. Example:
 
     [github-actions]
     additional-install = [
-        "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev"
+        "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev",
+    ]
+    services = [
+      "postgres:",
+      "  image: postgres",
     ]
 
 Meta Options
@@ -354,6 +358,10 @@ The corresponding section is named: ``[github-actions]``.
 additional-install
   Additional lines to be executed during the install dependencies step when
   running the tests on GitHub Actions. This option has to be a list of strings.
+
+services
+  Lines which will be added in the services section of the GitHub Actions build
+  section. This option has to be a list of strings.
 
 
 Hints

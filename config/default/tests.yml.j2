@@ -9,6 +9,12 @@ on:
 
 jobs:
   build:
+{% if services %}
+    services:
+{% for line in services %}
+      %(line)s
+{% endfor %}
+{% endif %}
     strategy:
       matrix:
         config:

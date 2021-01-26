@@ -201,10 +201,13 @@ copy_with_meta(
 
 gha_additional_install = meta_cfg['github-actions'].get(
     'additional-install', [])
+gha_services = meta_cfg['github-actions'].get('services', [])
 copy_with_meta(
     'tests.yml.j2', workflows / 'tests.yml', config_type,
     with_pypy=with_pypy, with_legacy_python=with_legacy_python,
-    with_docs=with_docs, gha_additional_install=gha_additional_install)
+    with_docs=with_docs, gha_additional_install=gha_additional_install,
+    services=gha_services,
+)
 
 
 # Modify MANIFEST.in with meta options
