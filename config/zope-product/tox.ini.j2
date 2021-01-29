@@ -22,6 +22,9 @@ commands =
 {% else %}
     {envbindir}/test {posargs:-cv}
 {% endif %}
+{% for line in testenv_additional %}
+%(line)s
+{% endfor %}
 
 [testenv:lint]
 basepython = python3

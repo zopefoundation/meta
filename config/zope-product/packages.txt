@@ -4,3 +4,4 @@
 Products.MailHost
 Products.GenericSetup
 Products.ZCatalog
+zope.sqlalchemy

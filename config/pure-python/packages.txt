@@ -65,3 +65,17 @@ zope.app.onlinehelp
 zope.app.pagetemplate
 zope.app.principalannotation
 zope.app.renderer
+zope.app.rotterdam
+zope.app.schema
+zope.fanstatic
+zope.schemaevent
+zope.app.debug
+zope.app.preference
+zc.resourcelibrary
+zope.app.localpermission
+Missing
+zc.sourcefactory
+zope.renderer
+z3c.preference
+zope.preference
+z3c.formwidget.query

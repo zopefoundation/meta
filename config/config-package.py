@@ -236,10 +236,7 @@ with change_dir(path) as cwd:
     # Remove empty sections:
     meta_cfg = {k: v  for k, v in meta_cfg.items() if v}
     with open('.meta.toml', 'w') as meta_f:
-        meta_f.write(
-            '# Generated from:\n'
-            '# https://github.com/zopefoundation/meta/tree/master/config/'
-            f'{config_type}\n')
+        meta_f.write(META_HINT.format(config_type=config_type))
         toml.dump(
             meta_cfg, meta_f,
             TomlArraySeparatorEncoderWithNewline(
