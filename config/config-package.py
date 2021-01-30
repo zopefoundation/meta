@@ -183,6 +183,7 @@ elif (path / '.coveragerc').exists():
 
 coverage_run_additional_config = meta_cfg['coverage-run'].get(
     'additional-config', [])
+additional_envlist = meta_cfg['tox'].get('additional-envlist', [])
 testenv_additional = meta_cfg['tox'].get('testenv-additional', [])
 testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
 testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
@@ -192,6 +193,7 @@ copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
     fail_under=fail_under, with_pypy=with_pypy,
     with_legacy_python=with_legacy_python,
+    additional_envlist=additional_envlist,
     testenv_additional=testenv_additional,
     testenv_commands_pre=testenv_commands_pre,
     testenv_commands=testenv_commands,
@@ -201,10 +203,15 @@ copy_with_meta(
 
 gha_additional_install = meta_cfg['github-actions'].get(
     'additional-install', [])
+gha_additional_config = meta_cfg['github-actions'].get(
+    'additional-config', [])
 copy_with_meta(
     'tests.yml.j2', workflows / 'tests.yml', config_type,
     with_pypy=with_pypy, with_legacy_python=with_legacy_python,
-    with_docs=with_docs, gha_additional_install=gha_additional_install)
+    with_docs=with_docs,
+    gha_additional_config=gha_additional_config,
+    gha_additional_install=gha_additional_install
+)
 
 
 # Modify MANIFEST.in with meta options
