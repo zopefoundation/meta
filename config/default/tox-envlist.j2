@@ -22,3 +22,6 @@ envlist =
 {% if with_coverage %}
     coverage
 {% endif %}
+{% for line in additional_envlist %}
+    %(line)s
+{% endfor %}

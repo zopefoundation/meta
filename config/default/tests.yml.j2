@@ -32,6 +32,9 @@ jobs:
         - ["3.8",   "docs"]
 {% endif %}
         - ["3.8",   "coverage"]
+{% for line in gha_additional_config %}
+        %(line)s
+{% endfor %}
 
     runs-on: ubuntu-latest
     name: ${{ matrix.config[1] }}

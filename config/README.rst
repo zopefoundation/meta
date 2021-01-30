@@ -180,13 +180,17 @@ updated. Example:
         ]
 
     [tox]
+    additional-envlist = [
+        "py37-slim",
+        "py38-fat",
+        ]
     testenv-commands-pre = [
         "{envbindir}/buildout -c ...",
-    ]
+        ]
     testenv-commands = [
         "{envbindir}/test {posargs:-cv}",
         "{envbindir}/test_with_gs {posargs:-cv}",
-    ]
+        ]
     testenv-additional = [
         "setenv =",
         "    ZOPE_INTERFACE_STRICT_IRO=1",
@@ -221,9 +225,12 @@ updated. Example:
     known_first_party = "Products.GenericSetup, Products.CMFCore"
 
     [github-actions]
+    additional-config = [
+        "- [\"3.8\",   \"py38-slim\"]",
+        ]
     additional-install = [
         "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev"
-    ]
+        ]
 
 Meta Options
 ````````````
@@ -278,6 +285,12 @@ tox.ini options
 ```````````````
 
 The corresponding section is named: ``[tox]``.
+
+additional-envlist
+  This option contains additional entries for the ``envlist`` in ``tox.ini``.
+  The configuration for the needed additional environments can be added using
+  ``testenv-additional`` (see below). This option has to be a list of strings
+  without indentation.
 
 testenv-commands-pre
   Replacement for the default ``commands_pre`` option in ``[testenv]`` of
@@ -350,6 +363,10 @@ GitHub Actions options
 ``````````````````````
 
 The corresponding section is named: ``[github-actions]``.
+
+additional-config
+  Additional entries for the config matrix. This option has to be a list of
+  strings without leading whitespace but it has to start with a hyphen.
 
 additional-install
   Additional lines to be executed during the install dependencies step when
