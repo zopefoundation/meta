@@ -79,3 +79,7 @@ zope.renderer
 z3c.preference
 zope.preference
 z3c.formwidget.query
+zc.form
+MultiMapping
+z3c.etestbrowser
+z3c.breadcrumb

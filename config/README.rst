@@ -180,13 +180,17 @@ updated. Example:
         ]
 
     [tox]
+    additional-envlist = [
+        "py37-slim",
+        "py38-fat",
+        ]
     testenv-commands-pre = [
         "{envbindir}/buildout -c ...",
-    ]
+        ]
     testenv-commands = [
         "{envbindir}/test {posargs:-cv}",
         "{envbindir}/test_with_gs {posargs:-cv}",
-    ]
+        ]
     testenv-additional = [
         "setenv =",
         "    ZOPE_INTERFACE_STRICT_IRO=1",
@@ -225,6 +229,9 @@ updated. Example:
       "postgres:",
       "  image: postgres",
     ]
+    additional-config = [
+        "- [\"3.8\",   \"py38-slim\"]",
+        ]
     steps-before-checkout = [
         "- name: \"Set some Postgres settings\"",
         "  run: ...",
@@ -232,6 +239,9 @@ updated. Example:
     additional-install = [
         "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev",
     ]
+    additional-install = [
+        "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev"
+        ]
 
 Meta Options
 ````````````
@@ -286,6 +296,12 @@ tox.ini options
 ```````````````
 
 The corresponding section is named: ``[tox]``.
+
+additional-envlist
+  This option contains additional entries for the ``envlist`` in ``tox.ini``.
+  The configuration for the needed additional environments can be added using
+  ``testenv-additional`` (see below). This option has to be a list of strings
+  without indentation.
 
 testenv-commands-pre
   Replacement for the default ``commands_pre`` option in ``[testenv]`` of
@@ -366,6 +382,10 @@ services
 steps-before-checkout
   Add steps definitions to be inserted into ``tests.yml`` before the checkout
   action i. e. as the first step. This option has to be a list of strings.
+
+additional-config
+  Additional entries for the config matrix. This option has to be a list of
+  strings without leading whitespace but it has to start with a hyphen.
 
 additional-install
   Additional lines to be executed during the install dependencies step when
