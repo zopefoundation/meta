@@ -376,13 +376,13 @@ services
   Lines which will be added in the services section of the GitHub Actions build
   section. This option has to be a list of strings.
 
-steps-before-checkout
-  Add steps definitions to be inserted into ``tests.yml`` before the checkout
-  action i. e. as the first step. This option has to be a list of strings.
-
 additional-config
   Additional entries for the config matrix. This option has to be a list of
   strings without leading whitespace but it has to start with a hyphen.
+
+steps-before-checkout
+  Add steps definitions to be inserted into ``tests.yml`` before the checkout
+  action i. e. as the first step. This option has to be a list of strings.
 
 additional-install
   Additional lines to be executed during the install dependencies step when
