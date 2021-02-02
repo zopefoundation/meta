@@ -226,21 +226,18 @@ updated. Example:
 
     [github-actions]
     services = [
-      "postgres:",
-      "  image: postgres",
-    ]
+        "postgres:",
+        "  image: postgres",
+        ]
     additional-config = [
         "- [\"3.8\",   \"py38-slim\"]",
         ]
     steps-before-checkout = [
         "- name: \"Set some Postgres settings\"",
         "  run: ...",
-    ]
+        ]
     additional-install = [
         "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev",
-    ]
-    additional-install = [
-        "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev"
         ]
 
 Meta Options
