@@ -201,16 +201,19 @@ copy_with_meta(
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
     coverage_run_additional_config=coverage_run_additional_config)
 
-gha_additional_install = meta_cfg['github-actions'].get(
-    'additional-install', [])
+gha_services = meta_cfg['github-actions'].get('services', [])
 gha_additional_config = meta_cfg['github-actions'].get(
     'additional-config', [])
+gha_steps_before_checkout = meta_cfg['github-actions'].get(
+    'steps-before-checkout', [])
+gha_additional_install = meta_cfg['github-actions'].get(
+    'additional-install', [])
 copy_with_meta(
     'tests.yml.j2', workflows / 'tests.yml', config_type,
     with_pypy=with_pypy, with_legacy_python=with_legacy_python,
-    with_docs=with_docs,
+    with_docs=with_docs, gha_additional_install=gha_additional_install,
+    services=gha_services, steps_before_checkout=gha_steps_before_checkout,
     gha_additional_config=gha_additional_config,
-    gha_additional_install=gha_additional_install
 )
 
 

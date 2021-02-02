@@ -9,6 +9,12 @@ on:
 
 jobs:
   build:
+{% if services %}
+    services:
+{% for line in services %}
+      %(line)s
+{% endfor %}
+{% endif %}
     strategy:
       matrix:
         config:
@@ -39,6 +45,9 @@ jobs:
     runs-on: ubuntu-latest
     name: ${{ matrix.config[1] }}
     steps:
+{% for line in steps_before_checkout %}
+    %(line)s
+{% endfor %}
     - uses: actions/checkout@v2
     - name: Set up Python
       uses: actions/setup-python@v2
