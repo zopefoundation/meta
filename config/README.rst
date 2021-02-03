@@ -203,7 +203,7 @@ updated. Example:
         "# E222 multiple spaces after operator",
         "per-file-ignores =",
         "    src/foo/bar.py: E221 E222",
-        "ignore = D203",
+        "ignore = D203, W503",
         ]
 
     [manifest]
@@ -222,6 +222,8 @@ updated. Example:
         ]
 
     [isort]
+    known_third_party = "ipaddress, PasteDeploy"
+    known_zope = "AccessControl, Acquisition, App"
     known_first_party = "Products.GenericSetup, Products.CMFCore"
 
     [github-actions]
@@ -238,6 +240,16 @@ updated. Example:
         ]
     additional-install = [
         "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev",
+        ]
+
+    [appveyor]
+    install-steps = [
+        "- pip install zc.buildout",
+        "- buildout",
+        ]
+    test-steps = [
+        "- zope-testrunner --test-path=src",
+        "- jasmine",
         ]
 
 Meta Options
@@ -358,13 +370,26 @@ Isort options
 
 The corresponding section is named: ``[isort]``.
 
+Please note the usage of underscores for the option name, which used to be
+consistent with the name of the option in ``isort``.
+
+Currently only the configuration type ``zope-product`` supports ``isort``
+configurations.
+
+known_third_party
+  This option defines the value for ``known_third_party`` in the ``isort``
+  configuration. This option has to be a string. It defaults to
+  ``"six, docutils, pkg_resources"``.
+
+known_zope
+  This option defines the value for ``known_zope`` in the ``isort``
+  configuration. This option has to be a string. It defaults to the empty
+  string.
+
 known_first_party
-  This options defines the value for ``known_first_party`` in the ``isort``
-  configuration. Please note the usage of underscores for the option name,
-  which used to be consistent with the name of the option in ``isort``.
-  This option has to be a single string. It defaults to the empty string.
-  (Currently only the configuration type ``zope-product`` supports ``isort``
-  configurations.)
+  This option defines the value for ``known_first_party`` in the ``isort``
+  configuration. This option has to be a string. It defaults to the empty
+  string.
 
 
 GitHub Actions options
@@ -388,6 +413,19 @@ additional-install
   Additional lines to be executed during the install dependencies step when
   running the tests on GitHub Actions. This option has to be a list of strings.
 
+
+AppVeyor options
+````````````````
+
+The corresponding section is named: ``[appveyor]``.
+
+install-steps
+  Steps to install the package under test on AppVeyor. This option has to be a
+  list of strings. It defaults to ``["- pip install -U -e .[test]"]``.
+
+test-steps
+  Steps to run the tests on AppVeyor. This option has to be a list of strings.
+  It defaults to ``["- zope-testrunner --test-path=src"]``.
 
 
 Hints
