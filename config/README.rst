@@ -199,11 +199,13 @@ updated. Example:
 
     [flake8]
     additional-config = [
+        "# D203 1 blank line required before class docstring",
         "# E221 multiple spaces before operator",
         "# E222 multiple spaces after operator",
+        "# W503 Line break occurred before a binary operator"
         "per-file-ignores =",
         "    src/foo/bar.py: E221 E222",
-        "ignore = D203, W503",
+        "extend-ignore = D203, W503",
         ]
 
     [manifest]
