@@ -83,3 +83,4 @@ zc.form
 MultiMapping
 z3c.etestbrowser
 z3c.breadcrumb
+zope.formlib
