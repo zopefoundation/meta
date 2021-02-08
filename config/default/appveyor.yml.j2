@@ -17,6 +17,7 @@ environment:
     - python: 39-x64
 
 install:
+  - "SET PYTHONVERSION=%PYTHON"
   - "SET PATH=C:\\Python%PYTHON%;c:\\Python%PYTHON%\\scripts;%PATH%"
   - ps: |
       $env:PYTHON = "C:\\Python${env:PYTHON}"
