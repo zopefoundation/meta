@@ -5,3 +5,6 @@ Products.MailHost
 Products.GenericSetup
 Products.ZCatalog
 zope.sqlalchemy
+Products.CMFCore
+Products.PluggableAuthService
+Zope

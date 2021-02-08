@@ -1,5 +1,9 @@
 [bdist_wheel]
+{% if with_legacy_python %}
 universal = 1
+{% else %}
+universal = 0
+{% endif %}
 
 [flake8]
 doctests = 1
@@ -40,9 +44,9 @@ ignore-bad-ideas =
 force_single_line = True
 combine_as_imports = True
 sections = FUTURE,STDLIB,THIRDPARTY,ZOPE,FIRSTPARTY,LOCALFOLDER
+known_third_party = %(isort_known_third_party)s
+known_zope = %(isort_known_zope)s
 known_first_party = %(isort_known_first_party)s
-known_third_party = six, docutils, pkg_resources
-known_zope =
 default_section = ZOPE
 line_length = 79
 lines_after_imports = 2

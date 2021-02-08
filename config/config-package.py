@@ -157,14 +157,21 @@ additional_check_manifest_ignores = meta_cfg['check-manifest'].get(
     'additional-ignores', [])
 check_manifest_ignore_bad_ideas = meta_cfg['check-manifest'].get(
     'ignore-bad-ideas', [])
+isort_known_third_party = meta_cfg['isort'].get(
+    'known_third_party', 'six, docutils, pkg_resources')
+isort_known_zope = meta_cfg['isort'].get('known_zope', '')
 isort_known_first_party = meta_cfg['isort'].get('known_first_party', '')
 copy_with_meta(
     'setup.cfg.j2', path / 'setup.cfg', config_type,
     additional_flake8_config=additional_flake8_config,
     additional_check_manifest_ignores=additional_check_manifest_ignores,
     check_manifest_ignore_bad_ideas=check_manifest_ignore_bad_ideas,
+    isort_known_third_party=isort_known_third_party,
+    isort_known_zope=isort_known_zope,
     isort_known_first_party=isort_known_first_party,
-    with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests)
+    with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
+    with_legacy_python=with_legacy_python,
+)
 copy_with_meta('editorconfig', path / '.editorconfig', config_type)
 copy_with_meta('gitignore', path / '.gitignore', config_type)
 workflows = path / '.github' / 'workflows'
@@ -226,9 +233,15 @@ copy_with_meta(
 
 
 if with_appveyor:
+    appveyor_install_steps = meta_cfg['appveyor'].get(
+        'install-steps', ['- pip install -U -e .[test]'])
+    appveyor_test_steps = meta_cfg['appveyor'].get(
+        'test-steps', ['- zope-testrunner --test-path=src'])
     copy_with_meta(
         'appveyor.yml.j2', path / 'appveyor.yml', config_type,
-        with_legacy_python=with_legacy_python)
+        with_legacy_python=with_legacy_python,
+        install_steps=appveyor_install_steps, test_steps=appveyor_test_steps,
+    )
 
 
 branch_name = args.branch_name or f'config-with-{config_type}'
