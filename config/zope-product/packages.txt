@@ -8,3 +8,4 @@ zope.sqlalchemy
 Products.CMFCore
 Products.PluggableAuthService
 Zope
+Products.BTreeFolder2
