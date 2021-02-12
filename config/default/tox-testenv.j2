@@ -10,7 +10,7 @@ commands_pre =
   {% endfor %}
 {% endif %}
 commands =
-    zope-testrunner --test-path=src []
+    zope-testrunner --test-path=src {posargs:-vc}
 {% if with_sphinx_doctests %}
     sphinx-build -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
 {% endif %}

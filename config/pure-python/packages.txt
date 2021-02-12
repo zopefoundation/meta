@@ -84,3 +84,5 @@ MultiMapping
 z3c.etestbrowser
 z3c.breadcrumb
 zope.formlib
+zope.paste
+z3c.authenticator
