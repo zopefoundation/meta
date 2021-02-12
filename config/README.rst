@@ -253,6 +253,11 @@ updated. Example:
         "- zope-testrunner --test-path=src",
         "- jasmine",
         ]
+    replacement = [
+        "environment:",
+        "  matrix:",
+        "    ...",
+        ]
 
 Meta Options
 ````````````
@@ -428,6 +433,12 @@ install-steps
 test-steps
   Steps to run the tests on AppVeyor. This option has to be a list of strings.
   It defaults to ``["- zope-testrunner --test-path=src"]``.
+
+replacement
+  Replace the whole template of the AppVeyor configuration with the contents of
+  this option. Use this option as last resort if your needed changes are too
+  big to configure AppVeyor in another way. This option has to be a list of
+  strings.
 
 
 Hints
