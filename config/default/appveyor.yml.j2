@@ -1,3 +1,8 @@
+{% if replacement %}
+{% for line in replacement %}
+%(line)s
+{% endfor %}
+{% else %}
 environment:
 
   matrix:
@@ -44,3 +49,4 @@ test_script:
 
 on_success:
   - echo Build succesful!
+{% endif %}

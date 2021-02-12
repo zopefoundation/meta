@@ -237,10 +237,12 @@ if with_appveyor:
         'install-steps', ['- pip install -U -e .[test]'])
     appveyor_test_steps = meta_cfg['appveyor'].get(
         'test-steps', ['- zope-testrunner --test-path=src'])
+    appveyor_replacement = meta_cfg['appveyor'].get('replacement', [])
     copy_with_meta(
         'appveyor.yml.j2', path / 'appveyor.yml', config_type,
         with_legacy_python=with_legacy_python,
         install_steps=appveyor_install_steps, test_steps=appveyor_test_steps,
+        replacement=appveyor_replacement,
     )
 
 
