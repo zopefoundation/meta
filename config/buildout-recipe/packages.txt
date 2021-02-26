@@ -6,3 +6,6 @@ z3c.recipe.sphinxdoc
 zc.recipe.testrunner
 z3c.recipe.mkdir
 zc.recipe.deployment
+z3c.recipe.i18n
+zc.recipe.cmmi
+zdaemon

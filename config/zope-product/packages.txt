@@ -10,3 +10,4 @@ Products.PluggableAuthService
 Zope
 Products.BTreeFolder2
 Products.DCWorkflow
+DateTime

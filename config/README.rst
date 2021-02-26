@@ -370,7 +370,8 @@ additional-ignores
   ``setup.cfg``. This option has to be a list of strings.
 
 ignore-bad-ideas
-  Ignore bad idea files/directories matching these patterns.
+  Ignore bad idea files/directories matching these patterns. This option has to
+  be a list of strings.
 
 Isort options
 `````````````

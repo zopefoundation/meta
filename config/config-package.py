@@ -188,14 +188,14 @@ elif (path / '.coveragerc').exists():
     rm_coveragerc = True
 
 
-coverage_run_additional_config = meta_cfg['coverage-run'].get(
-    'additional-config', [])
 additional_envlist = meta_cfg['tox'].get('additional-envlist', [])
 testenv_additional = meta_cfg['tox'].get('testenv-additional', [])
 testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
 testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
-fail_under = meta_cfg['coverage'].setdefault('fail-under', 0)
 coverage_command = meta_cfg['tox'].get('coverage-command', '')
+fail_under = meta_cfg['coverage'].setdefault('fail-under', 0)
+coverage_run_additional_config = meta_cfg['coverage-run'].get(
+    'additional-config', [])
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
     fail_under=fail_under, with_pypy=with_pypy,

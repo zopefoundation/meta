@@ -88,3 +88,10 @@ zope.paste
 z3c.authenticator
 zope.datetime
 z3c.zcmlhook
+zope.app.applicationcontrol
+z3c.caching
+z3c.formui
+z3c.pagelet
+zope.app.container
+zope.app.locales
+zope.app.zcmlfiles
