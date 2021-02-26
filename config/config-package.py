@@ -196,6 +196,9 @@ coverage_command = meta_cfg['tox'].get('coverage-command', '')
 fail_under = meta_cfg['coverage'].setdefault('fail-under', 0)
 coverage_run_additional_config = meta_cfg['coverage-run'].get(
     'additional-config', [])
+flake8_additional_sources = meta_cfg['flake8'].get('additional-sources', '')
+if flake8_additional_sources:
+    flake8_additional_sources = ' ' + flake8_additional_sources
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
     fail_under=fail_under, with_pypy=with_pypy,
@@ -204,6 +207,7 @@ copy_with_meta(
     testenv_additional=testenv_additional,
     testenv_commands_pre=testenv_commands_pre,
     testenv_commands=testenv_commands,
+    flake8_additional_sources=flake8_additional_sources,
     coverage_command=coverage_command,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
     coverage_run_additional_config=coverage_run_additional_config)
