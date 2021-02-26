@@ -12,6 +12,12 @@ deps =
     coverage
     coverage-python-version
     zope.testrunner
+{% if coverage_setenv %}
+setenv =
+{% for line in coverage_setenv %}
+    %(line)s
+{% endfor %}
+{% endif %}
 commands =
     mkdir -p {toxinidir}/parts/htmlcov
 {% if coverage_command %}

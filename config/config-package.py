@@ -177,12 +177,16 @@ copy_with_meta('gitignore', path / '.gitignore', config_type)
 workflows = path / '.github' / 'workflows'
 workflows.mkdir(parents=True, exist_ok=True)
 
+coverage_run_additional_config = meta_cfg['coverage-run'].get(
+    'additional-config', [])
 add_coveragerc = False
 rm_coveragerc = False
 if (config_type_path / 'coveragerc.j2').exists():
     copy_with_meta(
         'coveragerc.j2', path / '.coveragerc', config_type,
-        package_name=path.name)
+        package_name=path.name,
+        run_additional_config=coverage_run_additional_config,
+    )
     add_coveragerc = True
 elif (path / '.coveragerc').exists():
     rm_coveragerc = True
@@ -193,9 +197,8 @@ testenv_additional = meta_cfg['tox'].get('testenv-additional', [])
 testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
 testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
 coverage_command = meta_cfg['tox'].get('coverage-command', '')
+coverage_setenv = meta_cfg['tox'].get('coverage-setenv', [])
 fail_under = meta_cfg['coverage'].setdefault('fail-under', 0)
-coverage_run_additional_config = meta_cfg['coverage-run'].get(
-    'additional-config', [])
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
     fail_under=fail_under, with_pypy=with_pypy,
@@ -205,6 +208,7 @@ copy_with_meta(
     testenv_commands_pre=testenv_commands_pre,
     testenv_commands=testenv_commands,
     coverage_command=coverage_command,
+    coverage_setenv=coverage_setenv,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
     coverage_run_additional_config=coverage_run_additional_config)
 

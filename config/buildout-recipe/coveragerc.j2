@@ -3,6 +3,9 @@ source = %(package_name)s
 plugins = coverage_python_version
 branch = true
 parallel = true
+{% for line in run_additional_config %}
+%(line)s
+{% endfor %}
 
 [paths]
 source =

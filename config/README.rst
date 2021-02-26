@@ -196,6 +196,9 @@ updated. Example:
         "    ZOPE_INTERFACE_STRICT_IRO=1",
         ]
     coverage-command = "coverage run {envbindir}/test_with_gs []"
+    coverage-setenv = [
+        "COVERAGE_HOME={toxinidir}",
+        ]
 
     [flake8]
     additional-config = [
@@ -337,6 +340,11 @@ coverage-command
   is replaced. The calls to create the reporting are not changed. This option
   has to be a string. If it is not set or empty the default is used.
 
+coverage-setenv
+  This option defines the contents for the option ``setenv`` in the section
+  ``[testenv:coverage]`` in ``tox.ini``. If it has a default value (e. g. as
+  in the buildout-recipe template), the default value is replaced by the value
+  given here. This option has to be a list of strings.
 
 Flake8 options
 ``````````````

@@ -66,6 +66,12 @@ basepython = python3
 skip_install = true
 allowlist_externals =
     mkdir
+{% if coverage_setenv %}
+setenv =
+{% for line in coverage_setenv %}
+    %(line)s
+{% endfor %}
+{% endif %}
 deps =
     {[testenv]deps}
     coverage
