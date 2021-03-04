@@ -6,9 +6,7 @@ from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
 import jinja2
-import os
 import pathlib
-import shutil
 import toml
 
 
@@ -16,6 +14,7 @@ META_HINT = """\
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 """
+
 
 def copy_with_meta(template_name, destination, config_type, **kw):
     """Copy the source file to destination and a hint of origin.
@@ -73,7 +72,7 @@ parser.add_argument(
          ' .meta.toml.')
 parser.add_argument(
     '-t', '--type',
-     choices=[
+    choices=[
         'buildout-recipe',
         'pure-python',
         'zope-product',
@@ -190,6 +189,10 @@ elif (path / '.coveragerc').exists():
 
 additional_envlist = meta_cfg['tox'].get('additional-envlist', [])
 testenv_additional = meta_cfg['tox'].get('testenv-additional', [])
+testenv_extras = meta_cfg['tox'].get(
+    'testenv-extras',
+    ['test'] + (['docs'] if with_sphinx_doctests else [])
+)
 testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
 testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
 coverage_command = meta_cfg['tox'].get('coverage-command', '')
@@ -202,6 +205,7 @@ copy_with_meta(
     with_legacy_python=with_legacy_python,
     additional_envlist=additional_envlist,
     testenv_additional=testenv_additional,
+    testenv_extras=testenv_extras,
     testenv_commands_pre=testenv_commands_pre,
     testenv_commands=testenv_commands,
     coverage_command=coverage_command,
@@ -259,7 +263,7 @@ with change_dir(path) as cwd:
     if with_appveyor:
         call('git', 'add', 'appveyor.yml')
     # Remove empty sections:
-    meta_cfg = {k: v  for k, v in meta_cfg.items() if v}
+    meta_cfg = {k: v for k, v in meta_cfg.items() if v}
     with open('.meta.toml', 'w') as meta_f:
         meta_f.write(META_HINT.format(config_type=config_type))
         toml.dump(

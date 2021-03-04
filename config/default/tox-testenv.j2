@@ -15,10 +15,9 @@ commands =
     sphinx-build -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
 {% endif %}
 extras =
-    test
-{% if with_sphinx_doctests %}
-    docs
-{% endif %}
+{% for line in testenv_extras %}
+    %(line)s
+{% endfor %}
 {% for line in testenv_additional %}
 %(line)s
 {% endfor %}
