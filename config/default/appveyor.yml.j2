@@ -4,6 +4,12 @@
 {% endfor %}
 {% else %}
 environment:
+{% if global_env_vars %}
+
+{% endif %}
+{% for line in global_env_vars %}
+  %(line)s
+{% endfor %}
 
   matrix:
 {% if with_legacy_python %}
@@ -20,6 +26,9 @@ environment:
     - python: 38-x64
     - python: 39
     - python: 39-x64
+{% for line in additional_matrix %}
+    %(line)s
+{% endfor %}
 
 install:
   - "SET PYTHONVERSION=%PYTHON%"

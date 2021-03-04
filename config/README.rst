@@ -252,6 +252,13 @@ updated. Example:
         ]
 
     [appveyor]
+    global-env-vars = [
+        "ZOPE_INTERFACE_STRICT_IRO: 1",
+        ]
+    additional-matrix = [
+        "- { PYTHON: 38, PURE_PYTHON: 1 }",
+        "- { PYTHON: 38-x64, PURE_PYTHON: 1 }",
+        ]
     install-steps = [
         "- pip install zc.buildout",
         "- buildout",
@@ -447,6 +454,14 @@ AppVeyor options
 ````````````````
 
 The corresponding section is named: ``[appveyor]``.
+
+global-env-vars
+  Environment variables to specify globally. This option has to be a list of
+  strings.
+
+additional-matrix
+  Additional environment matrix rows.  This option has to be a list of strings,
+  each starting with a ``-`` (unless you know what you're doing).
 
 install-steps
   Steps to install the package under test on AppVeyor. This option has to be a

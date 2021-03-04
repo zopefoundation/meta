@@ -246,6 +246,10 @@ copy_with_meta(
 
 
 if with_appveyor:
+    appveyor_global_env_vars = meta_cfg['appveyor'].get(
+        'global-env-vars', [])
+    appveyor_additional_matrix = meta_cfg['appveyor'].get(
+        'additional-matrix', [])
     appveyor_install_steps = meta_cfg['appveyor'].get(
         'install-steps', ['- pip install -U -e .[test]'])
     appveyor_test_steps = meta_cfg['appveyor'].get(
@@ -254,6 +258,8 @@ if with_appveyor:
     copy_with_meta(
         'appveyor.yml.j2', path / 'appveyor.yml', config_type,
         with_legacy_python=with_legacy_python,
+        global_env_vars=appveyor_global_env_vars,
+        additional_matrix=appveyor_additional_matrix,
         install_steps=appveyor_install_steps, test_steps=appveyor_test_steps,
         replacement=appveyor_replacement,
     )
