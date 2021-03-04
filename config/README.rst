@@ -184,6 +184,11 @@ updated. Example:
         "py37-slim",
         "py38-fat",
         ]
+    testenv-extras = [
+        "test",
+        "docs",
+        "extra-feature",
+        ]
     testenv-commands-pre = [
         "{envbindir}/buildout -c ...",
         ]
@@ -318,6 +323,10 @@ additional-envlist
   The configuration for the needed additional environments can be added using
   ``testenv-additional`` (see below). This option has to be a list of strings
   without indentation.
+
+testenv-extras
+  Replacement for the default ``extras`` option in ``[testenv]`` of
+  ``tox.ini``.  This option has to be a list of strings without indentation.
 
 testenv-commands-pre
   Replacement for the default ``commands_pre`` option in ``[testenv]`` of
