@@ -85,7 +85,7 @@ The script needs a ``venv`` with some packages installed::
 
 To use the configuration provided here in a package call the following script::
 
-    $ bin/python config-package.py <path-to-package> <config-type-name>
+    $ bin/python config-package.py <path-to-package> --type <config-type-name> [<additional-options>]
 
 See ``--help`` for details.
 
