@@ -198,6 +198,7 @@ coverage_run_additional_config = meta_cfg['coverage-run'].get(
     'additional-config', [])
 flake8_additional_sources = meta_cfg['flake8'].get('additional-sources', '')
 if flake8_additional_sources:
+    # Avoid whitespace at end of line if no additional sources are provided:
     flake8_additional_sources = ' ' + flake8_additional_sources
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
