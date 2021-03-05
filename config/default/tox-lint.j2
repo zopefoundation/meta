@@ -7,6 +7,6 @@ deps =
     check-manifest
     check-python-versions
 commands =
-    flake8 src setup.py
+    flake8 src setup.py%(flake8_additional_sources)s
     check-manifest
     check-python-versions
