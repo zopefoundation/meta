@@ -95,3 +95,4 @@ z3c.pagelet
 zope.app.container
 zope.app.locales
 zope.app.zcmlfiles
+gocept.xmlrpcskin

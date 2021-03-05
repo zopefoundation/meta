@@ -36,8 +36,8 @@ commands_pre =
     mkdir -p {toxinidir}/parts/flake8
 commands =
     isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py
-    - flake8 --format=html {toxinidir}/src {toxinidir}/setup.py
-    flake8 {toxinidir}/src {toxinidir}/setup.py
+    - flake8 --format=html {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
+    flake8 {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
     check-manifest
     check-python-versions
 deps =

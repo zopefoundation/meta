@@ -210,6 +210,7 @@ updated. Example:
         "    src/foo/bar.py: E221 E222",
         "extend-ignore = D203, W503",
         ]
+    additional-sources = "testproj foo bar.py"
 
     [manifest]
     additional-rules = [
@@ -356,6 +357,11 @@ additional-config
   configuration section in ``setup.cfg``. *Caution:* This option has to be a
   list of strings so the leading white spaces and comments are preserved when
   writing the value to ``setup.cfg``.
+
+additional-sources
+  Sometimes not only ``src`` and ``setup.py`` contain Python code to be checked
+  by flake8. Additional files or directories can be configured here. This
+  option is a string. The sources inside have to be space separated.
 
 
 Manifest options
