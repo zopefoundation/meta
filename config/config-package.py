@@ -292,15 +292,18 @@ with change_dir(path) as cwd:
             TomlArraySeparatorEncoderWithNewline(
                 separator=',\n   ', indent_first_line=True))
 
-    old_toxenv = os.environ.get('TOXENV', None)
-    result = call(pathlib.Path(cwd) / 'bin' / 'tox', '-l',
-                  capture_output=True)
-    tox_envs = result.stdout.split()
-    if args.no_linting and 'lint' in tox_envs:
-        tox_envs.remove('lint')
-    os.environ['TOXENV'] = ','.join(tox_envs)
-    call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
-    os.environ['TOXENV'] = old_toxenv or ''
+    if args.no_linting:
+        old_toxenv = os.environ.get('TOXENV', None)
+        result = call(pathlib.Path(cwd) / 'bin' / 'tox', '-l',
+                      capture_output=True)
+        tox_envs = result.stdout.split()
+        if 'lint' in tox_envs:
+            tox_envs.remove('lint')
+        os.environ['TOXENV'] = ','.join(tox_envs)
+        call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
+        os.environ['TOXENV'] = old_toxenv or ''
+    else:
+        call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
 
     branches = call(
         'git', 'branch', '--format', '%(refname:short)',
