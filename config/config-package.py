@@ -32,6 +32,11 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     'path', type=pathlib.Path, help='path to the repository to be configured')
 parser.add_argument(
+    '--no-commit',
+    dest='no_commit',
+    action='store_true',
+    help='Prevent automatic committing of changes. Implies --no-push.')
+parser.add_argument(
     '--no-push',
     dest='no_push',
     action='store_true',
@@ -297,16 +302,18 @@ with change_dir(path) as cwd:
     else:
         call('git', 'checkout', '-b', branch_name)
         updating = False
-    call('git', 'add',
-         'setup.cfg', 'tox.ini', '.gitignore', '.github/workflows/tests.yml',
-         'MANIFEST.in', '.editorconfig', '.meta.toml')
     if not fail_under:
         print('In .meta.toml in section [coverage] the option "fail-under" is'
               ' 0. Please enter a valid minimum coverage and rerun.')
         abort(1)
-    call('git', 'commit', '-m', f'Configuring for {config_type}')
-    if not args.no_push:
-        call('git', 'push', '--set-upstream', 'origin', branch_name)
+    if not args.no_commit:
+        call('git', 'add',
+             'setup.cfg', 'tox.ini', '.gitignore',
+             '.github/workflows/tests.yml', 'MANIFEST.in', '.editorconfig',
+             '.meta.toml')
+        call('git', 'commit', '-m', f'Configuring for {config_type}')
+        if not args.no_push:
+            call('git', 'push', '--set-upstream', 'origin', branch_name)
     print()
     print('If everything went fine up to here:')
     if updating:
