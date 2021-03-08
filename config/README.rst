@@ -119,6 +119,12 @@ The following arguments are supported.
 --no-push
   Avoid pushing at the end of the configuration run.
 
+--no-linting
+  Don't run ``flake8`` and ``isort`` linters over the code. If the code is old
+  and numerous linting changes would obscure the package changes it may make
+  sense to use this flag and run the linters separate from the package
+  conversion.
+
 --branch
   Define a specific git branch name to be created for the changes. By default
   the script creates one which includes the name of the configuration type.

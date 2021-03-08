@@ -6,6 +6,7 @@ from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
 import jinja2
+import os
 import pathlib
 import toml
 
@@ -36,6 +37,11 @@ parser.add_argument(
     dest='no_push',
     action='store_true',
     help='Prevent direct push.')
+parser.add_argument(
+    '--no-linting',
+    dest='no_linting',
+    action='store_true',
+    help='Do not run the linter over the code.')
 parser.add_argument(
     '--with-appveyor',
     dest='with_appveyor',
@@ -286,7 +292,15 @@ with change_dir(path) as cwd:
             TomlArraySeparatorEncoderWithNewline(
                 separator=',\n   ', indent_first_line=True))
 
+    old_toxenv = os.environ.get('TOXENV', None)
+    result = call(pathlib.Path(cwd) / 'bin' / 'tox', '-l',
+                  capture_output=True)
+    tox_envs = result.stdout.split()
+    if args.no_linting and 'lint' in tox_envs:
+        tox_envs.remove('lint')
+    os.environ['TOXENV'] = ','.join(tox_envs)
     call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
+    os.environ['TOXENV'] = old_toxenv or ''
 
     branches = call(
         'git', 'branch', '--format', '%(refname:short)',
