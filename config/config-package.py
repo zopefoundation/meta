@@ -8,6 +8,7 @@ import collections
 import jinja2
 import os
 import pathlib
+import shutil
 import toml
 
 
@@ -292,18 +293,8 @@ with change_dir(path) as cwd:
             TomlArraySeparatorEncoderWithNewline(
                 separator=',\n   ', indent_first_line=True))
 
-    if args.no_linting:
-        old_toxenv = os.environ.get('TOXENV', None)
-        result = call(pathlib.Path(cwd) / 'bin' / 'tox', '-l',
-                      capture_output=True)
-        tox_envs = result.stdout.split()
-        if 'lint' in tox_envs:
-            tox_envs.remove('lint')
-        os.environ['TOXENV'] = ','.join(tox_envs)
-        call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
-        os.environ['TOXENV'] = old_toxenv or ''
-    else:
-        call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
+    tox_path = shutil.which('tox') or (pathlib.Path(cwd) / 'bin' / 'tox')
+    call(tox_path, '-p', 'auto')
 
     branches = call(
         'git', 'branch', '--format', '%(refname:short)',
