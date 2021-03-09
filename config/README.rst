@@ -98,7 +98,8 @@ The script does the following steps:
 3. Remove a possibly existing ``.coveragerc`` and ``bootstrap.py``. (Coverage
    is now configured in ``tox.ini`` for packages which are no buildout
    recipes.)
-4. Run the tests via: ``tox``
+4. Run the tests via: ``tox``. The ``tox`` script may be either on the current
+   ``$PATH`` or in the ``bin`` subfolder of the current working directory.
 5. Create a branch and a pull request. (Prevent an automatic commit of all
    changes with the command line switch ``--no-commit``, or an automatic push
    to GitHub using the command line switch ``--no-push``.)

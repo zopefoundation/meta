@@ -7,6 +7,7 @@ import argparse
 import collections
 import jinja2
 import pathlib
+import shutil
 import toml
 
 
@@ -291,7 +292,8 @@ with change_dir(path) as cwd:
             TomlArraySeparatorEncoderWithNewline(
                 separator=',\n   ', indent_first_line=True))
 
-    call(pathlib.Path(cwd) / 'bin' / 'tox', '-p', 'auto')
+    tox_path = shutil.which('tox') or (pathlib.Path(cwd) / 'bin' / 'tox')
+    call(tox_path, '-p', 'auto')
 
     branches = call(
         'git', 'branch', '--format', '%(refname:short)',
