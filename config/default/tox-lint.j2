@@ -3,10 +3,14 @@
 basepython = python3
 skip_install = true
 deps =
+{% if use_flake8 %}
     flake8
+{% endif %}
     check-manifest
     check-python-versions
 commands =
+{% if use_flake8 %}
     flake8 src setup.py%(flake8_additional_sources)s
+{% endif %}
     check-manifest
     check-python-versions

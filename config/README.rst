@@ -120,12 +120,6 @@ The following arguments are supported.
 --no-push
   Avoid pushing at the end of the configuration run.
 
---no-linting
-  Don't run ``flake8`` and ``isort`` linters over the code. If the code is old
-  and numerous linting changes would obscure the package changes it may make
-  sense to use this flag and run the linters separate from the package
-  conversion.
-
 --branch
   Define a specific git branch name to be created for the changes. By default
   the script creates one which includes the name of the configuration type.
@@ -154,6 +148,11 @@ The following options are only needed one time as their values re stored in
 --with-sphinx-doctests
   Enable running the documentation as doctest using Sphinx.
 
+--no-flake8
+  Don't add ``flake8`` and ``isort`` linting steps to the configuration. If
+  the code is old and numerous linting changes would obscure the package
+  reconfiguration changes it may make sense to use this flag and configure/run
+  ``flake8`` and ``isort`` in a separate step.
 
 Options
 +++++++
@@ -209,6 +208,7 @@ updated. Example:
     coverage-setenv = [
         "COVERAGE_HOME={toxinidir}",
         ]
+    use-flake8 = true
 
     [flake8]
     additional-config = [
@@ -367,6 +367,12 @@ coverage-setenv
   ``[testenv:coverage]`` in ``tox.ini``. If it has a default value (e. g. as
   in the buildout-recipe template), the default value is replaced by the value
   given here. This option has to be a list of strings.
+
+use-flake8
+  Whether to add the ``flake8`` and ``isort`` linting steps to the section
+  ``[testenv:lint]``. By default these steps are run. On an older code base it
+  may make sense to set this to ``false`` here or by invoking the script with
+  ``--no-flake8`` and handle linting cleanup separate from the reconfiguration.
 
 Flake8 options
 ``````````````
