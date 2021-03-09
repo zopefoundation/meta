@@ -34,13 +34,13 @@ parser.add_argument(
     'path', type=pathlib.Path, help='path to the repository to be configured')
 parser.add_argument(
     '--no-commit',
-    dest='no_commit',
-    action='store_true',
+    dest='commit',
+    action='store_false',
     help='Prevent automatic committing of changes. Implies --no-push.')
 parser.add_argument(
     '--no-push',
-    dest='no_push',
-    action='store_true',
+    dest='push',
+    action='store_false',
     help='Prevent direct push.')
 parser.add_argument(
     '--with-appveyor',
@@ -308,13 +308,13 @@ with change_dir(path) as cwd:
         print('In .meta.toml in section [coverage] the option "fail-under" is'
               ' 0. Please enter a valid minimum coverage and rerun.')
         abort(1)
-    if not args.no_commit:
+    if args.commit:
         call('git', 'add',
              'setup.cfg', 'tox.ini', '.gitignore',
              '.github/workflows/tests.yml', 'MANIFEST.in', '.editorconfig',
              '.meta.toml')
         call('git', 'commit', '-m', f'Configuring for {config_type}')
-        if not args.no_push:
+        if args.push:
             call('git', 'push', '--set-upstream', 'origin', branch_name)
     print()
     print('If everything went fine up to here:')
