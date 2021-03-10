@@ -96,3 +96,5 @@ zope.app.container
 zope.app.locales
 zope.app.zcmlfiles
 gocept.xmlrpcskin
+z3c.objpath
+zc.table
