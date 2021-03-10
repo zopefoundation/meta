@@ -36,11 +36,13 @@ parser.add_argument(
     '--no-commit',
     dest='commit',
     action='store_false',
+    default=True,
     help='Prevent automatic committing of changes. Implies --no-push.')
 parser.add_argument(
     '--no-push',
     dest='push',
     action='store_false',
+    default=True,
     help='Prevent direct push.')
 parser.add_argument(
     '--with-appveyor',
