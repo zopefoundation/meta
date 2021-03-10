@@ -30,19 +30,24 @@ commands =
 
 [testenv:lint]
 basepython = python3
+commands_pre =
+{% if use_flake8 %}
+    mkdir -p {toxinidir}/parts/flake8
 allowlist_externals =
     mkdir
-commands_pre =
-    mkdir -p {toxinidir}/parts/flake8
+{% endif %}
 commands =
+{% if use_flake8 %}
     isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py
     - flake8 --format=html {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
     flake8 {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
+{% endif %}
     check-manifest
     check-python-versions
 deps =
     check-manifest
     check-python-versions
+{% if use_flake8 %}
     flake8
     isort
     # helper to generate HTML reports:
@@ -59,6 +64,7 @@ deps =
     isort
 commands =
     isort {toxinidir}/src {toxinidir}/setup.py []
+{% endif %}
 {% include 'tox-docs.j2' %}
 
 [testenv:coverage]

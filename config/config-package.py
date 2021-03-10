@@ -6,6 +6,7 @@ from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
 import jinja2
+import os
 import pathlib
 import shutil
 import toml
@@ -37,6 +38,11 @@ parser.add_argument(
     dest='no_push',
     action='store_true',
     help='Prevent direct push.')
+parser.add_argument(
+    '--no-flake8',
+    dest='use_flake8',
+    action='store_false',
+    help='Do not include flake8 and isort in the linting configuration.')
 parser.add_argument(
     '--with-appveyor',
     dest='with_appveyor',
@@ -207,6 +213,11 @@ flake8_additional_sources = meta_cfg['flake8'].get('additional-sources', '')
 if flake8_additional_sources:
     # Avoid whitespace at end of line if no additional sources are provided:
     flake8_additional_sources = ' ' + flake8_additional_sources
+if args.use_flake8 is None:
+    use_flake8 = meta_cfg['tox'].get('use-flake8', True)
+else:
+    use_flake8 = args.use_flake8
+meta_cfg['tox']['use-flake8'] = use_flake8
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
     fail_under=fail_under, with_pypy=with_pypy,
@@ -220,7 +231,8 @@ copy_with_meta(
     coverage_command=coverage_command,
     coverage_setenv=coverage_setenv,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
-    coverage_run_additional_config=coverage_run_additional_config)
+    coverage_run_additional_config=coverage_run_additional_config,
+    use_flake8=use_flake8)
 
 gha_services = meta_cfg['github-actions'].get('services', [])
 gha_additional_config = meta_cfg['github-actions'].get(
