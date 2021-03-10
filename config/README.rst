@@ -100,8 +100,9 @@ The script does the following steps:
    recipes.)
 4. Run the tests via: ``tox``. The ``tox`` script may be either on the current
    ``$PATH`` or in the ``bin`` subfolder of the current working directory.
-5. Create a branch and a pull request. (Prevent pushing to GitHub using the
-   command line switch ``--no-push``.)
+5. Create a branch and a pull request. (Prevent an automatic commit of all
+   changes with the command line switch ``--no-commit``, or an automatic push
+   to GitHub using the command line switch ``--no-push``.)
 
 After running the script you should manually do the following steps:
 
@@ -116,6 +117,10 @@ CLI arguments
 +++++++++++++
 
 The following arguments are supported.
+
+--no-commit
+  Don't automatically commit changes after the configuration run. Implies
+  --no-push.
 
 --no-push
   Avoid pushing at the end of the configuration run.
