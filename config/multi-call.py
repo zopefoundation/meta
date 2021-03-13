@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
-from configparser import ConfigParser
 from shared.call import call
 from shared.path import change_dir
-from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
-import collections
-import os
 import pathlib
 import sys
-import toml
 
 
 def path_factory(parameter_name, *, has_extension=None, is_dir=False):
