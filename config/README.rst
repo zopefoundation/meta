@@ -445,6 +445,11 @@ known_first_party
   configuration. This option has to be a string. It defaults to the empty
   string.
 
+known_local_folder
+  This option defines the value for ``known_local_folder`` in the ``isort``
+  configuration. This option has to be a string. It defaults to the empty
+  string.
+
 
 GitHub Actions options
 ``````````````````````
