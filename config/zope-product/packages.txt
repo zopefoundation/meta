@@ -17,3 +17,4 @@ Products.ExternalMethod
 Products.MIMETools
 Products.PluginRegistry
 Products.SQLAlchemyDA
+Products.Sessions
