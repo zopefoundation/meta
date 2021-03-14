@@ -13,3 +13,4 @@ Products.DCWorkflow
 DateTime
 Products.PythonScripts
 Products.CMFUid
+Products.ExternalMethod
