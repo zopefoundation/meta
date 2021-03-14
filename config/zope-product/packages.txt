@@ -18,3 +18,9 @@ Products.MIMETools
 Products.PluginRegistry
 Products.SQLAlchemyDA
 Products.Sessions
+Products.SiteErrorLog
+Products.StandardCacheManagers
+Products.TemporaryFolder
+Products.ZODBMountPoint
+Products.ZSQLMethods
+DocumentTemplate
