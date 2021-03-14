@@ -12,3 +12,4 @@ Products.BTreeFolder2
 Products.DCWorkflow
 DateTime
 Products.PythonScripts
+Products.CMFUid
