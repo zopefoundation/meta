@@ -16,3 +16,4 @@ Products.CMFUid
 Products.ExternalMethod
 Products.MIMETools
 Products.PluginRegistry
+Products.SQLAlchemyDA
