@@ -357,6 +357,11 @@ testenv-commands
   Replacement for the default ``commands`` option in ``[testenv]`` of
   ``tox.ini``. This option has to be a list of strings without indentation.
 
+testenv-deps
+  Replacement for the default ``deps`` option in ``[testenv]`` of ``tox.ini``.
+  This option has to be a list of strings without indentation.  The default is
+  ``['zope.testrunner']``.
+
 testenv-additional
   Additional lines for the section ``[testenv]`` in ``tox.ini``.
   This option has to be a list of strings.
