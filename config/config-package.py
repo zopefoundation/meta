@@ -174,6 +174,8 @@ isort_known_third_party = meta_cfg['isort'].get(
     'known_third_party', 'six, docutils, pkg_resources')
 isort_known_zope = meta_cfg['isort'].get('known_zope', '')
 isort_known_first_party = meta_cfg['isort'].get('known_first_party', '')
+isort_known_local_folder = meta_cfg['isort'].get('known_local_folder', '')
+
 copy_with_meta(
     'setup.cfg.j2', path / 'setup.cfg', config_type,
     additional_flake8_config=additional_flake8_config,
@@ -182,6 +184,7 @@ copy_with_meta(
     isort_known_third_party=isort_known_third_party,
     isort_known_zope=isort_known_zope,
     isort_known_first_party=isort_known_first_party,
+    isort_known_local_folder=isort_known_local_folder,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
     with_legacy_python=with_legacy_python,
 )
