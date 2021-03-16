@@ -205,6 +205,9 @@ updated. Example:
         "{envbindir}/test {posargs:-cv}",
         "{envbindir}/test_with_gs {posargs:-cv}",
         ]
+    testenv-deps = [
+        "zope.testrunner",
+        ]
     testenv-additional = [
         "setenv =",
         "    ZOPE_INTERFACE_STRICT_IRO=1",
@@ -356,6 +359,11 @@ testenv-commands-pre
 testenv-commands
   Replacement for the default ``commands`` option in ``[testenv]`` of
   ``tox.ini``. This option has to be a list of strings without indentation.
+
+testenv-deps
+  Replacement for the default ``deps`` option in ``[testenv]`` of ``tox.ini``.
+  This option has to be a list of strings without indentation.  The default is
+  ``['zope.testrunner']``.
 
 testenv-additional
   Additional lines for the section ``[testenv]`` in ``tox.ini``.

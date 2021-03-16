@@ -6,7 +6,6 @@ from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
 import jinja2
-import os
 import pathlib
 import shutil
 import toml
@@ -215,6 +214,7 @@ testenv_additional_extras = meta_cfg['tox'].get(
 testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
 testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
 coverage_command = meta_cfg['tox'].get('coverage-command', '')
+testenv_deps = meta_cfg['tox'].get('testenv-deps', ['zope.testrunner'])
 coverage_setenv = meta_cfg['tox'].get('coverage-setenv', [])
 fail_under = meta_cfg['coverage'].setdefault('fail-under', 0)
 coverage_run_additional_config = meta_cfg['coverage-run'].get(
@@ -237,6 +237,7 @@ copy_with_meta(
     testenv_additional_extras=testenv_additional_extras,
     testenv_commands_pre=testenv_commands_pre,
     testenv_commands=testenv_commands,
+    testenv_deps=testenv_deps,
     flake8_additional_sources=flake8_additional_sources,
     coverage_command=coverage_command,
     coverage_setenv=coverage_setenv,

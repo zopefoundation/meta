@@ -19,7 +19,9 @@ setenv =
 deps =
     coverage
     coverage-python-version
-    zope.testrunner
+{% for line in testenv_deps %}
+    %(line)s
+{% endfor %}
 commands =
     mkdir -p {toxinidir}/parts/htmlcov
     coverage erase
