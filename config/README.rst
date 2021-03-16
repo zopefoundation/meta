@@ -205,6 +205,9 @@ updated. Example:
         "{envbindir}/test {posargs:-cv}",
         "{envbindir}/test_with_gs {posargs:-cv}",
         ]
+    testenv-deps = [
+        "zope.testrunner",
+        ]
     testenv-additional = [
         "setenv =",
         "    ZOPE_INTERFACE_STRICT_IRO=1",

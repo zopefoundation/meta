@@ -99,3 +99,4 @@ gocept.xmlrpcskin
 z3c.objpath
 zc.table
 Products.ExternalEditor
+zope.testrunner
