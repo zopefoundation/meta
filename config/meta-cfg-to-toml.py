@@ -5,7 +5,6 @@ from shared.path import change_dir
 from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
-import os
 import pathlib
 import sys
 import toml
@@ -63,7 +62,7 @@ if check_manifest:
     dest['check-manifest']['additional-ignores'] = check_manifest.splitlines()
 
 
-branch_name = f'covert.meta.cfg-to-.meta.toml'
+branch_name = 'covert.meta.cfg-to-.meta.toml'
 with change_dir(path) as cwd:
     with open('.meta.toml', 'w') as meta_f:
         meta_f.write(
@@ -86,7 +85,7 @@ with change_dir(path) as cwd:
         updating = False
     call('git', 'rm', '.meta.cfg')
     call('git', 'add', '.meta.toml')
-    call('git', 'commit', '-m', f'Switching from .meta.cfg to .meta.toml.')
+    call('git', 'commit', '-m', 'Switching from .meta.cfg to .meta.toml.')
     config_package_args = [
         sys.executable,
         'config-package.py',
