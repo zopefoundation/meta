@@ -24,3 +24,4 @@ Products.TemporaryFolder
 Products.ZODBMountPoint
 Products.ZSQLMethods
 DocumentTemplate
+Products.ZopeVersionControl

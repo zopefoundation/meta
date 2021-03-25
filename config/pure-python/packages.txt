@@ -100,3 +100,8 @@ z3c.objpath
 zc.table
 Products.ExternalEditor
 zope.testrunner
+zope.file
+z3c.authviewlet
+zope.catalog
+grokcore.rest
+zope.app.tree
