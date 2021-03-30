@@ -25,3 +25,4 @@ Products.ZODBMountPoint
 Products.ZSQLMethods
 DocumentTemplate
 Products.ZopeVersionControl
+Products.ZMySQLDA
