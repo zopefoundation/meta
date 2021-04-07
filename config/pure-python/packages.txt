@@ -105,3 +105,12 @@ z3c.authviewlet
 zope.catalog
 grokcore.rest
 zope.app.tree
+keas.kmi
+zope.globalrequest
+z3c.flashmessage
+z3c.saconfig
+grokcore.security
+zope.locking
+z3c.schema
+z3c.baseregistry
+AuthEncoding

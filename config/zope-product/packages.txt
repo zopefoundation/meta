@@ -26,3 +26,5 @@ Products.ZSQLMethods
 DocumentTemplate
 Products.ZopeVersionControl
 Products.ZMySQLDA
+five.customerize
+five.localsitemanager
