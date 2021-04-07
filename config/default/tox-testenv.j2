@@ -12,7 +12,13 @@ commands_pre =
   {% endfor %}
 {% endif %}
 commands =
+{% if testenv_commands %}
+  {% for line in testenv_commands %}
+    %(line)s
+  {% endfor %}
+{% else %}
     zope-testrunner --test-path=src {posargs:-vc}
+{% endif %}
 {% if with_sphinx_doctests %}
     sphinx-build -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
 {% endif %}
