@@ -5,6 +5,12 @@ deps =
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}
+{% if testenv_setenv %}
+setenv =
+  {% for line in testenv_setenv %}
+    %(line)s
+  {% endfor %}
+{% endif %}
 {% if testenv_commands_pre %}
 commands_pre =
   {% for line in testenv_commands_pre %}

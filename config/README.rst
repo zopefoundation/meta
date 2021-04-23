@@ -208,9 +208,12 @@ updated. Example:
     testenv-deps = [
         "zope.testrunner",
         ]
+    testenv-setenv = [
+        "ZOPE_INTERFACE_STRICT_IRO=1",
+    ]
     testenv-additional = [
-        "setenv =",
-        "    ZOPE_INTERFACE_STRICT_IRO=1",
+        "passenv =",
+        "    DISPLAY",
         ]
     coverage-command = "coverage run {envbindir}/test_with_gs []"
     coverage-setenv = [
@@ -364,6 +367,11 @@ testenv-deps
   Replacement for the default ``deps`` option in ``[testenv]`` of ``tox.ini``.
   This option has to be a list of strings without indentation.  The default is
   ``['zope.testrunner']``.
+
+testenv-setenv
+  Set the value of the ``setenv`` option in ``[testenv]`` of ``tox.ini``.
+  Depending in the template used this might be an addition to the predefined
+  values for this option. This option has to be a list of strings.
 
 testenv-additional
   Additional lines for the section ``[testenv]`` in ``tox.ini``.

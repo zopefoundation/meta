@@ -213,6 +213,7 @@ testenv_additional_extras = meta_cfg['tox'].get(
     'testenv-additional-extras', [])
 testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
 testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
+testenv_setenv = meta_cfg['tox'].get('testenv-setenv', [])
 coverage_command = meta_cfg['tox'].get('coverage-command', '')
 testenv_deps = meta_cfg['tox'].get('testenv-deps', ['zope.testrunner'])
 coverage_setenv = meta_cfg['tox'].get('coverage-setenv', [])
@@ -238,6 +239,7 @@ copy_with_meta(
     testenv_commands_pre=testenv_commands_pre,
     testenv_commands=testenv_commands,
     testenv_deps=testenv_deps,
+    testenv_setenv=testenv_setenv,
     flake8_additional_sources=flake8_additional_sources,
     coverage_command=coverage_command,
     coverage_setenv=coverage_setenv,
