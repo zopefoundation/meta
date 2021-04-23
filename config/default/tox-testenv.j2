@@ -2,9 +2,9 @@
 [testenv]
 usedevelop = true
 deps =
-{% for line in testenv_deps %}
+  {% for line in testenv_deps %}
     %(line)s
-{% endfor %}
+  {% endfor %}
 {% if testenv_setenv %}
 setenv =
   {% for line in testenv_setenv %}
@@ -33,9 +33,9 @@ extras =
 {% if with_sphinx_doctests %}
     docs
 {% endif %}
-{% for line in testenv_additional_extras %}
+  {% for line in testenv_additional_extras %}
     %(line)s
-{% endfor %}
+  {% endfor %}
 {% for line in testenv_additional %}
 %(line)s
 {% endfor %}

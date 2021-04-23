@@ -19,15 +19,15 @@ packages:
 
   - Configuration for a zc.buildout recipe. It is tested using multiple
     processes, so coverage has to be configured in a special way. (Supports
-    pure python packages which also run on PyPy.)
+    pure Python packages which also run on PyPy.)
 
 * pure-python
 
-  - Configuration for a pure python package.
+  - Configuration for a pure Python package.
 
 * zope-product
 
-  - Configuration for a pure python package which uses zc.buildout inside
+  - Configuration for a pure Python package which uses zc.buildout inside
     ``tox.ini`` to be able to pin the installed dependency versions the same
     way ``buildout.cfg`` does it.
 
