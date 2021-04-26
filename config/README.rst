@@ -268,6 +268,9 @@ updated. Example:
     additional-install = [
         "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev",
         ]
+    test-commands = [
+        "tox -f ${{ matrix.config[1] }}",
+        ]
 
     [appveyor]
     global-env-vars = [
@@ -487,6 +490,10 @@ steps-before-checkout
 additional-install
   Additional lines to be executed during the install dependencies step when
   running the tests on GitHub Actions. This option has to be a list of strings.
+
+test-commands
+  Replacement for the test command in ``tests.yml``.
+  This option has to be a list of strings.
 
 
 AppVeyor options
