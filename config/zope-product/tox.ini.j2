@@ -7,6 +7,9 @@ skip_install = true
 deps =
     setuptools < 52
     zc.buildout
+{% for line in testenv_deps %}
+    %(line)s
+{% endfor %}
 {% if testenv_setenv %}
 setenv =
   {% for line in testenv_setenv %}
