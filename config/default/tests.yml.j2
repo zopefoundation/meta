@@ -17,6 +17,8 @@ jobs:
 {% endfor %}
 {% endif %}
     strategy:
+      # We want do see all failures:
+      fail-fast: false
       matrix:
         config:
         # [Python version, tox env]
