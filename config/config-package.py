@@ -174,6 +174,14 @@ isort_known_third_party = meta_cfg['isort'].get(
 isort_known_zope = meta_cfg['isort'].get('known_zope', '')
 isort_known_first_party = meta_cfg['isort'].get('known_first_party', '')
 isort_known_local_folder = meta_cfg['isort'].get('known_local_folder', '')
+for var in (
+    'isort_known_third_party',
+    'isort_known_zope',
+    'isort_known_first_party',
+):
+    if locals()[var]:
+        # Avoid whitespace at end of line if empty:
+        locals()[var] = ' ' + locals()[var]
 
 copy_with_meta(
     'setup.cfg.j2', path / 'setup.cfg', config_type,
