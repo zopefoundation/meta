@@ -267,6 +267,7 @@ updated. Example:
         ]
     additional-install = [
         "sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev",
+        "pip install tox-factor"
         ]
     test-commands = [
         "tox -f ${{ matrix.config[1] }}",
