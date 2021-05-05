@@ -25,14 +25,8 @@ commands =
 {% else %}
     zope-testrunner --test-path=src {posargs:-vc}
 {% endif %}
-{% if with_sphinx_doctests %}
-    sphinx-build -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
-{% endif %}
 extras =
     test
-{% if with_sphinx_doctests %}
-    docs
-{% endif %}
   {% for line in testenv_additional_extras %}
     %(line)s
   {% endfor %}

@@ -87,6 +87,7 @@ parser.add_argument(
     '-t', '--type',
     choices=[
         'buildout-recipe',
+        'c-code',
         'pure-python',
         'zope-product',
     ],
@@ -223,6 +224,7 @@ testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
 testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
 testenv_setenv = meta_cfg['tox'].get('testenv-setenv', [])
 coverage_command = meta_cfg['tox'].get('coverage-command', '')
+coverage_additional = meta_cfg['tox'].get('coverage-additional', [])
 testenv_deps = meta_cfg['tox'].get('testenv-deps', ['zope.testrunner'])
 coverage_setenv = meta_cfg['tox'].get('coverage-setenv', [])
 fail_under = meta_cfg['coverage'].setdefault('fail-under', 0)
@@ -251,6 +253,7 @@ copy_with_meta(
     flake8_additional_sources=flake8_additional_sources,
     coverage_command=coverage_command,
     coverage_setenv=coverage_setenv,
+    coverage_additional=coverage_additional,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
     coverage_run_additional_config=coverage_run_additional_config,
     use_flake8=use_flake8)
@@ -266,6 +269,7 @@ gha_test_commands = meta_cfg['github-actions'].get(
     'test-commands', [])
 copy_with_meta(
     'tests.yml.j2', workflows / 'tests.yml', config_type,
+    package_name=path.name,
     with_pypy=with_pypy, with_legacy_python=with_legacy_python,
     with_docs=with_docs, gha_additional_install=gha_additional_install,
     services=gha_services, steps_before_checkout=gha_steps_before_checkout,
@@ -289,8 +293,12 @@ if with_appveyor:
         'additional-matrix', [])
     appveyor_install_steps = meta_cfg['appveyor'].get(
         'install-steps', ['- pip install -U -e .[test]'])
+    appveyor_build_script = meta_cfg['appveyor'].get(
+        'build-script', [])
     appveyor_test_steps = meta_cfg['appveyor'].get(
         'test-steps', ['- zope-testrunner --test-path=src'])
+    appveyor_additional_lines = meta_cfg['appveyor'].get(
+        'additional-lines', [])
     appveyor_replacement = meta_cfg['appveyor'].get('replacement', [])
     copy_with_meta(
         'appveyor.yml.j2', path / 'appveyor.yml', config_type,
@@ -298,6 +306,8 @@ if with_appveyor:
         global_env_vars=appveyor_global_env_vars,
         additional_matrix=appveyor_additional_matrix,
         install_steps=appveyor_install_steps, test_steps=appveyor_test_steps,
+        build_script=appveyor_build_script,
+        additional_lines=appveyor_additional_lines,
         replacement=appveyor_replacement,
     )
 

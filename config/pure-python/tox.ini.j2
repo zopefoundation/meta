@@ -32,4 +32,7 @@ commands =
 {% endif %}
     coverage html
     coverage report -m --fail-under=%(fail_under)s
+{% for line in coverage_additional %}
+%(line)s
+{% endfor %}
 {% include 'tox-coverage-config.j2' %}
