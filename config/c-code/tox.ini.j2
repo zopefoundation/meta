@@ -1,0 +1,87 @@
+{% set with_coverage = True %}
+{% set raw_testenv_setenv = testenv_setenv %}
+{% set testenv_setenv = ['PURE_PYTHON=0'] + testenv_setenv %}
+[tox]
+minversion = 3.18
+envlist =
+    lint
+{% if with_legacy_python %}
+    py27,py27-pure
+    py35,py35-pure
+{% endif %}
+    py36,py36-pure
+    py37,py37-pure
+    py38,py38-pure
+    py39,py39-pure
+{% if with_pypy and with_legacy_python %}
+    pypy
+{% endif %}
+{% if with_pypy %}
+    pypy3
+{% endif %}
+{% if with_docs %}
+    docs
+{% endif %}
+{% if with_coverage %}
+    coverage
+{% endif %}
+{% for line in additional_envlist %}
+    %(line)s
+{% endfor %}
+{% include 'tox-testenv.j2' %}
+
+[testenv:pure]
+setenv =
+    PURE_PYTHON=1
+  {% for line in raw_testenv_setenv %}
+    %(line)s
+  {% endfor %}
+{% if with_pypy and with_legacy_python %}
+
+[testenv:pypy]
+setenv =
+    PURE_PYTHON=1
+  {% for line in raw_testenv_setenv %}
+    %(line)s
+  {% endfor %}
+{% endif %}
+{% if with_pypy %}
+
+[testenv:pypy3]
+setenv =
+    PURE_PYTHON=1
+  {% for line in raw_testenv_setenv %}
+    %(line)s
+  {% endfor %}
+{% endif %}
+
+[testenv:coverage]
+basepython = python3
+allowlist_externals =
+    mkdir
+deps =
+    coverage
+    coverage-python-version
+{% for line in testenv_deps %}
+    %(line)s
+{% endfor %}
+{% if coverage_setenv %}
+setenv =
+{% for line in coverage_setenv %}
+    %(line)s
+{% endfor %}
+{% endif %}
+commands =
+    mkdir -p {toxinidir}/parts/htmlcov
+{% if coverage_command %}
+    %(coverage_command)s
+{% else %}
+    coverage run -m zope.testrunner --test-path=src {posargs:-vc}
+{% endif %}
+    coverage html -i
+    coverage report -i -m --fail-under=%(fail_under)s
+{% for line in coverage_additional %}
+%(line)s
+{% endfor %}
+{% include 'tox-lint.j2' %}
+{% include 'tox-docs.j2' %}
