@@ -5,8 +5,10 @@ basepython = python3
 skip_install = false
 # Until repoze.sphinx.autointerface supports Sphinx 4.x we cannot use it:
 deps = Sphinx < 4
+{% if not with_sphinx_doctests %}
 extras =
     docs
+{% endif %}
 commands_pre =
 commands =
     sphinx-build -b html -d docs/_build/doctrees docs docs/_build/html
