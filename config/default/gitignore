@@ -19,6 +19,7 @@ dist/
 docs/_build
 eggs/
 etc/
+htmlcov/
 lib/
 lib64
 log/
