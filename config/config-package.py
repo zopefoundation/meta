@@ -33,6 +33,11 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     'path', type=pathlib.Path, help='path to the repository to be configured')
 parser.add_argument(
+    '--commit-msg',
+    dest='commit_msg',
+    metavar='MSG',
+    help='Use MSG as commit message instead of an artificial one.')
+parser.add_argument(
     '--no-commit',
     dest='commit',
     action='store_false',
@@ -344,7 +349,11 @@ with change_dir(path) as cwd:
              'setup.cfg', 'tox.ini', '.gitignore',
              '.github/workflows/tests.yml', 'MANIFEST.in', '.editorconfig',
              '.meta.toml')
-        call('git', 'commit', '-m', f'Configuring for {config_type}')
+        if args.commit_msg:
+            commit_msg = args.commit_msg
+        else:
+            commit_msg = f'Configuring for {config_type}'
+        call('git', 'commit', '-m', commit_msg)
         if args.push:
             call('git', 'push', '--set-upstream', 'origin', branch_name)
     print()
