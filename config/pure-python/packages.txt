@@ -122,3 +122,5 @@ zc.set
 cipher.encryptingstorage
 zope.app.testing
 transaction
+zope.sequencesort
+zope.server
