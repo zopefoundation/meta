@@ -124,3 +124,4 @@ zope.app.testing
 transaction
 zope.sequencesort
 zope.server
+zope.pagetemplate
