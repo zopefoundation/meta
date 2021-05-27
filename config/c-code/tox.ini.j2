@@ -1,6 +1,6 @@
 {% set with_coverage = True %}
 {% set raw_testenv_setenv = testenv_setenv %}
-{% set testenv_setenv = ['PURE_PYTHON=0'] + testenv_setenv %}
+{% set testenv_setenv = ['pure: PURE_PYTHON=1', '!pure-!pypy-!pypy3: PURE_PYTHON=0'] + testenv_setenv %}
 [tox]
 minversion = 3.18
 envlist =
@@ -29,31 +29,6 @@ envlist =
     %(line)s
 {% endfor %}
 {% include 'tox-testenv.j2' %}
-
-[testenv:pure]
-setenv =
-    PURE_PYTHON=1
-  {% for line in raw_testenv_setenv %}
-    %(line)s
-  {% endfor %}
-{% if with_pypy and with_legacy_python %}
-
-[testenv:pypy]
-setenv =
-    PURE_PYTHON=1
-  {% for line in raw_testenv_setenv %}
-    %(line)s
-  {% endfor %}
-{% endif %}
-{% if with_pypy %}
-
-[testenv:pypy3]
-setenv =
-    PURE_PYTHON=1
-  {% for line in raw_testenv_setenv %}
-    %(line)s
-  {% endfor %}
-{% endif %}
 
 [testenv:coverage]
 basepython = python3
