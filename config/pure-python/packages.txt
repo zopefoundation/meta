@@ -125,3 +125,5 @@ transaction
 zope.sequencesort
 zope.server
 zope.pagetemplate
+zope.configuration
+zope.tal
