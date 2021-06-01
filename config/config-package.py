@@ -244,21 +244,25 @@ else:
 meta_cfg['tox']['use-flake8'] = use_flake8
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
-    fail_under=fail_under, with_pypy=with_pypy,
-    with_legacy_python=with_legacy_python,
     additional_envlist=additional_envlist,
+    coverage_command=coverage_command,
+    coverage_run_additional_config=coverage_run_additional_config,
+    coverage_setenv=coverage_setenv,
+    fail_under=fail_under,
+    flake8_additional_sources=flake8_additional_sources,
+    package_name=path.name,
     testenv_additional=testenv_additional,
     testenv_additional_extras=testenv_additional_extras,
-    testenv_commands_pre=testenv_commands_pre,
     testenv_commands=testenv_commands,
+    testenv_commands_pre=testenv_commands_pre,
     testenv_deps=testenv_deps,
     testenv_setenv=testenv_setenv,
-    flake8_additional_sources=flake8_additional_sources,
-    coverage_command=coverage_command,
-    coverage_setenv=coverage_setenv,
-    with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
-    coverage_run_additional_config=coverage_run_additional_config,
-    use_flake8=use_flake8)
+    use_flake8=use_flake8,
+    with_docs=with_docs,
+    with_legacy_python=with_legacy_python,
+    with_pypy=with_pypy,
+    with_sphinx_doctests=with_sphinx_doctests,
+)
 
 gha_services = meta_cfg['github-actions'].get('services', [])
 gha_additional_config = meta_cfg['github-actions'].get(
