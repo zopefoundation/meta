@@ -127,3 +127,7 @@ zope.server
 zope.pagetemplate
 zope.configuration
 zope.tal
+zope.tales
+zope.app.wsgi
+zope.exceptions
+zope.app.publisher
