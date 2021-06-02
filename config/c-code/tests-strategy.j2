@@ -1,0 +1,33 @@
+    strategy:
+      matrix:
+        python-version:
+{% if with_legacy_python %}
+          - 2.7
+          - 3.5
+{% endif %}
+{% if with_pypy and with_legacy_python %}
+          - pypy-2.7
+{% endif %}
+{% if with_pypy %}
+          - pypy-3.6
+{% endif %}
+          - 3.6
+          - 3.7
+          - 3.8
+          - 3.9
+        os: [ubuntu-20.04, macos-latest]
+{% if with_pypy or with_legacy_python %}
+        exclude:
+{% endif %}
+{% if with_pypy and with_legacy_python %}
+          - os: macos-latest
+            python-version: pypy-2.7
+{% endif %}
+{% if with_pypy %}
+          - os: macos-latest
+            python-version: pypy-3.6
+{% endif %}
+{% if with_legacy_python %}
+          - os: macos-latest
+            python-version: 3.5
+{% endif %}

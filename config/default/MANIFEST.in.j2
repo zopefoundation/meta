@@ -5,7 +5,7 @@ include tox.ini
 {% if with_appveyor %}
 include appveyor.yml
 {% endif %}
-{% if config_type == 'buildout-recipe' %}
+{% if config_type in ('buildout-recipe', 'c-code') %}
 include .coveragerc
 {% endif %}
 {% if with_docs %}

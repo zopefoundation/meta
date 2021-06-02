@@ -21,6 +21,10 @@ packages:
     processes, so coverage has to be configured in a special way. (Supports
     pure Python packages which also run on PyPy.)
 
+* c-code
+
+  - Configuration for package containing C code besides the Python one.
+
 * pure-python
 
   - Configuration for a pure Python package.
@@ -222,6 +226,9 @@ updated. Example:
     coverage-setenv = [
         "COVERAGE_HOME={toxinidir}",
         ]
+    coverage-additional = [
+        "depends = py37,docs"
+        ]
     use-flake8 = true
 
     [flake8]
@@ -288,9 +295,17 @@ updated. Example:
         "- pip install zc.buildout",
         "- buildout",
         ]
+    build-script = [
+        "- python -W ignore setup.py -q bdist_wheel",
+        ]
     test-steps = [
         "- zope-testrunner --test-path=src",
         "- jasmine",
+        ]
+    additional-lines = [
+        "artifacts:",
+        "  - path: 'dist\*.whl'",
+        "    name: wheel",
         ]
     replacement = [
         "environment:",
@@ -395,6 +410,10 @@ coverage-setenv
   in the buildout-recipe template), the default value is replaced by the value
   given here. This option has to be a list of strings.
 
+coverage-additional
+  This option allows to add additional lines below ``[testenv:coverage]`` in
+  ``tox.ini``. This option has to be a list of strings.
+
 use-flake8
   Whether to add the ``flake8`` and ``isort`` linting steps to the section
   ``[testenv:lint]``. By default these steps are run. On an older code base it
@@ -493,6 +512,8 @@ steps-before-checkout
 additional-install
   Additional lines to be executed during the install dependencies step when
   running the tests on GitHub Actions. This option has to be a list of strings.
+  For the template ``c-code`` this option is currently used to replace how to
+  install the package itself and run tests and coverage.
 
 test-commands
   Replacement for the test command in ``tests.yml``.
@@ -516,9 +537,20 @@ install-steps
   Steps to install the package under test on AppVeyor. This option has to be a
   list of strings. It defaults to ``["- pip install -U -e .[test]"]``.
 
+build-script
+  Steps to to build the project. If this option is not given because no
+  additional build steps are necessary ``build: false`` is rendered to the
+  AppVeyor configuration. This option has to be a list of strings, each one
+  starting with a ``-``.
+
 test-steps
-  Steps to run the tests on AppVeyor. This option has to be a list of strings.
-  It defaults to ``["- zope-testrunner --test-path=src"]``.
+  Steps to run the tests on AppVeyor. This option has to be a list of strings
+  , each one starting with a ``-``.  It defaults to
+  ``["- zope-testrunner --test-path=src"]``.
+
+additional-lines
+  This option allows to add arbitrary additional lines to the end of the
+  configuration file. It has to be a list of strings.
 
 replacement
   Replace the whole template of the AppVeyor configuration with the contents of

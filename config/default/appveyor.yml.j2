@@ -47,9 +47,17 @@ install:
   %(line)s
 {% endfor %}
 
-build: false
 matrix:
   fast_finish: true
+
+{% if build_script %}
+build_script:
+  {% for line in build_script %}
+  %(line)s
+  {% endfor %}
+{% else %}
+build: false
+{% endif %}
 
 test_script:
 {% for line in test_steps %}
@@ -58,4 +66,7 @@ test_script:
 
 on_success:
   - echo Build succesful!
+{% for line in additional_lines %}
+%(line)s
+{% endfor %}
 {% endif %}
