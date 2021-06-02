@@ -122,6 +122,9 @@ CLI arguments
 
 The following arguments are supported.
 
+--commit-msg=MSG
+  Use MSG as commit message instead of an artificial one.
+
 --no-commit
   Don't automatically commit changes after the configuration run. Implies
   --no-push.

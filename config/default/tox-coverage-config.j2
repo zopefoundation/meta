@@ -2,7 +2,7 @@
 [coverage:run]
 branch = True
 plugins = coverage_python_version
-source = src
+source = %(package_name)s
 {% for line in coverage_run_additional_config %}
 %(line)s
 {% endfor %}

@@ -122,3 +122,12 @@ zc.set
 cipher.encryptingstorage
 zope.app.testing
 transaction
+zope.sequencesort
+zope.server
+zope.pagetemplate
+zope.configuration
+zope.tal
+zope.tales
+zope.app.wsgi
+zope.exceptions
+zope.app.publisher

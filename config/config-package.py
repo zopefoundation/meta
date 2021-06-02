@@ -33,6 +33,11 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     'path', type=pathlib.Path, help='path to the repository to be configured')
 parser.add_argument(
+    '--commit-msg',
+    dest='commit_msg',
+    metavar='MSG',
+    help='Use MSG as commit message instead of an artificial one.')
+parser.add_argument(
     '--no-commit',
     dest='commit',
     action='store_false',
@@ -241,22 +246,26 @@ else:
 meta_cfg['tox']['use-flake8'] = use_flake8
 copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
-    fail_under=fail_under, with_pypy=with_pypy,
-    with_legacy_python=with_legacy_python,
     additional_envlist=additional_envlist,
+    coverage_additional=coverage_additional,
+    coverage_command=coverage_command,
+    coverage_run_additional_config=coverage_run_additional_config,
+    coverage_setenv=coverage_setenv,
+    fail_under=fail_under,
+    flake8_additional_sources=flake8_additional_sources,
+    package_name=path.name,
     testenv_additional=testenv_additional,
     testenv_additional_extras=testenv_additional_extras,
-    testenv_commands_pre=testenv_commands_pre,
     testenv_commands=testenv_commands,
+    testenv_commands_pre=testenv_commands_pre,
     testenv_deps=testenv_deps,
     testenv_setenv=testenv_setenv,
-    flake8_additional_sources=flake8_additional_sources,
-    coverage_command=coverage_command,
-    coverage_setenv=coverage_setenv,
-    coverage_additional=coverage_additional,
-    with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
-    coverage_run_additional_config=coverage_run_additional_config,
-    use_flake8=use_flake8)
+    use_flake8=use_flake8,
+    with_docs=with_docs,
+    with_legacy_python=with_legacy_python,
+    with_pypy=with_pypy,
+    with_sphinx_doctests=with_sphinx_doctests,
+)
 
 gha_services = meta_cfg['github-actions'].get('services', [])
 gha_additional_config = meta_cfg['github-actions'].get(
@@ -354,7 +363,11 @@ with change_dir(path) as cwd:
              'setup.cfg', 'tox.ini', '.gitignore',
              '.github/workflows/tests.yml', 'MANIFEST.in', '.editorconfig',
              '.meta.toml')
-        call('git', 'commit', '-m', f'Configuring for {config_type}')
+        if args.commit_msg:
+            commit_msg = args.commit_msg
+        else:
+            commit_msg = f'Configuring for {config_type}'
+        call('git', 'commit', '-m', commit_msg)
         if args.push:
             call('git', 'push', '--set-upstream', 'origin', branch_name)
     print()
