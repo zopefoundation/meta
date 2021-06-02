@@ -131,3 +131,5 @@ zope.tales
 zope.app.wsgi
 zope.exceptions
 zope.app.publisher
+zope.untrustedpython
+zope.errorview

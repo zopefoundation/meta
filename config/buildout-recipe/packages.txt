@@ -13,3 +13,4 @@ zc.recipe.filestorage
 five.customerize
 z3c.recipe.compattest
 zc.relation
+zc.zodbrecipes
