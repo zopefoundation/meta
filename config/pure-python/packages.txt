@@ -133,3 +133,8 @@ zope.exceptions
 zope.app.publisher
 zope.untrustedpython
 zope.errorview
+grokui.admin
+grokui.base
+grokcore.annotation
+zodbupdate
+zc.zodbdgc

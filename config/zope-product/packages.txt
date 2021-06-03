@@ -28,3 +28,4 @@ Products.ZopeVersionControl
 Products.ZMySQLDA
 five.customerize
 five.localsitemanager
+five.formlib
