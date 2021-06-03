@@ -38,6 +38,9 @@ commands =
 {% endif %}
 extras =
     test
+  {% if with_sphinx_doctests %}
+    docs
+  {% endif %}
   {% for line in testenv_additional_extras %}
     %(line)s
   {% endfor %}

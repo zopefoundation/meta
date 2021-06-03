@@ -138,3 +138,4 @@ grokui.base
 grokcore.annotation
 zodbupdate
 zc.zodbdgc
+RestrictedPython
