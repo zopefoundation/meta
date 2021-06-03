@@ -402,6 +402,7 @@ testenv-commands
 testenv-deps
   Additional dependencies for the ``deps`` option in ``[testenv]`` of
   ``tox.ini``. This option has to be a list of strings without indentation.
+  It is empty by default.
 
 testenv-setenv
   Set the value of the ``setenv`` option in ``[testenv]`` of ``tox.ini``.
