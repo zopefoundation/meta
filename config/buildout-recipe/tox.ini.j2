@@ -5,7 +5,7 @@
 {% include 'tox-docs.j2' %}
 
 [testenv:coverage]
-basepython = python3
+basepython = %(coverage_basepython)s
 allowlist_externals =
     mkdir
 setenv =

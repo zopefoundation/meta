@@ -77,7 +77,7 @@ commands =
 {% include 'tox-docs.j2' %}
 
 [testenv:coverage]
-basepython = python3
+basepython = %(coverage_basepython)s
 skip_install = true
 allowlist_externals =
     mkdir
