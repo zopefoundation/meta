@@ -200,6 +200,7 @@ updated. Example:
         "omit =",
         "    src/foo/bar.py",
         ]
+    source = "src"
 
     [tox]
     additional-envlist = [
@@ -369,6 +370,11 @@ The corresponding section is named: ``[coverage-run]``.
 additional-config
   Additional options for the ``[run]`` section of the coverage configuration.
   This option has to be a list of strings.
+
+source
+  This option defines the value of ``source`` in the coverage ``[run]``
+  section. This option has to be a string. It defaults to the name of the
+  package if it is not set.
 
 tox.ini options
 ```````````````
