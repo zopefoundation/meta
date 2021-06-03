@@ -218,12 +218,13 @@ workflows.mkdir(parents=True, exist_ok=True)
 
 coverage_run_additional_config = meta_cfg['coverage-run'].get(
     'additional-config', [])
+coverage_run_source = meta_cfg['coverage-run'].get('source', path.name)
 add_coveragerc = False
 rm_coveragerc = False
 if (config_type_path / 'coveragerc.j2').exists():
     copy_with_meta(
         'coveragerc.j2', path / '.coveragerc', config_type,
-        package_name=path.name,
+        coverage_run_source=coverage_run_source,
         run_additional_config=coverage_run_additional_config,
     )
     add_coveragerc = True
@@ -261,11 +262,11 @@ copy_with_meta(
     coverage_additional=coverage_additional,
     coverage_basepython=coverage_basepython,
     coverage_command=coverage_command,
+    coverage_run_source=coverage_run_source,
     coverage_run_additional_config=coverage_run_additional_config,
     coverage_setenv=coverage_setenv,
     fail_under=fail_under,
     flake8_additional_sources=flake8_additional_sources,
-    package_name=path.name,
     testenv_additional=testenv_additional,
     testenv_additional_extras=testenv_additional_extras,
     testenv_commands=testenv_commands,
