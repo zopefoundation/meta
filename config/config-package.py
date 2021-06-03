@@ -62,6 +62,13 @@ parser.add_argument(
     help='Activate running tests on AppVeyor, too, if not already configured'
          ' in .meta.toml.')
 parser.add_argument(
+    '--with-windows',
+    dest='with_windows',
+    action='store_true',
+    default=False,
+    help='Activate running tests on Windows on GitHub Actions, too, if not'
+         ' already configured in .meta.toml.')
+parser.add_argument(
     '--with-pypy',
     dest='with_pypy',
     action='store_true',
@@ -156,6 +163,9 @@ meta_cfg['meta']['commit-id'] = call(
 with_appveyor = meta_cfg['python'].get(
     'with-appveyor', False) or args.with_appveyor
 meta_cfg['python']['with-appveyor'] = with_appveyor
+with_windows = meta_cfg['python'].get(
+    'with-windows', False) or args.with_windows
+meta_cfg['python']['with-windows'] = with_windows
 with_pypy = meta_cfg['python'].get('with-pypy', False) or args.with_pypy
 meta_cfg['python']['with-pypy'] = with_pypy
 if args.with_legacy_python is None:
@@ -280,12 +290,16 @@ gha_test_commands = meta_cfg['github-actions'].get(
     'test-commands', [])
 copy_with_meta(
     'tests.yml.j2', workflows / 'tests.yml', config_type,
-    package_name=path.name,
-    with_pypy=with_pypy, with_legacy_python=with_legacy_python,
-    with_docs=with_docs, gha_additional_install=gha_additional_install,
-    services=gha_services, steps_before_checkout=gha_steps_before_checkout,
     gha_additional_config=gha_additional_config,
+    gha_additional_install=gha_additional_install,
     gha_test_commands=gha_test_commands,
+    package_name=path.name,
+    services=gha_services,
+    steps_before_checkout=gha_steps_before_checkout,
+    with_docs=with_docs,
+    with_legacy_python=with_legacy_python,
+    with_pypy=with_pypy,
+    with_windows=with_windows,
 )
 
 
