@@ -222,6 +222,7 @@ updated. Example:
         "passenv =",
         "    DISPLAY",
         ]
+    coverage-basepython = "python3.9"
     coverage-command = "coverage run {envbindir}/test_with_gs []"
     coverage-setenv = [
         "COVERAGE_HOME={toxinidir}",
@@ -397,6 +398,11 @@ testenv-setenv
 testenv-additional
   Additional lines for the section ``[testenv]`` in ``tox.ini``.
   This option has to be a list of strings.
+
+coverage-basepython
+  This option replaces the value for the ``basepython`` option in the section
+  ``[testenv:coverage]``. This option has to be a string. The default value is
+  ``python3``.
 
 coverage-command
   This option replaces the coverage call in the section ``[testenv:coverage]``

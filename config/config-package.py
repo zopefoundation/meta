@@ -228,6 +228,7 @@ testenv_additional_extras = meta_cfg['tox'].get(
 testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
 testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
 testenv_setenv = meta_cfg['tox'].get('testenv-setenv', [])
+coverage_basepython = meta_cfg['tox'].get('coverage-basepython', 'python3')
 coverage_command = meta_cfg['tox'].get('coverage-command', '')
 coverage_additional = meta_cfg['tox'].get('coverage-additional', [])
 testenv_deps = meta_cfg['tox'].get('testenv-deps', ['zope.testrunner'])
@@ -248,6 +249,7 @@ copy_with_meta(
     'tox.ini.j2', path / 'tox.ini', config_type,
     additional_envlist=additional_envlist,
     coverage_additional=coverage_additional,
+    coverage_basepython=coverage_basepython,
     coverage_command=coverage_command,
     coverage_run_additional_config=coverage_run_additional_config,
     coverage_setenv=coverage_setenv,
