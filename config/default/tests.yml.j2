@@ -20,6 +20,11 @@ jobs:
       # We want to see all failures:
       fail-fast: false
       matrix:
+        os:
+        - ubuntu
+{% if with_windows %}
+        - windows
+{% endif %}
         config:
         # [Python version, tox env]
         - ["3.8",   "lint"]
@@ -44,9 +49,21 @@ jobs:
 {% for line in gha_additional_config %}
         %(line)s
 {% endfor %}
+{% if with_windows %}
+        exclude:
+          - { os: windows, config: ["3.8",   "lint"] }
+{% if with_docs %}
+          - { os: windows, config: ["3.8",   "docs"] }
+{% endif %}
+          - { os: windows, config: ["3.8",   "coverage"] }
+{% endif %}
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}-latest
+{% if with_windows %}
+    name: ${{ matrix.os }}-${{ matrix.config[1] }}
+{% else %}
     name: ${{ matrix.config[1] }}
+{% endif %}
     steps:
 {% for line in steps_before_checkout %}
     %(line)s

@@ -146,6 +146,9 @@ The following options are only needed one time as their values re stored in
 --with-appveyor
   Enable running the tests on AppVeyor, too.
 
+--with-windows
+  Enable running the tests on Windows on GitHub Actions.
+
 --with-pypy
   Enable PyPy support.
 
@@ -187,6 +190,7 @@ updated. Example:
     with-pypy = false
     with-docs = true
     with-sphinx-doctests = false
+    with-windows = false
 
     [coverage]
     fail-under = 98
@@ -331,6 +335,9 @@ Python options
 
 with-appveyor
   Run the tests also on AppVeyor: true/false
+
+with-windows
+  Run the tests also on Windows on GitHub Actions: true/false, default: false
 
 with-legacy-python
   Run the tests even on Python 2.7, PyPy2 and Python 3.5: true/false
