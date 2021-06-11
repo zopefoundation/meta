@@ -13,8 +13,7 @@ import toml
 
 META_HINT = """\
 # Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/{config_type}
-"""
+# https://github.com/zopefoundation/meta/tree/master/config/{config_type}"""
 
 
 def copy_with_meta(template_name, destination, config_type, **kw):
@@ -23,9 +22,15 @@ def copy_with_meta(template_name, destination, config_type, **kw):
     If kwargs are given they are used as template arguments.
     """
     with open(destination, 'w') as f_:
-        f_.write(META_HINT.format(config_type=config_type))
         template = jinja_env.get_template(template_name)
-        f_.write(template.render(config_type=config_type, **kw))
+        rendered = template.render(config_type=config_type, **kw)
+        meta_hint = META_HINT.format(config_type=config_type)
+        if rendered.startswith('#!'):
+            she_bang, _, body = rendered.partition('\n')
+            content = '\n'.join([she_bang, meta_hint, body])
+        else:
+            content = '\n'.join([meta_hint, rendered])
+        f_.write(content)
 
 
 parser = argparse.ArgumentParser(
@@ -231,6 +236,18 @@ if (config_type_path / 'coveragerc.j2').exists():
 elif (path / '.coveragerc').exists():
     rm_coveragerc = True
 
+if (config_type_path / 'manylinux.sh').exists():
+    copy_with_meta('manylinux.sh', path / '.manylinux.sh', config_type)
+    (path / '.manylinux.sh').chmod(0o755)
+    copy_with_meta(
+        'manylinux-install.sh.j2', path / '.manylinux-install.sh', config_type,
+        package_name=path.name,
+    )
+    (path / '.manylinux-install.sh').chmod(0o755)
+    add_manylinux = True
+else:
+    add_manylinux = False
+
 
 additional_envlist = meta_cfg['tox'].get('additional-envlist', [])
 testenv_additional = meta_cfg['tox'].get('testenv-additional', [])
@@ -350,10 +367,13 @@ with change_dir(path) as cwd:
         call('git', 'add', '.coveragerc')
     if with_appveyor:
         call('git', 'add', 'appveyor.yml')
+    if add_manylinux:
+        call('git', 'add', '.manylinux.sh', '.manylinux-install.sh')
     # Remove empty sections:
     meta_cfg = {k: v for k, v in meta_cfg.items() if v}
     with open('.meta.toml', 'w') as meta_f:
         meta_f.write(META_HINT.format(config_type=config_type))
+        meta_f.write('\n')
         toml.dump(
             meta_cfg, meta_f,
             TomlArraySeparatorEncoderWithNewline(
