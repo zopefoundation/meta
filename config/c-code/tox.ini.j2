@@ -1,6 +1,7 @@
 {% set with_coverage = True %}
 {% set raw_testenv_setenv = testenv_setenv %}
 {% set testenv_setenv = ['pure: PURE_PYTHON=1', '!pure-!pypy-!pypy3: PURE_PYTHON=0'] + testenv_setenv %}
+{% set coverage_setenv = ['PURE_PYTHON=1'] + coverage_setenv %}
 [tox]
 minversion = 3.18
 envlist =
@@ -39,12 +40,10 @@ deps =
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}
-{% if coverage_setenv %}
 setenv =
 {% for line in coverage_setenv %}
     %(line)s
 {% endfor %}
-{% endif %}
 commands =
     mkdir -p {toxinidir}/parts/htmlcov
 {% if coverage_command %}
