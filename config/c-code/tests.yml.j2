@@ -182,6 +182,7 @@ jobs:
       uses: AndreMiras/coveralls-python-action@develop
       with:
         parallel-finished: true
+{% if with_docs %}
 
   docs:
     needs: build-package
@@ -207,7 +208,7 @@ jobs:
         run: |
           sphinx-build -b html -d docs/_build/doctrees docs docs/_build/html
           sphinx-build -b doctest -d docs/_build/doctrees docs docs/_build/doctest
-
+{% endif %}
 
   lint:
     needs: build-package
