@@ -149,7 +149,6 @@ jobs:
           pip install -U wheel
           pip install -U coverage coverage-python-version
           pip install -U 'faulthandler; python_version == "2.7" and platform_python_implementation == "CPython"'
-          pip install -U  "`ls dist/persistent*whl`[test]"
           # Unzip into src/ so that testrunner can find the .so files
           # when we ask it to load tests from that directory. This
           # might also save some build time?
@@ -158,11 +157,11 @@ jobs:
       - name: Run tests with C extensions
         if: ${{ !startsWith(matrix.python-version, 'pypy') }}
         run: |
-          python -m coverage run -p -m zope.testrunner --test-path=. --auto-color --auto-progress
+          python -m coverage run -p -m zope.testrunner --test-path=src --auto-color --auto-progress
       - name: Run tests without C extensions
         run:
           # coverage makes PyPy run about 3x slower!
-          PURE_PYTHON=1 python -m coverage run -p -m zope.testrunner --test-path=. --auto-color --auto-progress
+          PURE_PYTHON=1 python -m coverage run -p -m zope.testrunner --test-path=src --auto-color --auto-progress
       - name: Report Coverage
         run: |
           coverage combine
