@@ -2,6 +2,7 @@
 *.profraw
 *.pyc
 *.pyo
+*.so
 .coverage
 .coverage.*
 .eggs/
