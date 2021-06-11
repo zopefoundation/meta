@@ -63,9 +63,7 @@ test_script:
 {% for line in test_steps %}
   %(line)s
 {% endfor %}
-
-on_success:
-  - echo Build succesful!
+{% include 'appveyor-publish.j2' %}
 {% for line in additional_lines %}
 %(line)s
 {% endfor %}
