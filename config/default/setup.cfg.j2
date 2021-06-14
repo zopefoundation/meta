@@ -4,6 +4,11 @@ universal = 1
 {% else %}
 universal = 0
 {% endif %}
+{% if config_type == 'c-code' %}
+
+[zest.releaser]
+create-wheel = no
+{% endif %}
 
 [flake8]
 doctests = 1
