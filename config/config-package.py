@@ -58,6 +58,7 @@ parser.add_argument(
     '--no-flake8',
     dest='use_flake8',
     action='store_false',
+    default=None,
     help='Do not include flake8 and isort in the linting configuration.')
 parser.add_argument(
     '--with-appveyor',
