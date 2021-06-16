@@ -122,7 +122,7 @@ parser.add_argument(
          ' type')
 
 args = parser.parse_args()
-path = args.path
+path = args.path.absolute()
 default_path = pathlib.Path(__file__).parent / 'default'
 
 if not (path / '.git').exists():
