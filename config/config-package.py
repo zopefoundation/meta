@@ -91,7 +91,7 @@ parser.add_argument(
 parser.add_argument(
     '--with-docs',
     # people (me) use --with-sphinx and accidentally get --with-sphinx-doctests
-    # so let's make --with-sphinx an alias for --with-cods
+    # so let's make --with-sphinx an alias for --with-docs
     '--with-sphinx',
     dest='with_docs',
     action='store_true',
