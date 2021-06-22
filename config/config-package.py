@@ -64,7 +64,7 @@ parser.add_argument(
     '--with-appveyor',
     dest='with_appveyor',
     action='store_true',
-    default=False,
+    default=None,
     help='Activate running tests on AppVeyor, too, if not already configured'
          ' in .meta.toml.')
 parser.add_argument(
@@ -90,9 +90,12 @@ parser.add_argument(
     ' Also disables support for PyPy2.')
 parser.add_argument(
     '--with-docs',
+    # people (me) use --with-sphinx and accidentally get --with-sphinx-doctests
+    # so let's make --with-sphinx an alias for --with-cods
+    '--with-sphinx',
     dest='with_docs',
     action='store_true',
-    default=False,
+    default=None,
     help='Activate building docs if not already configured in .meta.toml.')
 parser.add_argument(
     '--with-sphinx-doctests',
@@ -136,6 +139,12 @@ if meta_toml_path.exists():
     meta_cfg = collections.defaultdict(dict, **meta_cfg)
 else:
     meta_cfg = collections.defaultdict(dict)
+    if args.with_docs is None:
+        args.with_docs = (path / "docs" / "conf.py").exists()
+        print(f"Autodetecting --with-docs: {args.with_docs}")
+    if args.with_appveyor is None:
+        args.with_appveyor = (path / "appveyor.yml").exists()
+        print(f"Autodetecting --with-appveyor: {args.with_appveyor}")
 
 config_type = meta_cfg['meta'].get('template') or args.type
 
@@ -184,6 +193,11 @@ meta_cfg['python']['with-docs'] = with_docs
 with_sphinx_doctests = meta_cfg['python'].get(
     'with-sphinx-doctests', False) or args.with_sphinx_doctests
 meta_cfg['python']['with-sphinx-doctests'] = with_sphinx_doctests
+
+
+if with_sphinx_doctests and not with_docs:
+    print("The package is configured without sphinx docs, but with sphinx"
+          " doctests.  Is this a mistake?")
 
 # Copy template files
 additional_flake8_config = meta_cfg['flake8'].get('additional-config', [])
