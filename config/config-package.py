@@ -90,6 +90,9 @@ parser.add_argument(
     ' Also disables support for PyPy2.')
 parser.add_argument(
     '--with-docs',
+    # people (me) use --with-sphinx and accidentally get --with-sphinx-doctests
+    # so let's make --with-sphinx an alias for --with-cods
+    '--with-sphinx',
     dest='with_docs',
     action='store_true',
     default=False,
@@ -184,6 +187,11 @@ meta_cfg['python']['with-docs'] = with_docs
 with_sphinx_doctests = meta_cfg['python'].get(
     'with-sphinx-doctests', False) or args.with_sphinx_doctests
 meta_cfg['python']['with-sphinx-doctests'] = with_sphinx_doctests
+
+
+if with_sphinx_doctests and not with_docs:
+    print("The package is configured without sphinx docs, but with sphinx"
+          " doctests.  Is this a mistake?")
 
 # Copy template files
 additional_flake8_config = meta_cfg['flake8'].get('additional-config', [])
