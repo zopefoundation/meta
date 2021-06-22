@@ -64,7 +64,7 @@ parser.add_argument(
     '--with-appveyor',
     dest='with_appveyor',
     action='store_true',
-    default=False,
+    default=None,
     help='Activate running tests on AppVeyor, too, if not already configured'
          ' in .meta.toml.')
 parser.add_argument(
@@ -95,7 +95,7 @@ parser.add_argument(
     '--with-sphinx',
     dest='with_docs',
     action='store_true',
-    default=False,
+    default=None,
     help='Activate building docs if not already configured in .meta.toml.')
 parser.add_argument(
     '--with-sphinx-doctests',
@@ -139,6 +139,12 @@ if meta_toml_path.exists():
     meta_cfg = collections.defaultdict(dict, **meta_cfg)
 else:
     meta_cfg = collections.defaultdict(dict)
+    if args.with_docs is None:
+        args.with_docs = (path / "docs" / "conf.py").exists()
+        print(f"Autodetecting --with-docs: {args.with_docs}")
+    if args.with_appveyor is None:
+        args.with_appveyor = (path / "appveyor.yml").exists()
+        print(f"Autodetecting --with-appveyor: {args.with_appveyor}")
 
 config_type = meta_cfg['meta'].get('template') or args.type
 
