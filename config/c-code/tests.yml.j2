@@ -157,11 +157,23 @@ jobs:
       - name: Run tests with C extensions
         if: ${{ !startsWith(matrix.python-version, 'pypy') }}
         run: |
+        {% if gha_test_commands %}
+        {% for line in gha_test_commands %}
+          %(line)s
+        {% endfor %}
+        {% else %}
           python -m coverage run -p -m zope.testrunner --test-path=src --auto-color --auto-progress
+        {% endif %}
       - name: Run tests without C extensions
         run:
+        {% if gha_test_commands %}
+        {% for line in gha_test_commands %}
+          PURE_PYTHON=1 %(line)s
+        {% endfor %}
+        {% else %}
           # coverage makes PyPy run about 3x slower!
           PURE_PYTHON=1 python -m coverage run -p -m zope.testrunner --test-path=src --auto-color --auto-progress
+        {% endif %}
       - name: Report Coverage
         run: |
           coverage combine
