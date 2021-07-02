@@ -81,6 +81,13 @@ parser.add_argument(
     default=False,
     help='Activate PyPy support if not already configured in .meta.toml.')
 parser.add_argument(
+    '--with-future-python',
+    dest='with_future_python',
+    action='store_true',
+    default=False,
+    help='Activate support for a future non-final Python version if not'
+         ' already configured in .meta.toml.')
+parser.add_argument(
     '--without-legacy-python',
     dest='with_legacy_python',
     action='store_false',
@@ -183,6 +190,9 @@ with_windows = meta_cfg['python'].get(
 meta_cfg['python']['with-windows'] = with_windows
 with_pypy = meta_cfg['python'].get('with-pypy', False) or args.with_pypy
 meta_cfg['python']['with-pypy'] = with_pypy
+with_future_python = (meta_cfg['python'].get('with-future-python', False)
+                      or args.with_future_python)
+meta_cfg['python']['with-future-python'] = with_future_python
 if args.with_legacy_python is None:
     with_legacy_python = meta_cfg['python'].get('with-legacy-python', True)
 else:
@@ -257,6 +267,7 @@ if (config_type_path / 'manylinux.sh').exists():
     copy_with_meta(
         'manylinux-install.sh.j2', path / '.manylinux-install.sh', config_type,
         package_name=path.name,
+        with_future_python=with_future_python,
     )
     (path / '.manylinux-install.sh').chmod(0o755)
     add_manylinux = True
@@ -308,6 +319,7 @@ copy_with_meta(
     use_flake8=use_flake8,
     with_docs=with_docs,
     with_legacy_python=with_legacy_python,
+    with_future_python=with_future_python,
     with_pypy=with_pypy,
     with_sphinx_doctests=with_sphinx_doctests,
 )
@@ -331,6 +343,7 @@ copy_with_meta(
     steps_before_checkout=gha_steps_before_checkout,
     with_docs=with_docs,
     with_legacy_python=with_legacy_python,
+    with_future_python=with_future_python,
     with_pypy=with_pypy,
     with_windows=with_windows,
 )
@@ -363,6 +376,7 @@ if with_appveyor:
     copy_with_meta(
         'appveyor.yml.j2', path / 'appveyor.yml', config_type,
         with_legacy_python=with_legacy_python,
+        with_future_python=with_future_python,
         global_env_vars=appveyor_global_env_vars,
         additional_matrix=appveyor_additional_matrix,
         install_steps=appveyor_install_steps, test_steps=appveyor_test_steps,

@@ -152,6 +152,11 @@ The following options are only needed one time as their values re stored in
 --with-pypy
   Enable PyPy support.
 
+--with-future-python
+  The package supports the next upcoming Python version which does not yet have
+  a final release thus it is not yet generally supported by the zopefoundation
+  packages.
+
 --without-legacy-python
   The package does not support Python versions which reached their end-of-life.
   (Currently this means dropping support for Python 2.7 and 3.5.) This as well
