@@ -560,8 +560,9 @@ install-steps
 build-script
   Steps to to build the project. If this option is not given because no
   additional build steps are necessary ``build: false`` is rendered to the
-  AppVeyor configuration. This option has to be a list of strings, each one
-  starting with a ``-``.
+  AppVeyor configuration. But if the config type is ``c-code`` it defaults to
+  ``['- python -W ignore setup.py -q bdist_wheel']``. This option has to be a
+  list of strings, each one starting with a ``-``.
 
 test-steps
   Steps to run the tests on AppVeyor. This option has to be a list of strings

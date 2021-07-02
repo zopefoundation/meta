@@ -353,6 +353,8 @@ if with_appveyor:
         'install-steps', ['- pip install -U -e .[test]'])
     appveyor_build_script = meta_cfg['appveyor'].get(
         'build-script', [])
+    if config_type == 'c-code' and not appveyor_build_script:
+        appveyor_build_script = ['- python -W ignore setup.py -q bdist_wheel']
     appveyor_test_steps = meta_cfg['appveyor'].get(
         'test-steps', ['- zope-testrunner --test-path=src'])
     appveyor_additional_lines = meta_cfg['appveyor'].get(
