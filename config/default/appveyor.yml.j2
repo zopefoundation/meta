@@ -4,9 +4,6 @@
 {% endfor %}
 {% else %}
 environment:
-{% if global_env_vars %}
-
-{% endif %}
 {% for line in global_env_vars %}
   %(line)s
 {% endfor %}
