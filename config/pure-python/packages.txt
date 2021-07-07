@@ -140,3 +140,5 @@ zodbupdate
 zc.zodbdgc
 RestrictedPython
 tempstorage
+z3c.currency
+zope.event
