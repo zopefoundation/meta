@@ -351,6 +351,8 @@ copy_with_meta(
 
 # Modify MANIFEST.in with meta options
 additional_manifest_rules = meta_cfg['manifest'].get('additional-rules', [])
+if config_type == 'c-code' and 'include *.sh' not in additional_manifest_rules:
+    additional_manifest_rules.insert(0, 'include *.sh')
 copy_with_meta(
     'MANIFEST.in.j2', path / 'MANIFEST.in', config_type,
     additional_rules=additional_manifest_rules,
