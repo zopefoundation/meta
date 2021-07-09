@@ -4,3 +4,5 @@
 zope.interface
 ExtensionClass
 zodbpickle
+zope.i18nmessageid
+zope.hookable
