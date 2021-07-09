@@ -7,14 +7,10 @@ deps =
     flake8
 {% endif %}
     check-manifest
-{% if not with_future_python %}
     check-python-versions
-{% endif %}
 commands =
 {% if use_flake8 %}
     flake8 src setup.py%(flake8_additional_sources)s
 {% endif %}
     check-manifest
-{% if not with_future_python %}
     check-python-versions
-{% endif %}

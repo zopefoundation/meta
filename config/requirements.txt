@@ -1,5 +1,4 @@
-ConfigUpdater == 1.1.3
 Jinja2 == 2.11.3
-check-python-versions == 0.17.0
+check-python-versions == 0.18.1
 toml == 0.10.2
 tox == 3.20.1
