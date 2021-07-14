@@ -7,3 +7,4 @@ zodbpickle
 zope.i18nmessageid
 zope.hookable
 zope.index
+Acquisition
