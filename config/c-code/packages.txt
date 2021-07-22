@@ -9,3 +9,4 @@ zope.hookable
 zope.index
 Acquisition
 zope.proxy
+Persistence
