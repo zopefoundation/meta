@@ -142,3 +142,4 @@ RestrictedPython
 tempstorage
 z3c.currency
 zope.event
+z3c.form
