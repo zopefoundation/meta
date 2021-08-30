@@ -8,6 +8,7 @@ deps =
 {% endif %}
     check-manifest
     check-python-versions
+    wheel
 commands =
 {% if use_flake8 %}
     flake8 src setup.py%(flake8_additional_sources)s
