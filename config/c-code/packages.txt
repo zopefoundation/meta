@@ -10,3 +10,4 @@ zope.index
 Acquisition
 zope.proxy
 Persistence
+zope.security
