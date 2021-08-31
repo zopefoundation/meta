@@ -625,3 +625,33 @@ The script does the following steps:
 
   Running this script discards any uncommitted changes in the repositories it
   runs on! There is no undo for this operation.
+
+
+Re-enabling GitHub Actions
+--------------------------
+
+After a certain period of time (currently 60 days) without commits GitHub
+automatically disables Actions. They can be re-enabled manually per repository.
+There is a script to do this for all repositories. It does no harm if Actions
+is already enabled.
+
+.. caution:: This script automatically clones all repositories which are
+             configured using the ``config-package.py`` script.
+
+Preparation
++++++++++++
+
+* Install GitHub's CLI application, see https://github.com/cli/cli.
+
+* Authorize using the application:
+
+  - ``gh auth login``
+  - It is probably enough to do it once.
+
+Usage
++++++
+
+To run the script point it to a directory where you store clones of the
+zopefoundation repositories::
+
+    $ bin/python re-enable-actions.py <path-to-clones>

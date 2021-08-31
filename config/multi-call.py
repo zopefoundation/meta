@@ -1,28 +1,10 @@
 #!/usr/bin/env python3
 from shared.call import call
+from shared.packages import list_packages
 from shared.path import change_dir
+from shared.path import path_factory
 import argparse
-import pathlib
 import sys
-
-
-def path_factory(parameter_name, *, has_extension=None, is_dir=False):
-    """Return factory creating pathlib.Path object if requirements are matched.
-
-    The factory raises an exception otherwise.
-    """
-    def factory(str):
-        path = pathlib.Path(str)
-        if not path.exists():
-            raise argparse.ArgumentTypeError(f'{str!r} does not exist!')
-        if has_extension is not None and path.suffix != has_extension:
-            raise argparse.ArgumentTypeError(
-                f'The required extension is {has_extension!r}'
-                f' not {path.suffix!r}.')
-        if is_dir and not path.is_dir():
-            raise argparse.ArgumentTypeError('has to point to a directory!')
-        return path
-    return factory
 
 
 parser = argparse.ArgumentParser(
@@ -42,12 +24,7 @@ parser.add_argument(
 
 # idea from https://stackoverflow.com/a/37367814/8531312
 args, sub_args = parser.parse_known_args()
-
-packages = [
-    p
-    for p in args.packages_txt.read_text().split('\n')
-    if p and not p.startswith('#')
-]
+packages = list_packages(args.packages_txt)
 
 for package in packages:
     print(f'*** Running {args.script.name} on {package} ***')
