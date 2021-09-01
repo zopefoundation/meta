@@ -651,7 +651,6 @@ Preparation
 Usage
 +++++
 
-To run the script point it to a directory where you store clones of the
-zopefoundation repositories::
+To run the script just call it::
 
-    $ bin/python re-enable-actions.py <path-to-clones>
+    $ bin/python re-enable-actions.py
