@@ -633,10 +633,7 @@ Re-enabling GitHub Actions
 After a certain period of time (currently 60 days) without commits GitHub
 automatically disables Actions. They can be re-enabled manually per repository.
 There is a script to do this for all repositories. It does no harm if Actions
-is already enabled.
-
-.. caution:: This script automatically clones all repositories which are
-             configured using the ``config-package.py`` script.
+is already enabled for a repository.
 
 Preparation
 +++++++++++
