@@ -625,3 +625,29 @@ The script does the following steps:
 
   Running this script discards any uncommitted changes in the repositories it
   runs on! There is no undo for this operation.
+
+
+Re-enabling GitHub Actions
+--------------------------
+
+After a certain period of time (currently 60 days) without commits GitHub
+automatically disables Actions. They can be re-enabled manually per repository.
+There is a script to do this for all repositories. It does no harm if Actions
+is already enabled for a repository.
+
+Preparation
++++++++++++
+
+* Install GitHub's CLI application, see https://github.com/cli/cli.
+
+* Authorize using the application:
+
+  - ``gh auth login``
+  - It is probably enough to do it once.
+
+Usage
++++++
+
+To run the script just call it::
+
+    $ bin/python re-enable-actions.py
