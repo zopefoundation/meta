@@ -11,10 +11,6 @@ allowlist_externals =
 deps =
     coverage
     coverage-python-version
-{% if with_sphinx_doctests %}
-    # Until repoze.sphinx.autointerface supports Sphinx 4.x we cannot use it:
-    Sphinx < 4
-{% endif %}
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}
