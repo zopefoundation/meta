@@ -11,3 +11,4 @@ Acquisition
 zope.proxy
 Persistence
 zope.security
+zope.container
