@@ -5,19 +5,20 @@
 {% if with_legacy_python %}
           - 2.7
           - 3.5
+          - 3.6
 {% endif %}
 {% if with_pypy and with_legacy_python %}
           - pypy-2.7
 {% endif %}
 {% if with_pypy %}
-          - pypy-3.6
+          - pypy-3.7
 {% endif %}
-          - 3.6
           - 3.7
           - 3.8
           - 3.9
+          - 3.10
 {% if with_future_python %}
-          - 3.10.0-rc.2
+          - 3.11.0-alpha.1
 {% endif %}
         os: [ubuntu-20.04, macos-latest]
 {% if with_pypy or with_legacy_python %}

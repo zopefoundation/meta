@@ -9,13 +9,14 @@ envlist =
 {% if with_legacy_python %}
     py27,py27-pure
     py35,py35-pure
-{% endif %}
     py36,py36-pure
+{% endif %}
     py37,py37-pure
     py38,py38-pure
     py39,py39-pure
-{% if with_future_python %}
     py310,py310-pure
+{% if with_future_python %}
+    py311,py311-pure
 {% endif %}
 {% if with_pypy and with_legacy_python %}
     pypy

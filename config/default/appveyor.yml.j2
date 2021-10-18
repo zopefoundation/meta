@@ -14,20 +14,22 @@ environment:
     - python: 27-x64
     - python: 35
     - python: 35-x64
-{% endif %}
     - python: 36
     - python: 36-x64
+{% endif %}
     - python: 37
     - python: 37-x64
     - python: 38
     - python: 38-x64
     - python: 39
     - python: 39-x64
+    - python: 310
+    - python: 310-x64
 {% if with_future_python %}
     # `multibuild` cannot install non-final versions as they are not on
     # ftp.python.org, so we skip Python 3.10 until its final release:
-    # - python: 310
-    # - python: 310-x64
+    # - python: 311
+    # - python: 311-x64
 {% endif %}
 {% for line in additional_matrix %}
     %(line)s
