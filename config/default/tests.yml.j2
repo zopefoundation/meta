@@ -27,7 +27,7 @@ jobs:
 {% endif %}
         config:
         # [Python version, tox env]
-        - ["3.8",   "lint"]
+        - ["3.9",   "lint"]
 {% if with_legacy_python %}
         - ["2.7",   "py27"]
         - ["3.5",   "py35"]
@@ -47,9 +47,9 @@ jobs:
         - ["pypy3", "pypy3"]
 {% endif %}
 {% if with_docs %}
-        - ["3.8",   "docs"]
+        - ["3.9",   "docs"]
 {% endif %}
-        - ["3.8",   "coverage"]
+        - ["3.9",   "coverage"]
 {% for line in gha_additional_config %}
         %(line)s
 {% endfor %}
