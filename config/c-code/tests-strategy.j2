@@ -5,7 +5,6 @@
 {% if with_legacy_python %}
           - 2.7
           - 3.5
-          - 3.6
 {% endif %}
 {% if with_pypy and with_legacy_python %}
           - pypy-2.7
@@ -13,6 +12,7 @@
 {% if with_pypy %}
           - pypy-3.7
 {% endif %}
+          - 3.6
           - 3.7
           - 3.8
           - 3.9

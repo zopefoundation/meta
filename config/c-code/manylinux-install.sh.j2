@@ -30,11 +30,11 @@ for PYBIN in /opt/python/*/bin; do
 {% if with_legacy_python %}
        [[ "${PYBIN}" == *"cp27"* ]] || \
        [[ "${PYBIN}" == *"cp35"* ]] || \
-       [[ "${PYBIN}" == *"cp36"* ]] || \
 {% endif %}
 {% if with_future_python %}
        [[ "${PYBIN}" == *"cp311"* ]] || \
 {% endif %}
+       [[ "${PYBIN}" == *"cp36"* ]] || \
        [[ "${PYBIN}" == *"cp37"* ]] || \
        [[ "${PYBIN}" == *"cp38"* ]] || \
        [[ "${PYBIN}" == *"cp39"* ]] || \
