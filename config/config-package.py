@@ -327,6 +327,8 @@ copy_with_meta(
 gha_services = meta_cfg['github-actions'].get('services', [])
 gha_additional_config = meta_cfg['github-actions'].get(
     'additional-config', [])
+gha_additional_exclude = meta_cfg['github-actions'].get(
+    'additional-exclude', [])
 gha_steps_before_checkout = meta_cfg['github-actions'].get(
     'steps-before-checkout', [])
 gha_additional_install = meta_cfg['github-actions'].get(
@@ -336,6 +338,7 @@ gha_test_commands = meta_cfg['github-actions'].get(
 copy_with_meta(
     'tests.yml.j2', workflows / 'tests.yml', config_type,
     gha_additional_config=gha_additional_config,
+    gha_additional_exclude=gha_additional_exclude,
     gha_additional_install=gha_additional_install,
     gha_test_commands=gha_test_commands,
     package_name=path.name,

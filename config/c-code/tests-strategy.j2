@@ -21,7 +21,7 @@
           - 3.11.0-alpha.1
 {% endif %}
         os: [ubuntu-20.04, macos-latest]
-{% if with_pypy or with_legacy_python %}
+{% if with_pypy or with_legacy_python or gha_additional_exclude %}
         exclude:
 {% endif %}
 {% if with_pypy and with_legacy_python %}
@@ -36,3 +36,6 @@
           - os: macos-latest
             python-version: 3.5
 {% endif %}
+{% for line in gha_additional_exclude %}
+          %(line)s
+{% endfor %}

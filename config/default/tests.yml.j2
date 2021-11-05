@@ -53,14 +53,19 @@ jobs:
 {% for line in gha_additional_config %}
         %(line)s
 {% endfor %}
-{% if with_windows %}
+{% if with_windows or gha_additional_exclude %}
         exclude:
-          - { os: windows, config: ["3.9",   "lint"] }
-{% if with_docs %}
-          - { os: windows, config: ["3.9",   "docs"] }
 {% endif %}
+{% if with_windows %}
+          - { os: windows, config: ["3.9",   "lint"] }
+  {% if with_docs %}
+          - { os: windows, config: ["3.9",   "docs"] }
+  {% endif %}
           - { os: windows, config: ["3.9",   "coverage"] }
 {% endif %}
+{% for line in gha_additional_exclude %}
+          %(line)s
+{% endfor %}
 
     runs-on: ${{ matrix.os }}-latest
 {% if with_windows %}
