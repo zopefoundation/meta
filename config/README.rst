@@ -282,6 +282,9 @@ updated. Example:
     additional-config = [
         "- [\"3.8\",   \"py38-slim\"]",
         ]
+    additional-exclude = [
+        "- { os: windows, config: [\"pypy2\", \"pypy\"] }",
+        ]
     steps-before-checkout = [
         "- name: \"Set some Postgres settings\"",
         "  run: ...",
@@ -529,6 +532,10 @@ services
 additional-config
   Additional entries for the config matrix. This option has to be a list of
   strings without leading whitespace but it has to start with a hyphen.
+
+additional-exclude
+  Additional entries to exclude from the config matrix. This option has to be a
+  list of strings without leading whitespace but it has to start with a hyphen.
 
 steps-before-checkout
   Add steps definitions to be inserted into ``tests.yml`` before the checkout
