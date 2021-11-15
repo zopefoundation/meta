@@ -267,6 +267,7 @@ if (config_type_path / 'manylinux.sh').exists():
     copy_with_meta(
         'manylinux-install.sh.j2', path / '.manylinux-install.sh', config_type,
         package_name=path.name,
+        with_legacy_python=with_legacy_python,
         with_future_python=with_future_python,
     )
     (path / '.manylinux-install.sh').chmod(0o755)

@@ -148,3 +148,4 @@ zope.i18n
 z3c.pdftemplate
 zExceptions
 ZODB
+zc.zlibstorage
