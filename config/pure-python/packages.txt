@@ -145,7 +145,6 @@ zope.event
 z3c.form
 zc.zservertracelog
 zope.i18n
-z3c.pdftemplate
 zExceptions
 ZODB
 zc.zlibstorage
