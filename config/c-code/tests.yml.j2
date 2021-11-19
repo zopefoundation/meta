@@ -217,7 +217,9 @@ jobs:
           ZOPE_INTERFACE_STRICT_IRO: 1
         run: |
           sphinx-build -b html -d docs/_build/doctrees docs docs/_build/html
+  {%- if with_sphinx_doctests %}
           sphinx-build -b doctest -d docs/_build/doctrees docs docs/_build/doctest
+  {% endif %}
 {% endif %}
 
   lint:

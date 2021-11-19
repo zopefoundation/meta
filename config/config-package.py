@@ -346,6 +346,7 @@ copy_with_meta(
     services=gha_services,
     steps_before_checkout=gha_steps_before_checkout,
     with_docs=with_docs,
+    with_sphinx_doctests=with_sphinx_doctests,
     with_legacy_python=with_legacy_python,
     with_future_python=with_future_python,
     with_pypy=with_pypy,
