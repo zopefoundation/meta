@@ -148,3 +148,4 @@ zope.i18n
 zExceptions
 ZODB
 zc.zlibstorage
+zope.vocabularyregistry
