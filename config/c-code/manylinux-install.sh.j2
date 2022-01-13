@@ -21,6 +21,9 @@ fi
 ls -ld /cache
 ls -ld /cache/pip
 
+{% for line in setup %}
+%(line)s
+{% endfor %}
 # We need some libraries because we build wheels from scratch:
 yum -y install libffi-devel
 

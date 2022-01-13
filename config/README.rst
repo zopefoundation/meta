@@ -327,6 +327,12 @@ updated. Example:
         "    ...",
         ]
 
+    [c-code]
+    manylinux-install-setup = [
+        "export CFLAGS=\"-pipe\"",
+        ]
+
+
 Meta Options
 ````````````
 
@@ -590,6 +596,17 @@ replacement
   this option. Use this option as last resort if your needed changes are too
   big to configure AppVeyor in another way. This option has to be a list of
   strings.
+
+
+C-code options
+``````````````
+
+The corresponding section is named: ``[c-code]`` it is used only for packages
+built with the template ``c-code``.
+
+manylinux-install-setup
+  Additional setup steps necessary in ``manylinux-install.sh``. This option has
+  to be a list of strings and defaults to an empty list.
 
 
 Hints
