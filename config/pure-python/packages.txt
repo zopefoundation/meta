@@ -149,3 +149,16 @@ zExceptions
 ZODB
 zc.zlibstorage
 zope.vocabularyregistry
+zope.ramcache
+zope.deferredimport
+zope.generations
+zc.catalog
+martian
+z3c.password
+zope.ptresource
+z3c.table
+zope.app.apidoc
+z3c.macro
+z3c.ptcompat
+z3c.pt
+zope.componentvocabulary
