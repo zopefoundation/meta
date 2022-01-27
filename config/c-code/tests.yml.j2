@@ -99,7 +99,6 @@ jobs:
         run: |
           pip install -U pip
           pip install -U setuptools wheel twine cffi
-          pip install -U coveralls coverage
 
       - name: Build %(package_name)s
         run: |
@@ -108,7 +107,6 @@ jobs:
           python setup.py build_ext -i
           python setup.py bdist_wheel
           # Also install it, so that we get dependencies in the (pip) cache.
-          pip install -U coverage
           pip install -U 'faulthandler; python_version == "2.7" and platform_python_implementation == "CPython"'
           pip install .[test]
 
@@ -154,7 +152,7 @@ jobs:
       - name: Install %(package_name)s
         run: |
           pip install -U wheel setuptools
-          pip install -U coverage
+          pip install -U --no-binary :all: coverage
           pip install -U 'faulthandler; python_version == "2.7" and platform_python_implementation == "CPython"'
           # Unzip into src/ so that testrunner can find the .so files
           # when we ask it to load tests from that directory. This
