@@ -14,6 +14,7 @@ import toml
 META_HINT = """\
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/{config_type}"""
+FUTUTRE_PYTHON_VERSION = "3.11.0-alpha.4"
 
 
 def copy_with_meta(template_name, destination, config_type, **kw):
@@ -352,6 +353,7 @@ copy_with_meta(
     with_sphinx_doctests=with_sphinx_doctests,
     with_legacy_python=with_legacy_python,
     with_future_python=with_future_python,
+    future_python_version=FUTUTRE_PYTHON_VERSION,
     with_pypy=with_pypy,
     with_windows=with_windows,
 )
