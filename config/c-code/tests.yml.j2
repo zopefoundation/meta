@@ -129,7 +129,7 @@ jobs:
           && startsWith(runner.os, 'Mac')
           && !startsWith(matrix.python-version, 'pypy')
 {% if with_future_python %}
-          && ${{ matrix.python-version != "%(future_python_version)s" }}
+          && ${{ matrix.python-version != '%(future_python_version)s' }}
 {% endif %}
         env:
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
@@ -305,7 +305,7 @@ jobs:
           github.event_name == 'push'
           && startsWith(github.ref, 'refs/tags')
 {% if with_future_python %}
-          && ${{ matrix.python-version != "%(future_python_version)s" }}
+          && ${{ matrix.python-version != '%(future_python_version)s' }}
 {% endif %}
         with:
           user: __token__
