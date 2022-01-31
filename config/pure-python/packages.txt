@@ -163,3 +163,4 @@ z3c.ptcompat
 z3c.pt
 zope.componentvocabulary
 zope.testbrowser
+zope.copypastemove
