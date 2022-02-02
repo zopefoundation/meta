@@ -47,6 +47,11 @@ Each directory contains the following files if they differ from the default
   - This file lists the packages which use the configuration in the
     directory.
 
+* CONTRIBUTING.md
+
+  - This file is copied as is. It allows developers to easily find our
+    contributing guidelines in the root of the repository.
+
 * editorconfig
 
   - This file is copied to `.editorconfig` and allows developers to have a

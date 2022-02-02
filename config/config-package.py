@@ -244,6 +244,7 @@ copy_with_meta(
 )
 copy_with_meta('editorconfig', path / '.editorconfig', config_type)
 copy_with_meta('gitignore', path / '.gitignore', config_type)
+copy_with_meta('CONTRIBUTING.md', path / 'CONTRIBUTING.md', config_type)
 workflows = path / '.github' / 'workflows'
 workflows.mkdir(parents=True, exist_ok=True)
 
@@ -440,7 +441,7 @@ with change_dir(path) as cwd:
         abort(1)
     if args.commit:
         call('git', 'add',
-             'setup.cfg', 'tox.ini', '.gitignore',
+             'setup.cfg', 'tox.ini', '.gitignore', 'CONTRIBUTING.md',
              '.github/workflows/tests.yml', 'MANIFEST.in', '.editorconfig',
              '.meta.toml')
         if args.commit_msg:
