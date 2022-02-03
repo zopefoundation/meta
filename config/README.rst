@@ -35,6 +35,9 @@ packages:
     ``tox.ini`` to be able to pin the installed dependency versions the same
     way ``buildout.cfg`` does it.
 
+* groktoolkit
+
+  - Configuration currently only used for the groktoolkit repository.
 
 Contents
 --------
@@ -46,6 +49,11 @@ Each directory contains the following files if they differ from the default
 
   - This file lists the packages which use the configuration in the
     directory.
+
+* CONTRIBUTING.md
+
+  - This file is copied as is. It allows developers to easily find our
+    contributing guidelines in the root of the repository.
 
 * editorconfig
 

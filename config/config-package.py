@@ -14,10 +14,16 @@ import toml
 META_HINT = """\
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/{config_type}"""
+META_HINT_MARKDOWN = """\
+<!--
+Generated from:
+https://github.com/zopefoundation/meta/tree/master/config/{config_type}
+--> """
 FUTUTRE_PYTHON_VERSION = "3.11.0-alpha.4"
 
 
-def copy_with_meta(template_name, destination, config_type, **kw):
+def copy_with_meta(
+        template_name, destination, config_type, meta_hint=META_HINT, **kw):
     """Copy the source file to destination and a hint of origin.
 
     If kwargs are given they are used as template arguments.
@@ -25,7 +31,7 @@ def copy_with_meta(template_name, destination, config_type, **kw):
     with open(destination, 'w') as f_:
         template = jinja_env.get_template(template_name)
         rendered = template.render(config_type=config_type, **kw)
-        meta_hint = META_HINT.format(config_type=config_type)
+        meta_hint = meta_hint.format(config_type=config_type)
         if rendered.startswith('#!'):
             she_bang, _, body = rendered.partition('\n')
             content = '\n'.join([she_bang, meta_hint, body])
@@ -119,6 +125,7 @@ parser.add_argument(
         'c-code',
         'pure-python',
         'zope-product',
+        'groktoolkit',
     ],
     default=None,
     dest='type',
@@ -244,6 +251,9 @@ copy_with_meta(
 )
 copy_with_meta('editorconfig', path / '.editorconfig', config_type)
 copy_with_meta('gitignore', path / '.gitignore', config_type)
+copy_with_meta(
+    'CONTRIBUTING.md', path / 'CONTRIBUTING.md', config_type,
+    meta_hint=META_HINT_MARKDOWN)
 workflows = path / '.github' / 'workflows'
 workflows.mkdir(parents=True, exist_ok=True)
 
@@ -440,7 +450,7 @@ with change_dir(path) as cwd:
         abort(1)
     if args.commit:
         call('git', 'add',
-             'setup.cfg', 'tox.ini', '.gitignore',
+             'setup.cfg', 'tox.ini', '.gitignore', 'CONTRIBUTING.md',
              '.github/workflows/tests.yml', 'MANIFEST.in', '.editorconfig',
              '.meta.toml')
         if args.commit_msg:
