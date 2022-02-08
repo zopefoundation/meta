@@ -4,11 +4,13 @@
 *.pyc
 *.pyo
 *.so
+.*project
 .coverage
 .coverage.*
 .eggs/
 .installed.cfg
 .mr.developer.cfg
+.settings/
 .tox/
 .vscode/
 __pycache__/
@@ -23,6 +25,7 @@ eggs/
 etc/
 lib/
 lib64
+local.cfg
 log/
 parts/
 pyvenv.cfg
