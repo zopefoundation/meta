@@ -254,6 +254,10 @@ copy_with_meta('gitignore', path / '.gitignore', config_type)
 copy_with_meta(
     'CONTRIBUTING.md', path / 'CONTRIBUTING.md', config_type,
     meta_hint=META_HINT_MARKDOWN)
+with change_dir(path):
+    # We have to add it here otherwise the linter complains that it is not
+    # added.
+    call('git', 'add', 'CONTRIBUTING.md')
 workflows = path / '.github' / 'workflows'
 workflows.mkdir(parents=True, exist_ok=True)
 
@@ -450,7 +454,7 @@ with change_dir(path) as cwd:
         abort(1)
     if args.commit:
         call('git', 'add',
-             'setup.cfg', 'tox.ini', '.gitignore', 'CONTRIBUTING.md',
+             'setup.cfg', 'tox.ini', '.gitignore',
              '.github/workflows/tests.yml', 'MANIFEST.in', '.editorconfig',
              '.meta.toml')
         if args.commit_msg:
