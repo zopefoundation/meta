@@ -302,7 +302,9 @@ testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
 testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
 testenv_setenv = meta_cfg['tox'].get('testenv-setenv', [])
 coverage_basepython = meta_cfg['tox'].get('coverage-basepython', 'python3')
-coverage_command = meta_cfg['tox'].get('coverage-command', '')
+coverage_command = meta_cfg['tox'].get('coverage-command', [])
+if isinstance(coverage_command, str):
+    coverage_command = [coverage_command]
 coverage_additional = meta_cfg['tox'].get('coverage-additional', [])
 testenv_deps = meta_cfg['tox'].get('testenv-deps', [])
 coverage_setenv = meta_cfg['tox'].get('coverage-setenv', [])

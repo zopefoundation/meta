@@ -241,7 +241,9 @@ updated. Example:
         "    DISPLAY",
         ]
     coverage-basepython = "python3.9"
-    coverage-command = "coverage run {envbindir}/test_with_gs []"
+    coverage-command = [
+        "coverage run {envbindir}/test_with_gs []"
+        ]
     coverage-setenv = [
         "COVERAGE_HOME={toxinidir}",
         ]
@@ -444,7 +446,7 @@ coverage-command
   This option replaces the coverage call in the section ``[testenv:coverage]``
   in ``tox.ini``. *Caution:* only the actual call to collect the coverage data
   is replaced. The calls to create the reporting are not changed. This option
-  has to be a string. If it is not set or empty the default is used.
+  has to be a list or a string. If it is not set or empty the default is used.
 
 coverage-setenv
   This option defines the contents for the option ``setenv`` in the section

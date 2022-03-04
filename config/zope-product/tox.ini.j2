@@ -94,7 +94,9 @@ deps =
 commands =
     mkdir -p {toxinidir}/parts/htmlcov
 {% if coverage_command %}
-    %(coverage_command)s
+  {% for line in coverage_command %}
+    %(line)s
+  {% endfor %}
 {% else %}
     coverage run {envbindir}/test {posargs:-cv}
 {% endif %}

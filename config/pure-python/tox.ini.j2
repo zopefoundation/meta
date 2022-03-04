@@ -23,7 +23,9 @@ setenv =
 commands =
     mkdir -p {toxinidir}/parts/htmlcov
 {% if coverage_command %}
-    %(coverage_command)s
+  {% for line in coverage_command %}
+    %(line)s
+  {% endfor %}
 {% else %}
     coverage run -m zope.testrunner --test-path=src {posargs:-vc}
 {% endif %}
