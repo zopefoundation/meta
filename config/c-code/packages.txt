@@ -13,3 +13,5 @@ Persistence
 zope.security
 zope.container
 BTrees
+persistent
+AccessControl
