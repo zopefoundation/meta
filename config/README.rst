@@ -341,6 +341,12 @@ updated. Example:
     manylinux-install-setup = [
         "export CFLAGS=\"-pipe\"",
         ]
+    manylinux-aarch64-tests = [
+        "cd /io/",
+        "\"${PYBIN}/pip\" install tox",
+        "\"${PYBIN}/tox\" -e py",
+        "cd ..",
+    ]
 
 
 Meta Options
@@ -618,6 +624,10 @@ manylinux-install-setup
   Additional setup steps necessary in ``manylinux-install.sh``. This option has
   to be a list of strings and defaults to an empty list.
 
+manylinux-aarch64-tests
+  Replacement for the tests against the aarch64 architecture. This option has
+  to be a list of strings and defaults to testing using ``tox`` against all
+  supported Python versions, which could be too slow for some packages.
 
 Hints
 -----

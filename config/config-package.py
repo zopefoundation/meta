@@ -278,6 +278,13 @@ elif (path / '.coveragerc').exists():
 
 manylinux_install_setup = meta_cfg['c-code'].get(
     'manylinux-install-setup', [])
+manylinux_aarch64_tests = meta_cfg['c-code'].get(
+    'manylinux-aarch64-tests', [
+        'cd /io/',
+        '"${PYBIN}/pip" install tox',
+        '"${PYBIN}/tox" -e py',
+        'cd ..',
+    ])
 if (config_type_path / 'manylinux.sh').exists():
     copy_with_meta('manylinux.sh', path / '.manylinux.sh', config_type)
     (path / '.manylinux.sh').chmod(0o755)
@@ -285,6 +292,7 @@ if (config_type_path / 'manylinux.sh').exists():
         'manylinux-install.sh.j2', path / '.manylinux-install.sh', config_type,
         package_name=path.name,
         setup=manylinux_install_setup,
+        aarch64_tests=manylinux_aarch64_tests,
         with_legacy_python=with_legacy_python,
         with_future_python=with_future_python,
     )
