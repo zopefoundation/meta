@@ -164,3 +164,6 @@ z3c.pt
 zope.componentvocabulary
 zope.testbrowser
 zope.copypastemove
+zope.principalannotation
+zope.structuredtext
+zope.viewlet
