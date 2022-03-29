@@ -7,6 +7,7 @@ skip_install = true
 deps =
     setuptools < 60
     zc.buildout==3.0.0rc2
+    wheel > 0.37
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}
@@ -48,7 +49,7 @@ allowlist_externals =
 commands =
 {% if use_flake8 %}
     isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py
-    - flake8 --format=html {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
+    - flake8 {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
     flake8 {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
 {% endif %}
     check-manifest
@@ -59,8 +60,6 @@ deps =
 {% if use_flake8 %}
     flake8
     isort
-    # helper to generate HTML reports:
-    flake8-html
     # Useful flake8 plugins that are Python and Plone specific:
     flake8-coding
     flake8-debugger

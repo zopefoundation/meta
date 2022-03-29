@@ -167,3 +167,5 @@ zope.copypastemove
 zope.principalannotation
 zope.structuredtext
 zope.viewlet
+zope.keyreference
+z3c.template
