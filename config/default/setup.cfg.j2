@@ -43,7 +43,7 @@ ignore-bad-ideas =
     %(line)s
   {% endfor %}
 {% endif %}
-{% if config_type == 'zope-product' %}
+{% if config_type in ('pure-python', 'zope-product') %}
 
 [isort]
 force_single_line = True
