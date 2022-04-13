@@ -108,7 +108,11 @@ jobs:
           python setup.py bdist_wheel
           # Also install it, so that we get dependencies in the (pip) cache.
           pip install -U 'faulthandler; python_version == "2.7" and platform_python_implementation == "CPython"'
+{% if with_future_python %}
+          pip install --pre .[test]
+{% else %}
           pip install .[test]
+{% endif %}
 
       - name: Check %(package_name)s build
         run: |
@@ -164,7 +168,11 @@ jobs:
           # when we ask it to load tests from that directory. This
           # might also save some build time?
           unzip -n dist/%(package_name)s-*whl -d src
+{% if with_future_python %}
+          pip install --pre -U -e .[test]
+{% else %}
           pip install -U -e .[test]
+{% endif %}
       - name: Run tests with C extensions
         if: ${{ !startsWith(matrix.python-version, 'pypy') }}
         run: |
