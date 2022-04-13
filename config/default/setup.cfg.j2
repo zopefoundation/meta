@@ -43,7 +43,6 @@ ignore-bad-ideas =
     %(line)s
   {% endfor %}
 {% endif %}
-{% if config_type in ('pure-python', 'zope-product') %}
 
 [isort]
 force_single_line = True
@@ -58,4 +57,3 @@ known_local_folder = %(isort_known_local_folder)s
 default_section = ZOPE
 line_length = 79
 lines_after_imports = 2
-{% endif %}
