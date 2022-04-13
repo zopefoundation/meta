@@ -1,6 +1,9 @@
 
 [testenv]
 usedevelop = true
+{% if with_future_python %}
+pip_pre = true
+{% endif %}
 deps =
   {% for line in testenv_deps %}
     %(line)s
