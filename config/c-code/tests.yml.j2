@@ -168,7 +168,11 @@ jobs:
           # when we ask it to load tests from that directory. This
           # might also save some build time?
           unzip -n dist/%(package_name)s-*whl -d src
+{% if with_future_python %}
+          pip install --pre -U -e .[test]
+{% else %}
           pip install -U -e .[test]
+{% endif %}
       - name: Run tests with C extensions
         if: ${{ !startsWith(matrix.python-version, 'pypy') }}
         run: |
