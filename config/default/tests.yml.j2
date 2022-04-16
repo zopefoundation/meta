@@ -109,7 +109,11 @@ jobs:
     - name: Coverage
       if: matrix.config[1] == 'coverage'
       run: |
+{% if with_legacy_python %}
         pip install coveralls coverage-python-version
+{% else %}
+        pip install coveralls
+{% endif %}
         coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
