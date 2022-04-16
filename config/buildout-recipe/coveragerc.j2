@@ -1,6 +1,8 @@
 [run]
 source = %(coverage_run_source)s
+{% if with_legacy_python %}
 plugins = coverage_python_version
+{% endif %}
 branch = true
 parallel = true
 {% for line in run_additional_config %}

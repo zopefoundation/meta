@@ -271,6 +271,7 @@ if (config_type_path / 'coveragerc.j2').exists():
         'coveragerc.j2', path / '.coveragerc', config_type,
         coverage_run_source=coverage_run_source,
         run_additional_config=coverage_run_additional_config,
+        with_legacy_python=with_legacy_python,
     )
     add_coveragerc = True
 elif (path / '.coveragerc').exists():
