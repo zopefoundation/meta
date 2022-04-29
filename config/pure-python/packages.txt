@@ -170,3 +170,5 @@ zope.viewlet
 zope.keyreference
 z3c.template
 ZEO
+zope.login
+zope.browserpage
