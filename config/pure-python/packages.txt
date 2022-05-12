@@ -172,3 +172,5 @@ z3c.template
 ZEO
 zope.login
 zope.browserpage
+zope.lifecycleevent
+zope.applicationcontrol
