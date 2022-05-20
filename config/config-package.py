@@ -19,7 +19,7 @@ META_HINT_MARKDOWN = """\
 Generated from:
 https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 --> """
-FUTURE_PYTHON_VERSION = "3.11.0-alpha.7"
+FUTURE_PYTHON_VERSION = "3.11.0-beta.1"
 
 
 def copy_with_meta(
