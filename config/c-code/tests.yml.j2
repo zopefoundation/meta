@@ -166,6 +166,7 @@ jobs:
 {% else %}
 {% if with_future_python %}
       - name: Install %(package_name)s %(future_python_version)s
+        if: ${{ startsWith(matrix.python-version, '%(future_python_version)s') }}
         run: |
           pip install -U wheel setuptools
           # coverage has a wheel on PyPI for a future python version which is
