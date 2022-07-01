@@ -174,3 +174,4 @@ zope.login
 zope.browserpage
 zope.lifecycleevent
 zope.applicationcontrol
+ZConfig
