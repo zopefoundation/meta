@@ -95,7 +95,7 @@ jobs:
     steps:
 {% include 'tests-cache.j2' %}
 
-{% if with_future_python and with_pypy %}
+{% if with_legacy_python and with_pypy %}
       - name: Install Build Dependencies (PyPy2)
         if: >
            startsWith(matrix.python-version, 'pypy-2.7')
