@@ -2,7 +2,7 @@
 [testenv]
 usedevelop = true
 {% if with_future_python %}
-pip_pre = true
+pip_pre = py311: true
 {% endif %}
 deps =
   {% for line in testenv_deps %}
