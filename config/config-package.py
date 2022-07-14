@@ -282,8 +282,9 @@ manylinux_install_setup = meta_cfg['c-code'].get(
 manylinux_aarch64_tests = meta_cfg['c-code'].get(
     'manylinux-aarch64-tests', [
         'cd /io/',
-        '"${PYBIN}/pip" install tox',
-        '"${PYBIN}/tox" -e py',
+        '${PYBIN}/pip install tox',
+        'TOXENV=$(tox_env_map "${PYBIN}")',
+        '${PYBIN}/tox -e ${TOXENV}',
         'cd ..',
     ])
 if (config_type_path / 'manylinux.sh').exists():
