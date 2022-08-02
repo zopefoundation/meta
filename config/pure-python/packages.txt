@@ -71,7 +71,6 @@ zope.fanstatic
 zope.schemaevent
 zope.app.debug
 zope.app.preference
-zc.resourcelibrary
 zope.app.localpermission
 Missing
 zc.sourcefactory
