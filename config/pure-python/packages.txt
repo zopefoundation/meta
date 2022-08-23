@@ -175,3 +175,4 @@ zope.lifecycleevent
 zope.applicationcontrol
 ZConfig
 zope.principalregistry
+zope.site
