@@ -176,3 +176,5 @@ zope.applicationcontrol
 ZConfig
 zope.principalregistry
 zope.site
+zope.processlifetime
+zope.password

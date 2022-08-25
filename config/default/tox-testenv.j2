@@ -9,8 +9,7 @@ deps =
     %(line)s
   {% endfor %}
   {% if with_sphinx_doctests and with_future_python %}
-    # repoze.sphinx.autointerface does not yet support Sphinx >= 5:
-    Sphinx < 5
+    Sphinx
   {% endif %}
 {% if testenv_setenv %}
 setenv =
