@@ -181,10 +181,12 @@ zope.password
 zope.error
 zope.session
 zope.browserresource
-z3c.coverage
 zope.minmax
 zope.size
 zope.contenttype
 zope.cachedescriptors
 zope.traversing
 z3c.rml
+zope.annotation
+zope.filerepresentation
+zope.dottedname
