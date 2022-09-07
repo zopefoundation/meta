@@ -90,6 +90,7 @@ jobs:
     # Sigh. Note that the matrix must be kept in sync
     # with `test`, and `docs` must use a subset.
     runs-on: ${{ matrix.os }}
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
 {% include 'tests-strategy.j2' %}
 
     steps:
