@@ -60,9 +60,10 @@ Each directory contains the following files if they differ from the default
   - This file is copied to `.editorconfig` and allows developers to have a
     common editor configuration experience in all repos.
 
-* gitignore
+* gitignore.j2
 
-  - This file is copied to `.gitignore`.
+  - This file is copied to `.gitignore` and can be appended trough
+    configuration in ``.meta.cfg``.
 
 * MANIFEST.in.j2
 
@@ -346,7 +347,18 @@ updated. Example:
         "\"${PYBIN}/pip\" install tox",
         "\"${PYBIN}/tox\" -e py",
         "cd ..",
-    ]
+        ]
+
+    [zest-releaser]
+    options = [
+        "prereleaser.before =",
+        "    zest.pocompile.compile.main",
+        ]
+
+    [git]
+    ignore = [
+        "*.mo",
+        ]
 
 
 Meta Options
@@ -628,6 +640,26 @@ manylinux-aarch64-tests
   Replacement for the tests against the aarch64 architecture. This option has
   to be a list of strings and defaults to testing using ``tox`` against all
   supported Python versions, which could be too slow for some packages.
+
+zest.releaser options
+`````````````````````
+
+The corresponding section is named: ``[zest-releaser]`` (with an ``-`` instead
+of the ``.``).
+
+options
+  (Additional) options used to configure ``zest.releaser``. This option has to
+  be a list of strings and defaults to an empty list.
+
+
+git options
+```````````
+
+The corresponding section is named: ``[git]``.
+
+ignore
+  Additional lines to be added to the ``.gitignore`` file. This option has to
+  be a list of strings and defaults to an empty list.
 
 Hints
 -----

@@ -237,6 +237,10 @@ for var in (
         # Avoid whitespace at end of line if empty:
         locals()[var] = ' ' + locals()[var]
 
+zest_releaser_options = meta_cfg['zest-releaser'].get('options', [])
+if config_type == 'c-code':
+    zest_releaser_options.append('create-wheel = no')
+
 copy_with_meta(
     'setup.cfg.j2', path / 'setup.cfg', config_type,
     additional_flake8_config=additional_flake8_config,
@@ -248,9 +252,16 @@ copy_with_meta(
     isort_known_local_folder=isort_known_local_folder,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
     with_legacy_python=with_legacy_python,
+    zest_releaser_options=zest_releaser_options,
+)
+
+git_ignore = meta_cfg['git'].get('ignore', [])
+
+copy_with_meta(
+    'gitignore.j2', path / '.gitignore', config_type,
+    ignore=git_ignore,
 )
 copy_with_meta('editorconfig', path / '.editorconfig', config_type)
-copy_with_meta('gitignore', path / '.gitignore', config_type)
 copy_with_meta(
     'CONTRIBUTING.md', path / 'CONTRIBUTING.md', config_type,
     meta_hint=META_HINT_MARKDOWN)
