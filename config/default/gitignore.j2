@@ -28,3 +28,6 @@ parts/
 pyvenv.cfg
 testing.log
 var/
+{% for line in ignore %}
+%(line)s
+{% endfor %}

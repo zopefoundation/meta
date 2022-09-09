@@ -4,10 +4,12 @@ universal = 1
 {% else %}
 universal = 0
 {% endif %}
-{% if config_type == 'c-code' %}
+{% if zest_releaser_options %}
 
 [zest.releaser]
-create-wheel = no
+{% for line in zest_releaser_options %}
+%(line)s
+{% endfor %}
 {% endif %}
 
 [flake8]
