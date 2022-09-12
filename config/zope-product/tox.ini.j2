@@ -30,7 +30,7 @@ commands =
     %(line)s
   {% endfor %}
 {% else %}
-    {envbindir}/test {posargs:-cv}
+    {envdir}/bin/test {posargs:-cv}
 {% endif %}
 {% for line in testenv_additional %}
 %(line)s
@@ -97,7 +97,7 @@ commands =
     %(line)s
   {% endfor %}
 {% else %}
-    coverage run {envbindir}/test {posargs:-cv}
+    coverage run {envdir}/bin/test {posargs:-cv}
 {% endif %}
     coverage html
     coverage report -m --fail-under=%(fail_under)s
