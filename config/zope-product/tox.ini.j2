@@ -46,7 +46,7 @@ allowlist_externals =
 {% endif %}
 commands =
 {% if use_flake8 %}
-    isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py
+    isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s
     - flake8 {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
     flake8 {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
 {% endif %}
@@ -69,7 +69,7 @@ commands_pre =
 deps =
     isort
 commands =
-    isort {toxinidir}/src {toxinidir}/setup.py []
+    isort {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s []
 {% endif %}
 {% include 'tox-docs.j2' %}
 

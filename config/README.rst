@@ -284,6 +284,7 @@ updated. Example:
     known_third_party = "ipaddress, PasteDeploy"
     known_zope = "AccessControl, Acquisition, App"
     known_first_party = "Products.GenericSetup, Products.CMFCore"
+    additional-sources = "{toxinidir}/tests {toxinidir}/bar.py"
 
     [github-actions]
     services = [
@@ -553,6 +554,10 @@ known_local_folder
   configuration. This option has to be a string. It defaults to the empty
   string.
 
+additional-sources
+  This option defines additional files and/or directories where ``isort``
+  should be applied. This option has to be a string. It defaults to the empty
+  string.
 
 GitHub Actions options
 ``````````````````````
