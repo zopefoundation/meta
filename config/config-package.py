@@ -335,7 +335,11 @@ coverage_run_additional_config = meta_cfg['coverage-run'].get(
 flake8_additional_sources = meta_cfg['flake8'].get('additional-sources', '')
 if flake8_additional_sources:
     # Avoid whitespace at end of line if no additional sources are provided:
-    flake8_additional_sources = ' ' + flake8_additional_sources
+    flake8_additional_sources = f' {flake8_additional_sources}'
+isort_additional_sources = meta_cfg['isort'].get('additional-sources', '')
+if isort_additional_sources:
+    # Avoid whitespace at end of line if no additional sources are provided:
+    isort_additional_sources = f' {isort_additional_sources}'
 if args.use_flake8 is None:
     use_flake8 = meta_cfg['tox'].get('use-flake8', True)
 else:
@@ -352,6 +356,7 @@ copy_with_meta(
     coverage_setenv=coverage_setenv,
     fail_under=fail_under,
     flake8_additional_sources=flake8_additional_sources,
+    isort_additional_sources=isort_additional_sources,
     testenv_additional=testenv_additional,
     testenv_additional_extras=testenv_additional_extras,
     testenv_commands=testenv_commands,
