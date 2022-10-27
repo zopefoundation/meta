@@ -190,3 +190,4 @@ z3c.rml
 zope.annotation
 zope.filerepresentation
 zope.dottedname
+Record
