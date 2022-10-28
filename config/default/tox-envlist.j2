@@ -11,8 +11,9 @@ envlist =
     py38
     py39
     py310
-{% if with_future_python %}
     py311
+{% if with_future_python %}
+    py312
 {% endif %}
 {% if with_pypy and with_legacy_python %}
     pypy
