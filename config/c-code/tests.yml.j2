@@ -154,7 +154,7 @@ jobs:
           ls -l dist
           twine check dist/*
       - name: Upload %(package_name)s wheel
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}.whl
           path: dist/*whl
@@ -351,14 +351,14 @@ jobs:
           bash .manylinux.sh
 
       - name: Upload %(package_name)s wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: wheelhouse/*whl
           name: manylinux_${{ matrix.image }}_wheels.zip
       - name: Restore pip cache permissions
         run: sudo chown -R $(whoami) ${{ steps.pip-cache.outputs.dir }}
       - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.4.1
+        uses: pypa/gh-action-pypi-publish@release/v1
         if: >
           github.event_name == 'push'
           && startsWith(github.ref, 'refs/tags')
