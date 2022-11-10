@@ -75,6 +75,13 @@ parser.add_argument(
     help='Activate running tests on AppVeyor, too, if not already configured'
          ' in .meta.toml.')
 parser.add_argument(
+    '--with-macos',
+    dest='with_macos',
+    action='store_true',
+    default=False,
+    help='Activate running tests on macOS on GitHub Actions, too, if not'
+         ' already configured in .meta.toml.')
+parser.add_argument(
     '--with-windows',
     dest='with_windows',
     action='store_true',
@@ -193,6 +200,9 @@ meta_cfg['meta']['commit-id'] = call(
 with_appveyor = meta_cfg['python'].get(
     'with-appveyor', False) or args.with_appveyor
 meta_cfg['python']['with-appveyor'] = with_appveyor
+with_macos = meta_cfg['python'].get(
+    'with-macos', False) or args.with_macos
+meta_cfg['python']['with-macos'] = with_macos
 with_windows = meta_cfg['python'].get(
     'with-windows', False) or args.with_windows
 meta_cfg['python']['with-windows'] = with_windows
@@ -397,6 +407,7 @@ copy_with_meta(
     with_future_python=with_future_python,
     future_python_version=FUTURE_PYTHON_VERSION,
     with_pypy=with_pypy,
+    with_macos=with_macos,
     with_windows=with_windows,
 )
 

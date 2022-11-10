@@ -25,6 +25,9 @@ jobs:
 {% if with_windows %}
         - windows
 {% endif %}
+{% if with_macos %}
+        - macos
+{% endif %}
         config:
         # [Python version, tox env]
         - ["3.9",   "lint"]
@@ -64,13 +67,21 @@ jobs:
   {% endif %}
           - { os: windows, config: ["3.9",   "coverage"] }
 {% endif %}
+{% if with_macos %}
+          - { os: macos, config: ["3.9",   "lint"] }
+  {% if with_docs %}
+          - { os: macos, config: ["3.9",   "docs"] }
+  {% endif %}
+          - { os: macos, config: ["3.9",   "coverage"] }
+{% endif %}
+
 {% for line in gha_additional_exclude %}
           %(line)s
 {% endfor %}
 
     runs-on: ${{ matrix.os }}-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
-{% if with_windows %}
+{% if with_windows or with_macos %}
     name: ${{ matrix.os }}-${{ matrix.config[1] }}
 {% else %}
     name: ${{ matrix.config[1] }}
