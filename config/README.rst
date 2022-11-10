@@ -300,7 +300,7 @@ updated. Example:
         ]
     additional-exclude = [
         "- { os: windows, config: [\"pypy-2.7\", \"pypy\"] }",
-        "- { os: macos-latest, config: [\"pypy-2.7\", \"pypy\"] }",
+        "- { os: macos, config: [\"pypy-2.7\", \"pypy\"] }",
         ]
     steps-before-checkout = [
         "- name: \"Set some Postgres settings\"",
