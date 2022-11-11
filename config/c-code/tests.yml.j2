@@ -133,7 +133,9 @@ jobs:
           && (startsWith(matrix.python-version, '3.10')
               || startsWith(matrix.python-version, '3.11'))
         env:
-          _PYTHON_HOST_PLATFORM: macosx-11-x86_64
+          MACOSX_DEPLOYMENT_TARGET: 10.9
+          _PYTHON_HOST_PLATFORM: macosx-10.9-x86_64
+          ARCHFLAGS: -arch x86_64
   {% else %}
           !startsWith(runner.os, 'Mac')
           || !(startsWith(matrix.python-version, '3.10')
