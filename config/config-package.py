@@ -380,6 +380,8 @@ gha_steps_before_checkout = meta_cfg['github-actions'].get(
     'steps-before-checkout', [])
 gha_additional_install = meta_cfg['github-actions'].get(
     'additional-install', [])
+gha_additional_build_dependencies = meta_cfg['github-actions'].get(
+    'additional-build-dependencies', [])
 gha_test_commands = meta_cfg['github-actions'].get(
     'test-commands', [])
 copy_with_meta(
@@ -387,6 +389,7 @@ copy_with_meta(
     gha_additional_config=gha_additional_config,
     gha_additional_exclude=gha_additional_exclude,
     gha_additional_install=gha_additional_install,
+    gha_additional_build_dependencies=gha_additional_build_dependencies,
     gha_test_commands=gha_test_commands,
     package_name=path.name,
     services=gha_services,
