@@ -103,6 +103,11 @@ jobs:
         run: |
           pip install -U pip
           pip install -U setuptools wheel twine "cffi != 1.15.1"
+{% if gha_additional_build_dependencies %}
+  {% for line in gha_additional_build_dependencies %}
+          pip install -U %(line)s
+  {% endfor %}
+{% endif %}
       - name: Install Build Dependencies (other Python versions)
         if: >
           !startsWith(matrix.python-version, 'pypy-2.7')
