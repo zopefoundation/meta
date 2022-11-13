@@ -123,18 +123,6 @@ jobs:
   {% endfor %}
 {% endif %}
 
-{% if with_future_python %}
-      - name: Build %(package_name)s (%(future_python_version)s)
-        if: ${{ startsWith(matrix.python-version, '%(future_python_version)s') }}
-        run: |
-          # Next, build the wheel *in place*. This helps ccache, and also lets us cache the configure
-          # output (pip install uses a random temporary directory, making this difficult).
-          python setup.py build_ext -i
-          python setup.py bdist_wheel
-          # Also install it, so that we get dependencies in the (pip) cache.
-          pip install -U 'faulthandler; python_version == "2.7" and platform_python_implementation == "CPython"'
-          pip install --pre .[test]
-{% endif %}
 {% for kind in ('macOS x86_64, Python 3.8+',
                 'macOS arm64, Python 3.8+',
                 'all other versions') %}
@@ -175,11 +163,24 @@ jobs:
           # output (pip install uses a random temporary directory, making this difficult).
           python setup.py build_ext -i
           python setup.py bdist_wheel
-          # Also install it, so that we get dependencies in the (pip) cache.
+{% endfor %}
+
+{% if with_future_python %}
+      - name: Install %(package_name)s and dependencies (%(future_python_version)s)
+        if: matrix.python-version == '%(future_python_version)s'
+        run: |
+          # Install to collect dependencies into the (pip) cache.
+          pip install --pre .[test]
+{% endif %}
+      - name: Install %(package_name)s and dependencies
+{% if with_future_python %}
+        if: matrix.python-version != '%(future_python_version)s'
+{% endif %}
+        run: |
+          # Install to collect dependencies into the (pip) cache.
           pip install -U 'faulthandler; python_version == "2.7" and platform_python_implementation == "CPython"'
           pip install .[test]
 
-{% endfor %}
       - name: Check %(package_name)s build
         run: |
           ls -l dist
