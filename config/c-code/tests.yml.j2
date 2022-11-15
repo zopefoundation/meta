@@ -125,6 +125,7 @@ jobs:
 
 {% for kind in ('macOS x86_64, Python 3.8+',
                 'macOS arm64, Python 3.8+',
+                'macOS universal2, Python 3.8+',
                 'all other versions') %}
       - name: Build %(package_name)s (%(kind)s)
         if: >
@@ -150,6 +151,17 @@ jobs:
           MACOSX_DEPLOYMENT_TARGET: 11.0
           _PYTHON_HOST_PLATFORM: macosx-11.0-arm64
           ARCHFLAGS: -arch arm64
+  {% elif kind == 'macOS universal2, Python 3.8+' %}
+          startsWith(runner.os, 'Mac')
+          && !(startsWith(matrix.python-version, 'pypy')
+               || matrix.python-version == '2.7'
+               || matrix.python-version == '3.5'
+               || matrix.python-version == '3.6'
+               || matrix.python-version == '3.7')
+        env:
+          MACOSX_DEPLOYMENT_TARGET: 10.9
+          _PYTHON_HOST_PLATFORM: macosx-10.9-universal2
+          ARCHFLAGS: -arch arm64 -arch x86_64
   {% else %}
           !startsWith(runner.os, 'Mac')
           || startsWith(matrix.python-version, 'pypy')
@@ -185,12 +197,15 @@ jobs:
         run: |
           ls -l dist
           twine check dist/*
-{% for kind in ('macOS x86_64', 'macOS arm64', 'all other platforms') %}
+{% for kind in ('macOS x86_64',
+                'macOS arm64',
+                'macOS universal2',
+                'all other platforms') %}
       - name: Upload %(package_name)s wheel (%(kind)s)
         if: >
   {% if kind == 'macOS x86_64' %}
           startsWith(runner.os, 'Mac')
-  {% elif kind == 'macOS arm64' %}
+  {% elif kind == 'macOS arm64' or kind == 'macOS universal2' %}
           startsWith(runner.os, 'Mac')
           && !(startsWith(matrix.python-version, 'pypy')
                || matrix.python-version == '2.7'
@@ -207,6 +222,10 @@ jobs:
           # manually downloaded when desired. The wheel itself *cannot* be tested
           # on the GHA runner, which uses x86_64 architecture.
           name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}-arm64.whl
+  {% elif kind == 'macOS universal2' %}
+          # The universal2 wheel is uploaded with a different name just so it
+          # can be manually downloaded when desired.
+          name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}-universal2.whl
   {% else %}
           name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}.whl
   {% endif %}
@@ -214,6 +233,8 @@ jobs:
           path: dist/*x86_64.whl
   {% elif kind == 'macOS arm64' %}
           path: dist/*arm64.whl
+  {% elif kind == 'macOS universal2' %}
+          path: dist/*universal2.whl
   {% else %}
           path: dist/*whl
   {% endif %}
