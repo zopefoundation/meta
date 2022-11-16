@@ -155,6 +155,9 @@ The following options are only needed one time as their values re stored in
 --with-appveyor
   Enable running the tests on AppVeyor, too.
 
+--with-macos
+  Enable running the tests on macOS on GitHub Actions.
+
 --with-windows
   Enable running the tests on Windows on GitHub Actions.
 
@@ -204,6 +207,7 @@ updated. Example:
     with-pypy = false
     with-docs = true
     with-sphinx-doctests = false
+    with-macos = false
     with-windows = false
 
     [coverage]
@@ -296,6 +300,7 @@ updated. Example:
         ]
     additional-exclude = [
         "- { os: windows, config: [\"pypy-2.7\", \"pypy\"] }",
+        "- { os: macos, config: [\"pypy-2.7\", \"pypy\"] }",
         ]
     steps-before-checkout = [
         "- name: \"Set some Postgres settings\"",
@@ -379,6 +384,9 @@ Python options
 
 with-appveyor
   Run the tests also on AppVeyor: true/false
+
+with-macos
+  Run the tests also on macOS on GitHub Actions: true/false, default: false
 
 with-windows
   Run the tests also on Windows on GitHub Actions: true/false, default: false
