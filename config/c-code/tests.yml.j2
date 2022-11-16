@@ -182,6 +182,8 @@ jobs:
         if: matrix.python-version == '%(future_python_version)s'
         run: |
           # Install to collect dependencies into the (pip) cache.
+          # Use "--pre" here because dependencies with support for this future
+          # Python release may only be available as pre-releases
           pip install --pre .[test]
 {% endif %}
       - name: Install %(package_name)s and dependencies
@@ -282,6 +284,8 @@ jobs:
           # when we ask it to load tests from that directory. This
           # might also save some build time?
           unzip -n dist/%(package_name)s-*whl -d src
+          # Use "--pre" here because dependencies with support for this future
+          # Python release may only be available as pre-releases
           pip install --pre -U -e .[test]
 {% endif %}
       - name: Install %(package_name)s
