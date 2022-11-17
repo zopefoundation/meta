@@ -125,7 +125,6 @@ jobs:
 
 {% for kind in ('macOS x86_64, Python 3.8+',
                 'macOS arm64, Python 3.8+',
-                'macOS universal2, Python 3.8+',
                 'all other versions') %}
       - name: Build %(package_name)s (%(kind)s)
         if: >
@@ -201,7 +200,6 @@ jobs:
           twine check dist/*
 {% for kind in ('macOS x86_64',
                 'macOS arm64',
-                'macOS universal2',
                 'all other platforms') %}
       - name: Upload %(package_name)s wheel (%(kind)s)
         if: >
