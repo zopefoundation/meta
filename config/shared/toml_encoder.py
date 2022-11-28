@@ -4,8 +4,9 @@ import toml
 class TomlArraySeparatorEncoderWithNewline(toml.TomlArraySeparatorEncoder):
     """Special version indenting the first element of and array.
 
-    After https://github.com/uiri/toml/pull/343 is merged an released we can
-    use the upstream version here.
+    In https://github.com/zopefoundation/meta/issues/118 we suggest to switch
+    to Python 3.11 and its built-in toml support. We'll see if this path is
+    still needed then.
     """
 
     def __init__(self, _dict=dict, preserve=False, separator=",",
