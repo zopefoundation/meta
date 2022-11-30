@@ -191,3 +191,7 @@ zope.annotation
 zope.filerepresentation
 zope.dottedname
 Record
+zope.location
+zope.copy
+zope.deprecation
+zope.app.i18n

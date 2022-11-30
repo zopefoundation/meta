@@ -37,8 +37,8 @@ commands =
 {% if with_sphinx_doctests %}
     coverage run -a -m sphinx -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
 {% endif %}
-    coverage html
-    coverage report -m --fail-under=%(fail_under)s
+    coverage html --ignore-errors
+    coverage report --ignore-errors --show-missing --fail-under=%(fail_under)s
 {% for line in coverage_additional %}
 %(line)s
 {% endfor %}
