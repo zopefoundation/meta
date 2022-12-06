@@ -21,12 +21,12 @@ jobs:
       fail-fast: false
       matrix:
         os:
-        - ubuntu-20.04
+        - ["ubuntu", "ubuntu-20.04"]
 {% if with_windows %}
-        - windows-latest
+        - ["windows", "windows-latest"]
 {% endif %}
 {% if with_macos %}
-        - macos-latest
+        - ["macos", "macos-latest"]
 {% endif %}
         config:
         # [Python version, tox env]
@@ -61,30 +61,30 @@ jobs:
         exclude:
 {% endif %}
 {% if with_windows %}
-          - { os: windows-latest, config: ["3.9",   "lint"] }
+          - { os: ["windows", "windows-latest"], config: ["3.9",   "lint"] }
   {% if with_docs %}
-          - { os: windows-latest, config: ["3.9",   "docs"] }
+          - { os: ["windows", "windows-latest"], config: ["3.9",   "docs"] }
   {% endif %}
-          - { os: windows-latest, config: ["3.9",   "coverage"] }
+          - { os: ["windows", "windows-latest"], config: ["3.9",   "coverage"] }
 {% endif %}
 {% if with_macos %}
-          - { os: macos-latest, config: ["3.9",   "lint"] }
+          - { os: ["macos", "macos-latest"], config: ["3.9",   "lint"] }
   {% if with_docs %}
-          - { os: macos-latest, config: ["3.9",   "docs"] }
+          - { os: ["macos", "macos-latest"], config: ["3.9",   "docs"] }
   {% endif %}
-          - { os: macos-latest, config: ["3.9",   "coverage"] }
+          - { os: ["macos", "macos-latest"], config: ["3.9",   "coverage"] }
           # macOS/Python 3.11 is set up for universal2 architecture
           # which causes build and package selection issues.
-          - { os: macos-latest, config: ["3.11",  "py311"] }
+          - { os: ["macos", "macos-latest"], config: ["3.11",  "py311"] }
 {% endif %}
 {% for line in gha_additional_exclude %}
           %(line)s
 {% endfor %}
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os[1] }}
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
 {% if with_windows or with_macos %}
-    name: ${{ matrix.os }}-${{ matrix.config[1] }}
+    name: ${{ matrix.os[0] }}-${{ matrix.config[1] }}
 {% else %}
     name: ${{ matrix.config[1] }}
 {% endif %}
