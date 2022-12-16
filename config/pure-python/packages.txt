@@ -195,3 +195,6 @@ zope.location
 zope.copy
 zope.deprecation
 zope.app.i18n
+zope.app.security
+ZopeUndo
+grok

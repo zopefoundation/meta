@@ -454,7 +454,7 @@ if with_appveyor:
     )
 
 
-branch_name = args.branch_name or f'config-with-{config_type}'
+branch_name = args.branch_name or f'config-with-{config_type}-template'
 with change_dir(path) as cwd:
     if pathlib.Path('bootstrap.py').exists():
         call('git', 'rm', 'bootstrap.py')
