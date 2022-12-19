@@ -1,16 +1,13 @@
 {% set with_coverage = True %}
 {% set raw_testenv_setenv = testenv_setenv %}
-{% set testenv_setenv = ['pure: PURE_PYTHON=1', '!pure-!pypy-!pypy3: PURE_PYTHON=0'] + testenv_setenv %}
+{% set testenv_setenv = ['pure: PURE_PYTHON=1', '!pure-!pypy3: PURE_PYTHON=0'] + testenv_setenv %}
 {% set coverage_setenv = ['PURE_PYTHON=1'] + coverage_setenv %}
 [tox]
 minversion = 3.18
 envlist =
     lint
 {% if with_legacy_python %}
-    py27,py27-pure
-    py35,py35-pure
 {% endif %}
-    py36,py36-pure
     py37,py37-pure
     py38,py38-pure
     py39,py39-pure
@@ -20,7 +17,6 @@ envlist =
     py312,py312-pure
 {% endif %}
 {% if with_pypy and with_legacy_python %}
-    pypy
 {% endif %}
 {% if with_pypy %}
     pypy3

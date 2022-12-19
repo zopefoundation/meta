@@ -21,8 +21,7 @@ commands_pre =
     %(line)s
   {% endfor %}
 {% else %}
-    py27,py35: {envbindir}/buildout -nc {toxinidir}/buildout4.cfg buildout:directory={envdir} buildout:develop={toxinidir} install test
-    !py27-!py35: {envbindir}/buildout -nc {toxinidir}/buildout.cfg buildout:directory={envdir} buildout:develop={toxinidir} install test
+    {envbindir}/buildout -nc {toxinidir}/buildout.cfg buildout:directory={envdir} buildout:develop={toxinidir} install test
 {% endif %}
 commands =
 {% if testenv_commands %}

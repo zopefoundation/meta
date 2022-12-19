@@ -93,7 +93,7 @@ Preparation
 
 The script needs a ``venv`` with some packages installed::
 
-    $ python3.8 -m venv .
+    $ python3.11 -m venv .
     $ bin/pip install -r requirements.txt
 
 To use the configuration provided here in a package call the following script::
@@ -171,8 +171,7 @@ The following options are only needed one time as their values re stored in
 
 --without-legacy-python
   The package does not support Python versions which reached their end-of-life.
-  (Currently this means dropping support for Python 2.7 and 3.5.) This as well
-  drops support for PyPy2.
+  (Currently this is a no-op as there are no supported legacy versions).
 
 --with-docs
   Enable building the documentation using Sphinx.
@@ -299,8 +298,8 @@ updated. Example:
         "- [\"3.8\",   \"py38-slim\"]",
         ]
     additional-exclude = [
-        "- { os: windows, config: [\"pypy-2.7\", \"pypy\"] }",
-        "- { os: macos, config: [\"pypy-2.7\", \"pypy\"] }",
+        "- { os: windows, config: [\"pypy-3.7\", \"pypy\"] }",
+        "- { os: macos, config: [\"pypy-3.7\", \"pypy\"] }",
         ]
     steps-before-checkout = [
         "- name: \"Set some Postgres settings\"",
@@ -396,7 +395,7 @@ with-windows
   Run the tests also on Windows on GitHub Actions: true/false, default: false
 
 with-legacy-python
-  Run the tests even on Python 2.7, PyPy2 and Python 3.5: true/false
+  Run the tests even on legacy versions (currently none): true/false
 
 with-pypy
   Does the package support PyPy: true/false

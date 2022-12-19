@@ -32,10 +32,7 @@ jobs:
         # [Python version, tox env]
         - ["3.9",   "lint"]
 {% if with_legacy_python %}
-        - ["2.7",   "py27"]
-        - ["3.5",   "py35"]
 {% endif %}
-        - ["3.6",   "py36"]
         - ["3.7",   "py37"]
         - ["3.8",   "py38"]
         - ["3.9",   "py39"]
@@ -45,7 +42,6 @@ jobs:
         - ["%(future_python_version)s",  "py312"]
 {% endif %}
 {% if with_pypy and with_legacy_python %}
-        - ["pypy-2.7", "pypy"]
 {% endif %}
 {% if with_pypy %}
         - ["pypy-3.7", "pypy3"]
