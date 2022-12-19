@@ -96,10 +96,7 @@ jobs:
     steps:
 {% include 'tests-cache.j2' %}
 
-{% if with_legacy_python and with_pypy %}
-{% else %}
       - name: Install Build Dependencies
-{% endif %}
         run: |
           pip install -U pip
           pip install -U setuptools wheel twine cffi
