@@ -210,7 +210,10 @@ meta_cfg['python']['with-docs'] = with_docs
 with_sphinx_doctests = meta_cfg['python'].get(
     'with-sphinx-doctests', False) or args.with_sphinx_doctests
 meta_cfg['python']['with-sphinx-doctests'] = with_sphinx_doctests
-
+try:
+    del meta_cfg['python']['with-legacy-python']
+except KeyError:
+    pass
 
 if with_sphinx_doctests and not with_docs:
     print("The package is configured without sphinx docs, but with sphinx"

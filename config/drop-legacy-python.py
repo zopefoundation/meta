@@ -63,8 +63,10 @@ with change_dir(path) as cwd_str:
     src = path.resolve() / 'src'
     call('find', src, '-name', '*.py', '-exec',
          bin_dir / 'pyupgrade', '--py3-plus', '--py37-plus', '{}', ';')
+    call(bin_dir / 'pyupgrade', '--py3-plus', '--py37-plus', 'setup.py')
+
     excludes = ('--exclude-dir', '__pycache__', '--exclude-dir', '*.egg-info',
-                '--exclude', '*.pyc')
+                '--exclude', '*.pyc', '--exclude', '*.so')
     print(
         'Replace all remaining `six` mentions or continue if none are listed.')
     call('grep', '-rn', 'six', src, *excludes, allowed_return_codes=(0, 1))
