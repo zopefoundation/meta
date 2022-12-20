@@ -60,22 +60,24 @@ with change_dir(path) as cwd_str:
     call(*config_package_args, cwd=cwd_str)
     print('Remove `six` from the list of dependencies and other Py 2 things.')
     call(os.environ['EDITOR'], 'setup.py')
-    call('find', 'src', '-name', '"*.py"',
-         '-exec', 'bin/pyupgrade', '--py3-plus', '--py37-plus', '{}', ';')
-    print('Replace all remaining `six` mentions.')
     src = path.resolve() / 'src'
+    call('find', src, '-name', '"*.py"',
+         '-exec', 'bin/pyupgrade', '--py3-plus', '--py37-plus', '{}', ';')
     excludes = ('--exclude-dir', '__pycache__', '--exclude-dir', '*.egg-info',
                 '--exclude', '*.pyc')
-    call('grep', '-rn', 'six', src, *excludes)
+    print(
+        'Replace all remaining `six` mentions or continue if none are listed.')
+    call('grep', '-rn', 'six', src, *excludes, allowed_return_codes=(0, 1))
     wait_for_accept()
     print('Replace any remaining code that may support legacy Python 2:')
     call('egrep', '-rn',
          '2.7|3.5|3.6|sys.version|PY2|PY3|Py2|Py3|Python 2|Python 3'
-         '|__unicode__|ImportError"', src, *excludes)
+         '|__unicode__|ImportError"', src, *excludes,
+         allowed_return_codes=(0, 1))
     wait_for_accept()
     tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
     call(tox_path, '-p', 'auto')
-    print('Add all changes ')
+    print('Adding, committing and pushing all changes ...')
     call('git', 'add', '.')
     call('git', 'commit', '-m', 'Drop support for Python 2.7 up to 3.6.')
     call('git', 'push', '--set-upstream', 'origin', branch_name)
