@@ -61,8 +61,8 @@ with change_dir(path) as cwd_str:
     print('Remove `six` from the list of dependencies and other Py 2 things.')
     call(os.environ['EDITOR'], 'setup.py')
     src = path.resolve() / 'src'
-    call('find', src, '-name', '*.py',
-         '-exec', 'bin/pyupgrade', '--py3-plus', '--py37-plus', '{}', ';')
+    call('find', src, '-name', '*.py', '-exec',
+         bin_dir / 'pyupgrade', '--py3-plus', '--py37-plus', '{}', ';')
     excludes = ('--exclude-dir', '__pycache__', '--exclude-dir', '*.egg-info',
                 '--exclude', '*.pyc')
     print(
