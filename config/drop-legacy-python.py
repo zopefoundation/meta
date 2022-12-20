@@ -72,7 +72,7 @@ with change_dir(path) as cwd_str:
     print('Replace any remaining code that may support legacy Python 2:')
     call('egrep', '-rn',
          '2.7|3.5|3.6|sys.version|PY2|PY3|Py2|Py3|Python 2|Python 3'
-         '|__unicode__|ImportError"', src, *excludes,
+         '|__unicode__|ImportError', src, *excludes,
          allowed_return_codes=(0, 1))
     wait_for_accept()
     tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
