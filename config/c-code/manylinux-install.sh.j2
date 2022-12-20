@@ -29,8 +29,6 @@ yum -y install libffi-devel
 
 tox_env_map() {
     case $1 in
-{% if with_legacy_python %}
-{% endif %}
 {% if with_future_python %}
         *"cp312"*) echo 'py312';;
 {% endif %}
@@ -46,8 +44,6 @@ tox_env_map() {
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
     if \
-{% if with_legacy_python %}
-{% endif %}
 {% if with_future_python %}
        [[ "${PYBIN}" == *"cp312"* ]] || \
 {% endif %}

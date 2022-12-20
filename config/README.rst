@@ -169,10 +169,6 @@ The following options are only needed one time as their values re stored in
   a final release thus it is not yet generally supported by the zopefoundation
   packages.
 
---without-legacy-python
-  The package does not support Python versions which reached their end-of-life.
-  (Currently this is a no-op as there are no supported legacy versions).
-
 --with-docs
   Enable building the documentation using Sphinx.
 
@@ -202,7 +198,6 @@ updated. Example:
 
     [python]
     with-appveyor = false
-    with-legacy-python = true
     with-pypy = false
     with-docs = true
     with-sphinx-doctests = false
@@ -393,9 +388,6 @@ with-macos
 
 with-windows
   Run the tests also on Windows on GitHub Actions: true/false, default: false
-
-with-legacy-python
-  Run the tests even on legacy versions (currently none): true/false
 
 with-pypy
   Does the package support PyPy: true/false

@@ -2,10 +2,6 @@
       fail-fast: false
       matrix:
         python-version:
-{% if with_legacy_python %}
-{% endif %}
-{% if with_pypy and with_legacy_python %}
-{% endif %}
 {% if with_pypy %}
           - "pypy-3.7"
 {% endif %}
@@ -24,8 +20,6 @@
 {% if with_pypy %}
           - os: macos-latest
             python-version: "pypy-3.7"
-{% endif %}
-{% if with_legacy_python %}
 {% endif %}
 {% for line in gha_additional_exclude %}
           %(line)s

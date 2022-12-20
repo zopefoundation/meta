@@ -31,8 +31,6 @@ jobs:
         config:
         # [Python version, tox env]
         - ["3.9",   "lint"]
-{% if with_legacy_python %}
-{% endif %}
         - ["3.7",   "py37"]
         - ["3.8",   "py38"]
         - ["3.9",   "py39"]
@@ -40,8 +38,6 @@ jobs:
         - ["3.11",  "py311"]
 {% if with_future_python %}
         - ["%(future_python_version)s",  "py312"]
-{% endif %}
-{% if with_pypy and with_legacy_python %}
 {% endif %}
 {% if with_pypy %}
         - ["pypy-3.7", "pypy3"]
@@ -120,11 +116,7 @@ jobs:
     - name: Coverage
       if: matrix.config[1] == 'coverage'
       run: |
-{% if with_legacy_python %}
-        pip install coveralls coverage-python-version
-{% else %}
         pip install coveralls
-{% endif %}
         coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

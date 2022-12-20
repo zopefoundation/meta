@@ -86,9 +86,6 @@ setenv =
 deps =
     {[testenv]deps}
     coverage
-{% if with_legacy_python %}
-    coverage-python-version
-{% endif %}
 commands =
     mkdir -p {toxinidir}/parts/htmlcov
 {% if coverage_command %}

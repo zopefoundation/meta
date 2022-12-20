@@ -10,9 +10,6 @@ allowlist_externals =
     mkdir
 deps =
     coverage
-{% if with_legacy_python %}
-    coverage-python-version
-{% endif %}
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}
