@@ -32,11 +32,7 @@ commands =
     zope-testrunner --test-path=src {posargs:-vc}
 {% endif %}
 {% if with_sphinx_doctests %}
-  {% if with_legacy_python %}
-    !py27-!pypy: sphinx-build -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
-  {% else %}
     sphinx-build -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
-  {% endif %}
 {% endif %}
 extras =
     test

@@ -1,4 +1,4 @@
-Jinja2==3.0.2
-check-python-versions==0.19.1
+Jinja2==3.1.2
+check-python-versions==0.20.0
 toml==0.10.2
-tox==3.24.4
+tox==4.0.14

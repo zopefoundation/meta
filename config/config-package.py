@@ -107,8 +107,7 @@ parser.add_argument(
     action='store_false',
     default=None,
     help='Disable support for Python versions which reached their end-of-life.'
-    ' (aka 2.7 and 3.5) if not already configured in .meta.toml.'
-    ' Also disables support for PyPy2.')
+    ' (currently no versions) if not already configured in .meta.toml.')
 parser.add_argument(
     '--with-docs',
     # people (me) use --with-sphinx and accidentally get --with-sphinx-doctests
@@ -454,7 +453,9 @@ if with_appveyor:
     )
 
 
-branch_name = args.branch_name or f'config-with-{config_type}-template'
+branch_name = (
+    args.branch_name
+    or f"config-with-{config_type}-template-{meta_cfg['meta']['commit-id']}")
 with change_dir(path) as cwd:
     if pathlib.Path('bootstrap.py').exists():
         call('git', 'rm', 'bootstrap.py')
