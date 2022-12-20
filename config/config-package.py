@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 from shared.call import abort
 from shared.call import call
+from shared.git import get_branch_name
+from shared.git import get_commit_id
+from shared.git import git_branch
 from shared.path import change_dir
 from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
@@ -194,8 +197,7 @@ jinja_env = jinja2.Environment(
     lstrip_blocks=True,
 )
 
-meta_cfg['meta']['commit-id'] = call(
-    'git', 'log', '-n1', '--format=format:%H', capture_output=True).stdout
+meta_cfg['meta']['commit-id'] = get_commit_id()
 with_appveyor = meta_cfg['python'].get(
     'with-appveyor', False) or args.with_appveyor
 meta_cfg['python']['with-appveyor'] = with_appveyor
@@ -453,9 +455,7 @@ if with_appveyor:
     )
 
 
-branch_name = (
-    args.branch_name
-    or f"config-with-{config_type}-template-{meta_cfg['meta']['commit-id']}")
+branch_name = get_branch_name(args.branch_name, config_type)
 with change_dir(path) as cwd:
     if pathlib.Path('bootstrap.py').exists():
         call('git', 'rm', 'bootstrap.py')
@@ -482,15 +482,8 @@ with change_dir(path) as cwd:
     tox_path = shutil.which('tox') or (pathlib.Path(cwd) / 'bin' / 'tox')
     call(tox_path, '-p', 'auto')
 
-    branches = call(
-        'git', 'branch', '--format', '%(refname:short)',
-        capture_output=True).stdout.splitlines()
-    if branch_name in branches:
-        call('git', 'checkout', branch_name)
-        updating = True
-    else:
-        call('git', 'checkout', '-b', branch_name)
-        updating = False
+    updating = git_branch(branch_name)
+
     if not fail_under:
         print('In .meta.toml in section [coverage] the option "fail-under" is'
               ' 0. Please enter a valid minimum coverage and rerun.')

@@ -10,6 +10,12 @@ def abort(exitcode):
         sys.exit(exitcode)
 
 
+def wait_for_accept():
+    """Wait until the user has hit enter."""
+    print('Proceed by hitting <ENTER>')
+    input()
+
+
 def call(*args, capture_output=False, cwd=None):
     """Call `args` as a subprocess.
 
