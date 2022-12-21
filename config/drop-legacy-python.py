@@ -52,11 +52,11 @@ with change_dir(path) as cwd_str:
     if not args.interactive:
         call(bin_dir / 'bumpversion', '--breaking', '--no-input')
         call(bin_dir / 'addchangelogentry',
-            'Drop support for Python 2.7, 3.5, 3.6.', '--no-input')
+             'Drop support for Python 2.7, 3.5, 3.6.', '--no-input')
     else:
         call(bin_dir / 'bumpversion', '--breaking')
         call(bin_dir / 'addchangelogentry',
-            'Drop support for Python 2.7, 3.5, 3.6.')
+             'Drop support for Python 2.7, 3.5, 3.6.')
     call(bin_dir / 'check-python-versions',
          '--drop=2.7,3.5,3.6', '--only=setup.py')
     print('Remove legacy Python specific settings from .meta.toml')
