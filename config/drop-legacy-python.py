@@ -24,6 +24,13 @@ parser.add_argument(
     help='Define a git branch name to be used for the changes. If not given'
          ' it is constructed automatically and includes the configuration'
          ' type')
+parser.add_argument(
+    '--interactive',
+    dest='interactive',
+    action='store_true',
+    default=False,
+    help='Run interactively: Scripts will prompt for input and changes will '
+         'not be committed and pushed automatically.')
 
 
 args = parser.parse_args()
@@ -42,9 +49,14 @@ with change_dir(path) as cwd_str:
     branch_name = get_branch_name(args.branch_name, config_type)
     updating = git_branch(branch_name)
 
-    call(bin_dir / 'bumpversion', '--breaking', '--no-input')
-    call(bin_dir / 'addchangelogentry',
-         'Drop support for Python 2.7, 3.5, 3.6.', '--no-input')
+    if not args.interactive:
+        call(bin_dir / 'bumpversion', '--breaking', '--no-input')
+        call(bin_dir / 'addchangelogentry',
+            'Drop support for Python 2.7, 3.5, 3.6.', '--no-input')
+    else:
+        call(bin_dir / 'bumpversion', '--breaking')
+        call(bin_dir / 'addchangelogentry',
+            'Drop support for Python 2.7, 3.5, 3.6.')
     call(bin_dir / 'check-python-versions',
          '--drop=2.7,3.5,3.6', '--only=setup.py')
     print('Remove legacy Python specific settings from .meta.toml')
@@ -57,6 +69,8 @@ with change_dir(path) as cwd_str:
         f'--branch={branch_name}',
         '--no-push',
     ]
+    if args.interactive:
+        config_package_args.append('--no-commit')
     call(*config_package_args, cwd=cwd_str)
     print('Remove `six` from the list of dependencies and other Py 2 things.')
     call(os.environ['EDITOR'], 'setup.py')
@@ -79,12 +93,15 @@ with change_dir(path) as cwd_str:
     wait_for_accept()
     tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
     call(tox_path, '-p', 'auto')
-    print('Adding, committing and pushing all changes ...')
-    call('git', 'add', '.')
-    call('git', 'commit', '-m', 'Drop support for Python 2.7 up to 3.6.')
-    call('git', 'push', '--set-upstream', 'origin', branch_name)
-    if updating:
-        print('Updated the previously created PR.')
+    if not args.interactive:
+        print('Adding, committing and pushing all changes ...')
+        call('git', 'add', '.')
+        call('git', 'commit', '-m', 'Drop support for Python 2.7 up to 3.6.')
+        call('git', 'push', '--set-upstream', 'origin', branch_name)
+        if updating:
+            print('Updated the previously created PR.')
+        else:
+            print('If everything went fine up to here:')
+            print('Create a PR, using the URL shown above.')
     else:
-        print('If everything went fine up to here:')
-        print('Create a PR, using the URL shown above.')
+        print('Applied all changes. Please check and commit manually.')

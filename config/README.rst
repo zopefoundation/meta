@@ -766,3 +766,8 @@ Additional optional parameters, see above at ``config-package.py`` for a
 descriptions of them:
 
 * ``--branch``
+
+You can call the script interactively by passing the argument
+``--interactive``, this will let the various scripts prompt for information and
+prevent automatic commits and pushes. That way all changes can be viewed before
+committing them.
