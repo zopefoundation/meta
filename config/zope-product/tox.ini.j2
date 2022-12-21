@@ -46,7 +46,6 @@ allowlist_externals =
 commands =
 {% if use_flake8 %}
     isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s
-    - flake8 {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
     flake8 {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
 {% endif %}
     check-manifest
