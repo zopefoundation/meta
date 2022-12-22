@@ -77,7 +77,8 @@ with change_dir(path) as cwd_str:
     src = path.resolve() / 'src'
     call('find', src, '-name', '*.py', '-exec',
          bin_dir / 'pyupgrade', '--py3-plus', '--py37-plus', '{}', ';')
-    call(bin_dir / 'pyupgrade', '--py3-plus', '--py37-plus', 'setup.py')
+    call(bin_dir / 'pyupgrade', '--py3-plus', '--py37-plus', 'setup.py',
+         allowed_return_codes=(0, 1))
 
     excludes = ('--exclude-dir', '__pycache__', '--exclude-dir', '*.egg-info',
                 '--exclude', '*.pyc', '--exclude', '*.so')
