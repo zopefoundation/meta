@@ -41,8 +41,6 @@ dest['meta']['template'] = src['template']
 dest['meta']['commit-id'] = src['commit-id']
 
 dest['python']['with-pypy'] = src.getboolean('with-pypy', False)
-dest['python']['with-legacy-python'] = src.getboolean(
-    'with-legacy-python', True)
 dest['python']['with-docs'] = src.getboolean('with-docs', False)
 dest['python']['with-sphinx-doctests'] = src.getboolean(
     'with-sphinx-doctests', False)

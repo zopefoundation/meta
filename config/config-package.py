@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 from shared.call import abort
 from shared.call import call
+from shared.git import get_branch_name
+from shared.git import get_commit_id
+from shared.git import git_branch
 from shared.path import change_dir
 from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
@@ -102,13 +105,6 @@ parser.add_argument(
     help='Activate support for a future non-final Python version if not'
          ' already configured in .meta.toml.')
 parser.add_argument(
-    '--without-legacy-python',
-    dest='with_legacy_python',
-    action='store_false',
-    default=None,
-    help='Disable support for Python versions which reached their end-of-life.'
-    ' (currently no versions) if not already configured in .meta.toml.')
-parser.add_argument(
     '--with-docs',
     # people (me) use --with-sphinx and accidentally get --with-sphinx-doctests
     # so let's make --with-sphinx an alias for --with-docs
@@ -194,8 +190,7 @@ jinja_env = jinja2.Environment(
     lstrip_blocks=True,
 )
 
-meta_cfg['meta']['commit-id'] = call(
-    'git', 'log', '-n1', '--format=format:%H', capture_output=True).stdout
+meta_cfg['meta']['commit-id'] = get_commit_id()
 with_appveyor = meta_cfg['python'].get(
     'with-appveyor', False) or args.with_appveyor
 meta_cfg['python']['with-appveyor'] = with_appveyor
@@ -210,17 +205,15 @@ meta_cfg['python']['with-pypy'] = with_pypy
 with_future_python = (meta_cfg['python'].get('with-future-python', False)
                       or args.with_future_python)
 meta_cfg['python']['with-future-python'] = with_future_python
-if args.with_legacy_python is None:
-    with_legacy_python = meta_cfg['python'].get('with-legacy-python', True)
-else:
-    with_legacy_python = args.with_legacy_python
-meta_cfg['python']['with-legacy-python'] = with_legacy_python
 with_docs = meta_cfg['python'].get('with-docs', False) or args.with_docs
 meta_cfg['python']['with-docs'] = with_docs
 with_sphinx_doctests = meta_cfg['python'].get(
     'with-sphinx-doctests', False) or args.with_sphinx_doctests
 meta_cfg['python']['with-sphinx-doctests'] = with_sphinx_doctests
-
+try:
+    del meta_cfg['python']['with-legacy-python']
+except KeyError:
+    pass
 
 if with_sphinx_doctests and not with_docs:
     print("The package is configured without sphinx docs, but with sphinx"
@@ -260,7 +253,6 @@ copy_with_meta(
     isort_known_first_party=isort_known_first_party,
     isort_known_local_folder=isort_known_local_folder,
     with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
-    with_legacy_python=with_legacy_python,
     zest_releaser_options=zest_releaser_options,
 )
 
@@ -291,7 +283,6 @@ if (config_type_path / 'coveragerc.j2').exists():
         'coveragerc.j2', path / '.coveragerc', config_type,
         coverage_run_source=coverage_run_source,
         run_additional_config=coverage_run_additional_config,
-        with_legacy_python=with_legacy_python,
     )
     add_coveragerc = True
 elif (path / '.coveragerc').exists():
@@ -315,7 +306,6 @@ if (config_type_path / 'manylinux.sh').exists():
         package_name=path.name,
         setup=manylinux_install_setup,
         aarch64_tests=manylinux_aarch64_tests,
-        with_legacy_python=with_legacy_python,
         with_future_python=with_future_python,
     )
     (path / '.manylinux-install.sh').chmod(0o755)
@@ -374,7 +364,6 @@ copy_with_meta(
     testenv_setenv=testenv_setenv,
     use_flake8=use_flake8,
     with_docs=with_docs,
-    with_legacy_python=with_legacy_python,
     with_future_python=with_future_python,
     with_pypy=with_pypy,
     with_sphinx_doctests=with_sphinx_doctests,
@@ -405,7 +394,6 @@ copy_with_meta(
     steps_before_checkout=gha_steps_before_checkout,
     with_docs=with_docs,
     with_sphinx_doctests=with_sphinx_doctests,
-    with_legacy_python=with_legacy_python,
     with_future_python=with_future_python,
     future_python_version=FUTURE_PYTHON_VERSION,
     with_pypy=with_pypy,
@@ -442,7 +430,6 @@ if with_appveyor:
     appveyor_replacement = meta_cfg['appveyor'].get('replacement', [])
     copy_with_meta(
         'appveyor.yml.j2', path / 'appveyor.yml', config_type,
-        with_legacy_python=with_legacy_python,
         with_future_python=with_future_python,
         global_env_vars=appveyor_global_env_vars,
         additional_matrix=appveyor_additional_matrix,
@@ -453,9 +440,7 @@ if with_appveyor:
     )
 
 
-branch_name = (
-    args.branch_name
-    or f"config-with-{config_type}-template-{meta_cfg['meta']['commit-id']}")
+branch_name = get_branch_name(args.branch_name, config_type)
 with change_dir(path) as cwd:
     if pathlib.Path('bootstrap.py').exists():
         call('git', 'rm', 'bootstrap.py')
@@ -482,15 +467,8 @@ with change_dir(path) as cwd:
     tox_path = shutil.which('tox') or (pathlib.Path(cwd) / 'bin' / 'tox')
     call(tox_path, '-p', 'auto')
 
-    branches = call(
-        'git', 'branch', '--format', '%(refname:short)',
-        capture_output=True).stdout.splitlines()
-    if branch_name in branches:
-        call('git', 'checkout', branch_name)
-        updating = True
-    else:
-        call('git', 'checkout', '-b', branch_name)
-        updating = False
+    updating = git_branch(branch_name)
+
     if not fail_under:
         print('In .meta.toml in section [coverage] the option "fail-under" is'
               ' 0. Please enter a valid minimum coverage and rerun.')

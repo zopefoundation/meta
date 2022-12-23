@@ -26,13 +26,11 @@ jobs:
         - ["windows", "windows-latest"]
 {% endif %}
 {% if with_macos %}
-        - ["macos", "macos-latest"]
+        - ["macos", "macos-11"]
 {% endif %}
         config:
         # [Python version, tox env]
         - ["3.9",   "lint"]
-{% if with_legacy_python %}
-{% endif %}
         - ["3.7",   "py37"]
         - ["3.8",   "py38"]
         - ["3.9",   "py39"]
@@ -40,8 +38,6 @@ jobs:
         - ["3.11",  "py311"]
 {% if with_future_python %}
         - ["%(future_python_version)s",  "py312"]
-{% endif %}
-{% if with_pypy and with_legacy_python %}
 {% endif %}
 {% if with_pypy %}
         - ["pypy-3.7", "pypy3"]
@@ -64,14 +60,14 @@ jobs:
           - { os: ["windows", "windows-latest"], config: ["3.9",   "coverage"] }
 {% endif %}
 {% if with_macos %}
-          - { os: ["macos", "macos-latest"], config: ["3.9",   "lint"] }
+          - { os: ["macos", "macos-11"], config: ["3.9",   "lint"] }
   {% if with_docs %}
-          - { os: ["macos", "macos-latest"], config: ["3.9",   "docs"] }
+          - { os: ["macos", "macos-11"], config: ["3.9",   "docs"] }
   {% endif %}
-          - { os: ["macos", "macos-latest"], config: ["3.9",   "coverage"] }
+          - { os: ["macos", "macos-11"], config: ["3.9",   "coverage"] }
           # macOS/Python 3.11 is set up for universal2 architecture
           # which causes build and package selection issues.
-          - { os: ["macos", "macos-latest"], config: ["3.11",  "py311"] }
+          - { os: ["macos", "macos-11"], config: ["3.11",  "py311"] }
 {% endif %}
 {% for line in gha_additional_exclude %}
           %(line)s
@@ -120,11 +116,7 @@ jobs:
     - name: Coverage
       if: matrix.config[1] == 'coverage'
       run: |
-{% if with_legacy_python %}
-        pip install coveralls coverage-python-version
-{% else %}
         pip install coveralls
-{% endif %}
         coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

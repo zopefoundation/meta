@@ -1,9 +1,6 @@
 
 [coverage:run]
 branch = True
-{% if with_legacy_python %}
-plugins = coverage_python_version
-{% endif %}
 source = %(coverage_run_source)s
 {% for line in coverage_run_additional_config %}
 %(line)s

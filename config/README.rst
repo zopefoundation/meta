@@ -169,10 +169,6 @@ The following options are only needed one time as their values re stored in
   a final release thus it is not yet generally supported by the zopefoundation
   packages.
 
---without-legacy-python
-  The package does not support Python versions which reached their end-of-life.
-  (Currently this is a no-op as there are no supported legacy versions).
-
 --with-docs
   Enable building the documentation using Sphinx.
 
@@ -202,7 +198,6 @@ updated. Example:
 
     [python]
     with-appveyor = false
-    with-legacy-python = true
     with-pypy = false
     with-docs = true
     with-sphinx-doctests = false
@@ -393,9 +388,6 @@ with-macos
 
 with-windows
   Run the tests also on Windows on GitHub Actions: true/false, default: false
-
-with-legacy-python
-  Run the tests even on legacy versions (currently none): true/false
 
 with-pypy
   Does the package support PyPy: true/false
@@ -749,3 +741,33 @@ Usage
 To run the script just call it::
 
     $ bin/python re-enable-actions.py
+
+Dropping support for legacy Python versions
+-------------------------------------------
+
+To drop support for Python 2.7 up to 3.6 several steps have to be done as
+documented at https://zope.dev/developer/python2.html#how-to-drop-support.
+There is a script to ease this process.
+
+Preparation
++++++++++++
+
+* The package to remove legacy python support from has to have a ``.meta.toml``
+  file aka it must be under control of the ``config-package.py`` script.
+
+Usage
++++++
+
+To run the script call::
+
+    $ bin/python drop-legacy-python.py <path-to-package>
+
+Additional optional parameters, see above at ``config-package.py`` for a
+descriptions of them:
+
+* ``--branch``
+
+You can call the script interactively by passing the argument
+``--interactive``, this will let the various scripts prompt for information and
+prevent automatic commits and pushes. That way all changes can be viewed before
+committing them.

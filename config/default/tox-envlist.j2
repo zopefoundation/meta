@@ -2,8 +2,6 @@
 minversion = 3.18
 envlist =
     lint
-{% if with_legacy_python %}
-{% endif %}
     py37
     py38
     py39
@@ -11,8 +9,6 @@ envlist =
     py311
 {% if with_future_python %}
     py312
-{% endif %}
-{% if with_pypy and with_legacy_python %}
 {% endif %}
 {% if with_pypy %}
     pypy3
