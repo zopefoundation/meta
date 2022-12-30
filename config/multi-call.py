@@ -31,7 +31,7 @@ for package in packages:
     if (args.clones / package).exists():
         with change_dir(args.clones / package):
             print('Updating existing checkout …')
-            call('git', 'restore', '.')
+            call('git', 'stash')
             call('git', 'checkout', 'master')
             call('git', 'pull')
     else:

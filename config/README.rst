@@ -713,8 +713,8 @@ The script does the following steps:
 
 .. caution::
 
-  Running this script discards any uncommitted changes in the repositories it
-  runs on! There is no undo for this operation.
+  Running this script stashes any uncommitted changes in the repositories,
+  run `git stash pop` to recover them.
 
 
 Re-enabling GitHub Actions
