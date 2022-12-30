@@ -190,26 +190,26 @@ jinja_env = jinja2.Environment(
     lstrip_blocks=True,
 )
 
+
+def set_config_value(name):
+    global meta_cfg
+    key = f'with-{name}'
+    existing_value = meta_cfg['python'].get(key, False)
+    arg_value = vars(args)[f"with_{name.replace('-', '_')}"]
+    new_value = existing_value or arg_value
+    meta_cfg['python'][key] = new_value
+    return new_value
+
+
 meta_cfg['meta']['commit-id'] = get_commit_id()
-with_appveyor = meta_cfg['python'].get(
-    'with-appveyor', False) or args.with_appveyor
-meta_cfg['python']['with-appveyor'] = with_appveyor
-with_macos = meta_cfg['python'].get(
-    'with-macos', False) or args.with_macos
-meta_cfg['python']['with-macos'] = with_macos
-with_windows = meta_cfg['python'].get(
-    'with-windows', False) or args.with_windows
-meta_cfg['python']['with-windows'] = with_windows
-with_pypy = meta_cfg['python'].get('with-pypy', False) or args.with_pypy
-meta_cfg['python']['with-pypy'] = with_pypy
-with_future_python = (meta_cfg['python'].get('with-future-python', False)
-                      or args.with_future_python)
-meta_cfg['python']['with-future-python'] = with_future_python
-with_docs = meta_cfg['python'].get('with-docs', False) or args.with_docs
-meta_cfg['python']['with-docs'] = with_docs
-with_sphinx_doctests = meta_cfg['python'].get(
-    'with-sphinx-doctests', False) or args.with_sphinx_doctests
-meta_cfg['python']['with-sphinx-doctests'] = with_sphinx_doctests
+with_appveyor = set_config_value('appveyor')
+with_macos = set_config_value('macos')
+with_windows = set_config_value('windows')
+with_pypy = set_config_value('pypy')
+with_future_python = set_config_value('future-python')
+with_docs = set_config_value('docs')
+with_sphinx_doctests = set_config_value('sphinx-doctests')
+
 try:
     del meta_cfg['python']['with-legacy-python']
 except KeyError:
