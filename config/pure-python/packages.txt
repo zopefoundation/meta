@@ -199,3 +199,4 @@ zope.app.security
 ZopeUndo
 grok
 grokcore.site
+hurry.query
