@@ -198,7 +198,7 @@ def set_python_config_value(meta_cfg, args, name, default=False):
     """
     key = f'with-{name}'
     existing_value = meta_cfg['python'].get(key, False)
-    arg_value = vars(args)[f"with_{name.replace('-', '_')}"]
+    arg_value = getattr(args, key.replace('-', '_'))
     new_value = existing_value or arg_value
     meta_cfg['python'][key] = new_value
     return new_value
