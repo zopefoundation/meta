@@ -190,26 +190,30 @@ jinja_env = jinja2.Environment(
     lstrip_blocks=True,
 )
 
+
+def set_python_config_value(meta_cfg, args, name, default=False):
+    """Get value from either python section in config file or cmd line arg.
+
+    Return the value and store it in `meta_cfg`.
+    """
+    key = f'with-{name}'
+    existing_value = meta_cfg['python'].get(key, False)
+    arg_value = getattr(args, key.replace('-', '_'))
+    new_value = existing_value or arg_value
+    meta_cfg['python'][key] = new_value
+    return new_value
+
+
 meta_cfg['meta']['commit-id'] = get_commit_id()
-with_appveyor = meta_cfg['python'].get(
-    'with-appveyor', False) or args.with_appveyor
-meta_cfg['python']['with-appveyor'] = with_appveyor
-with_macos = meta_cfg['python'].get(
-    'with-macos', False) or args.with_macos
-meta_cfg['python']['with-macos'] = with_macos
-with_windows = meta_cfg['python'].get(
-    'with-windows', False) or args.with_windows
-meta_cfg['python']['with-windows'] = with_windows
-with_pypy = meta_cfg['python'].get('with-pypy', False) or args.with_pypy
-meta_cfg['python']['with-pypy'] = with_pypy
-with_future_python = (meta_cfg['python'].get('with-future-python', False)
-                      or args.with_future_python)
-meta_cfg['python']['with-future-python'] = with_future_python
-with_docs = meta_cfg['python'].get('with-docs', False) or args.with_docs
-meta_cfg['python']['with-docs'] = with_docs
-with_sphinx_doctests = meta_cfg['python'].get(
-    'with-sphinx-doctests', False) or args.with_sphinx_doctests
-meta_cfg['python']['with-sphinx-doctests'] = with_sphinx_doctests
+with_appveyor = set_python_config_value(meta_cfg, args, 'appveyor')
+with_macos = set_python_config_value(meta_cfg, args, 'macos')
+with_windows = set_python_config_value(meta_cfg, args, 'windows')
+with_pypy = set_python_config_value(meta_cfg, args, 'pypy')
+with_future_python = set_python_config_value(meta_cfg, args, 'future-python')
+with_docs = set_python_config_value(meta_cfg, args, 'docs')
+with_sphinx_doctests = set_python_config_value(
+    meta_cfg, args, 'sphinx-doctests')
+
 try:
     del meta_cfg['python']['with-legacy-python']
 except KeyError:
