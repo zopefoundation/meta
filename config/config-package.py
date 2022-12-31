@@ -191,8 +191,11 @@ jinja_env = jinja2.Environment(
 )
 
 
-def set_config_value(name):
-    global meta_cfg
+def set_python_config_value(meta_cfg, args, name, default=False):
+    """Get value from either python section in config file or cmd line arg.
+
+    Return the value and store it in `meta_cfg`.
+    """
     key = f'with-{name}'
     existing_value = meta_cfg['python'].get(key, False)
     arg_value = vars(args)[f"with_{name.replace('-', '_')}"]
@@ -202,13 +205,14 @@ def set_config_value(name):
 
 
 meta_cfg['meta']['commit-id'] = get_commit_id()
-with_appveyor = set_config_value('appveyor')
-with_macos = set_config_value('macos')
-with_windows = set_config_value('windows')
-with_pypy = set_config_value('pypy')
-with_future_python = set_config_value('future-python')
-with_docs = set_config_value('docs')
-with_sphinx_doctests = set_config_value('sphinx-doctests')
+with_appveyor = set_python_config_value(meta_cfg, args, 'appveyor')
+with_macos = set_python_config_value(meta_cfg, args, 'macos')
+with_windows = set_python_config_value(meta_cfg, args, 'windows')
+with_pypy = set_python_config_value(meta_cfg, args, 'pypy')
+with_future_python = set_python_config_value(meta_cfg, args, 'future-python')
+with_docs = set_python_config_value(meta_cfg, args, 'docs')
+with_sphinx_doctests = set_python_config_value(
+    meta_cfg, args, 'sphinx-doctests')
 
 try:
     del meta_cfg['python']['with-legacy-python']
