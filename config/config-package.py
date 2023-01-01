@@ -403,6 +403,19 @@ def copy_tests_yml(meta_cfg, path, config_type):
     )
 
 
+def copy_manifest_in(meta_cfg, path, config_type):
+    """Modify MANIFEST.in with meta options"""
+    additional_manifest_rules = meta_cfg['manifest'].get(
+        'additional-rules', [])
+    if config_type == 'c-code' \
+            and 'include *.sh' not in additional_manifest_rules:
+        additional_manifest_rules.insert(0, 'include *.sh')
+    copy_with_meta(
+        'MANIFEST.in.j2', path / 'MANIFEST.in', config_type,
+        additional_rules=additional_manifest_rules,
+        with_docs=with_docs, with_appveyor=with_appveyor)
+
+
 args = handle_command_line_arguments()
 path = args.path.absolute()
 
@@ -466,15 +479,7 @@ copy_tox(meta_cfg, path, config_type, fail_under)
 
 copy_tests_yml(meta_cfg, path, config_type)
 
-
-# Modify MANIFEST.in with meta options
-additional_manifest_rules = meta_cfg['manifest'].get('additional-rules', [])
-if config_type == 'c-code' and 'include *.sh' not in additional_manifest_rules:
-    additional_manifest_rules.insert(0, 'include *.sh')
-copy_with_meta(
-    'MANIFEST.in.j2', path / 'MANIFEST.in', config_type,
-    additional_rules=additional_manifest_rules,
-    with_docs=with_docs, with_appveyor=with_appveyor)
+copy_manifest_in(meta_cfg, path, config_type)
 
 
 if with_appveyor:
