@@ -416,6 +416,34 @@ def copy_manifest_in(meta_cfg, path, config_type):
         with_docs=with_docs, with_appveyor=with_appveyor)
 
 
+def copy_appveyor(meta_cfg, path, config_type):
+    appveyor_global_env_vars = meta_cfg['appveyor'].get(
+        'global-env-vars', [])
+    appveyor_additional_matrix = meta_cfg['appveyor'].get(
+        'additional-matrix', [])
+    appveyor_install_steps = meta_cfg['appveyor'].get(
+        'install-steps', ['- pip install -U -e .[test]'])
+    appveyor_build_script = meta_cfg['appveyor'].get(
+        'build-script', [])
+    if config_type == 'c-code' and not appveyor_build_script:
+        appveyor_build_script = ['- python -W ignore setup.py -q bdist_wheel']
+    appveyor_test_steps = meta_cfg['appveyor'].get(
+        'test-steps', ['- zope-testrunner --test-path=src'])
+    appveyor_additional_lines = meta_cfg['appveyor'].get(
+        'additional-lines', [])
+    appveyor_replacement = meta_cfg['appveyor'].get('replacement', [])
+    copy_with_meta(
+        'appveyor.yml.j2', path / 'appveyor.yml', config_type,
+        with_future_python=with_future_python,
+        global_env_vars=appveyor_global_env_vars,
+        additional_matrix=appveyor_additional_matrix,
+        install_steps=appveyor_install_steps, test_steps=appveyor_test_steps,
+        build_script=appveyor_build_script,
+        additional_lines=appveyor_additional_lines,
+        replacement=appveyor_replacement,
+    )
+
+
 args = handle_command_line_arguments()
 path = args.path.absolute()
 
@@ -483,31 +511,7 @@ copy_manifest_in(meta_cfg, path, config_type)
 
 
 if with_appveyor:
-    appveyor_global_env_vars = meta_cfg['appveyor'].get(
-        'global-env-vars', [])
-    appveyor_additional_matrix = meta_cfg['appveyor'].get(
-        'additional-matrix', [])
-    appveyor_install_steps = meta_cfg['appveyor'].get(
-        'install-steps', ['- pip install -U -e .[test]'])
-    appveyor_build_script = meta_cfg['appveyor'].get(
-        'build-script', [])
-    if config_type == 'c-code' and not appveyor_build_script:
-        appveyor_build_script = ['- python -W ignore setup.py -q bdist_wheel']
-    appveyor_test_steps = meta_cfg['appveyor'].get(
-        'test-steps', ['- zope-testrunner --test-path=src'])
-    appveyor_additional_lines = meta_cfg['appveyor'].get(
-        'additional-lines', [])
-    appveyor_replacement = meta_cfg['appveyor'].get('replacement', [])
-    copy_with_meta(
-        'appveyor.yml.j2', path / 'appveyor.yml', config_type,
-        with_future_python=with_future_python,
-        global_env_vars=appveyor_global_env_vars,
-        additional_matrix=appveyor_additional_matrix,
-        install_steps=appveyor_install_steps, test_steps=appveyor_test_steps,
-        build_script=appveyor_build_script,
-        additional_lines=appveyor_additional_lines,
-        replacement=appveyor_replacement,
-    )
+    copy_appveyor(meta_cfg, path, config_type)
 
 
 branch_name = get_branch_name(args.branch_name, config_type)
