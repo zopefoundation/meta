@@ -151,44 +151,62 @@ def handle_command_line_arguments():
     return args
 
 
+def read_meta_configuration(args, path):
+    """Read and update meta configuration"""
+    meta_toml_path = path / '.meta.toml'
+    if meta_toml_path.exists():
+        meta_cfg = toml.load(meta_toml_path)
+        meta_cfg = collections.defaultdict(dict, **meta_cfg)
+    else:
+        meta_cfg = collections.defaultdict(dict)
+        if args.with_docs is None:
+            args.with_docs = (path / "docs" / "conf.py").exists()
+            print(f"Autodetecting --with-docs: {args.with_docs}")
+        if args.with_appveyor is None:
+            args.with_appveyor = (path / "appveyor.yml").exists()
+            print(f"Autodetecting --with-appveyor: {args.with_appveyor}")
+    return meta_cfg
+
+
+def get_config_type_and_path(meta_cfg, args):
+    """Get the project type and its filesystem path"""
+    config_type = meta_cfg['meta'].get('template') or args.type
+
+    if config_type is None:
+        raise ValueError(
+            'Configuration type not set. Please use `--type` to select it.')
+    meta_cfg['meta']['template'] = config_type
+
+    config_type_path = pathlib.Path(__file__).parent / config_type
+
+    return config_type, config_type_path
+
+
+def add_project_to_config_type_list(config_type_path, path):
+    """Add the current project to packages.txt if it is not there"""
+    with open(config_type_path / 'packages.txt') as f:
+        known_packages = f.read().splitlines()
+
+    if path.name in known_packages:
+        print(f'{path.name} is already configured for this config type, '
+              'updating.')
+    else:
+        print(f'{path.name} is not yet configured for this config type, '
+              'adding.')
+        with open(config_type_path / 'packages.txt', 'a') as f:
+            f.write(f'{path.name}\n')
+
+
 args = handle_command_line_arguments()
 path = args.path.absolute()
 
 if not (path / '.git').exists():
     raise ValueError('`path` does not point to a git clone of a repository!')
 
+meta_cfg = read_meta_configuration(args, path)
+config_type, config_type_path = get_config_type_and_path(meta_cfg, args)
+add_project_to_config_type_list(config_type_path, path)
 
-# Read and update meta configuration
-meta_toml_path = path / '.meta.toml'
-if meta_toml_path.exists():
-    meta_cfg = toml.load(meta_toml_path)
-    meta_cfg = collections.defaultdict(dict, **meta_cfg)
-else:
-    meta_cfg = collections.defaultdict(dict)
-    if args.with_docs is None:
-        args.with_docs = (path / "docs" / "conf.py").exists()
-        print(f"Autodetecting --with-docs: {args.with_docs}")
-    if args.with_appveyor is None:
-        args.with_appveyor = (path / "appveyor.yml").exists()
-        print(f"Autodetecting --with-appveyor: {args.with_appveyor}")
-
-config_type = meta_cfg['meta'].get('template') or args.type
-
-if config_type is None:
-    raise ValueError(
-        'Configuration type not set. Please use `--type` to select it.')
-meta_cfg['meta']['template'] = config_type
-
-config_type_path = pathlib.Path(__file__).parent / config_type
-with open(config_type_path / 'packages.txt') as f:
-    known_packages = f.read().splitlines()
-
-if path.name in known_packages:
-    print(f'{path.name} is already configured for this config type, updating.')
-else:
-    print(f'{path.name} is not yet configured for this config type, adding.')
-    with open(config_type_path / 'packages.txt', 'a') as f:
-        f.write(f'{path.name}\n')
 
 default_path = pathlib.Path(__file__).parent / 'default'
 jinja_env = jinja2.Environment(
