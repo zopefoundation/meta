@@ -307,6 +307,102 @@ def copy_manylinux_sh(meta_cfg, path, config_type, config_type_path,
     return add_manylinux
 
 
+def copy_tox(meta_cfg, path, config_type, fail_under):
+    additional_envlist = meta_cfg['tox'].get('additional-envlist', [])
+    testenv_additional = meta_cfg['tox'].get('testenv-additional', [])
+    testenv_additional_extras = meta_cfg['tox'].get(
+        'testenv-additional-extras', [])
+    testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
+    testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
+    testenv_setenv = meta_cfg['tox'].get('testenv-setenv', [])
+    coverage_basepython = meta_cfg['tox'].get('coverage-basepython', 'python3')
+    coverage_command = meta_cfg['tox'].get('coverage-command', [])
+    if isinstance(coverage_command, str):
+        coverage_command = [coverage_command]
+    coverage_additional = meta_cfg['tox'].get('coverage-additional', [])
+    testenv_deps = meta_cfg['tox'].get('testenv-deps', [])
+    coverage_setenv = meta_cfg['tox'].get('coverage-setenv', [])
+    coverage_run_additional_config = meta_cfg['coverage-run'].get(
+        'additional-config', [])
+    flake8_additional_sources = meta_cfg['flake8'].get(
+        'additional-sources', '')
+    if flake8_additional_sources:
+        # Avoid whitespace at end of line
+        # if no additional sources are provided:
+        flake8_additional_sources = f' {flake8_additional_sources}'
+    isort_additional_sources = meta_cfg['isort'].get('additional-sources', '')
+    if isort_additional_sources:
+        # Avoid whitespace at end of line
+        # if no additional sources are provided:
+        isort_additional_sources = f' {isort_additional_sources}'
+    if args.use_flake8 is None:
+        use_flake8 = meta_cfg['tox'].get('use-flake8', True)
+    else:
+        use_flake8 = args.use_flake8
+    meta_cfg['tox']['use-flake8'] = use_flake8
+    copy_with_meta(
+        'tox.ini.j2', path / 'tox.ini', config_type,
+        additional_envlist=additional_envlist,
+        coverage_additional=coverage_additional,
+        coverage_basepython=coverage_basepython,
+        coverage_command=coverage_command,
+        coverage_run_source=coverage_run_source,
+        coverage_run_additional_config=coverage_run_additional_config,
+        coverage_setenv=coverage_setenv,
+        fail_under=fail_under,
+        flake8_additional_sources=flake8_additional_sources,
+        isort_additional_sources=isort_additional_sources,
+        testenv_additional=testenv_additional,
+        testenv_additional_extras=testenv_additional_extras,
+        testenv_commands=testenv_commands,
+        testenv_commands_pre=testenv_commands_pre,
+        testenv_deps=testenv_deps,
+        testenv_setenv=testenv_setenv,
+        use_flake8=use_flake8,
+        with_docs=with_docs,
+        with_future_python=with_future_python,
+        with_pypy=with_pypy,
+        with_sphinx_doctests=with_sphinx_doctests,
+    )
+
+
+def copy_tests_yml(meta_cfg, path, config_type):
+    workflows = path / '.github' / 'workflows'
+    workflows.mkdir(parents=True, exist_ok=True)
+
+    gha_services = meta_cfg['github-actions'].get('services', [])
+    gha_additional_config = meta_cfg['github-actions'].get(
+        'additional-config', [])
+    gha_additional_exclude = meta_cfg['github-actions'].get(
+        'additional-exclude', [])
+    gha_steps_before_checkout = meta_cfg['github-actions'].get(
+        'steps-before-checkout', [])
+    gha_additional_install = meta_cfg['github-actions'].get(
+        'additional-install', [])
+    gha_additional_build_dependencies = meta_cfg['github-actions'].get(
+        'additional-build-dependencies', [])
+    gha_test_commands = meta_cfg['github-actions'].get(
+        'test-commands', [])
+    copy_with_meta(
+        'tests.yml.j2', workflows / 'tests.yml', config_type,
+        gha_additional_config=gha_additional_config,
+        gha_additional_exclude=gha_additional_exclude,
+        gha_additional_install=gha_additional_install,
+        gha_additional_build_dependencies=gha_additional_build_dependencies,
+        gha_test_commands=gha_test_commands,
+        package_name=path.name,
+        services=gha_services,
+        steps_before_checkout=gha_steps_before_checkout,
+        with_docs=with_docs,
+        with_sphinx_doctests=with_sphinx_doctests,
+        with_future_python=with_future_python,
+        future_python_version=FUTURE_PYTHON_VERSION,
+        with_pypy=with_pypy,
+        with_macos=with_macos,
+        with_windows=with_windows,
+    )
+
+
 args = handle_command_line_arguments()
 path = args.path.absolute()
 
@@ -365,94 +461,10 @@ add_coveragerc, rm_coveragerc = copy_coveragerc(
 add_manylinux = copy_manylinux_sh(
     meta_cfg, path, config_type, config_type_path, with_future_python)
 
-additional_envlist = meta_cfg['tox'].get('additional-envlist', [])
-testenv_additional = meta_cfg['tox'].get('testenv-additional', [])
-testenv_additional_extras = meta_cfg['tox'].get(
-    'testenv-additional-extras', [])
-testenv_commands_pre = meta_cfg['tox'].get('testenv-commands-pre', [])
-testenv_commands = meta_cfg['tox'].get('testenv-commands', [])
-testenv_setenv = meta_cfg['tox'].get('testenv-setenv', [])
-coverage_basepython = meta_cfg['tox'].get('coverage-basepython', 'python3')
-coverage_command = meta_cfg['tox'].get('coverage-command', [])
-if isinstance(coverage_command, str):
-    coverage_command = [coverage_command]
-coverage_additional = meta_cfg['tox'].get('coverage-additional', [])
-testenv_deps = meta_cfg['tox'].get('testenv-deps', [])
-coverage_setenv = meta_cfg['tox'].get('coverage-setenv', [])
 fail_under = meta_cfg['coverage'].setdefault('fail-under', 0)
-coverage_run_additional_config = meta_cfg['coverage-run'].get(
-    'additional-config', [])
-flake8_additional_sources = meta_cfg['flake8'].get('additional-sources', '')
-if flake8_additional_sources:
-    # Avoid whitespace at end of line if no additional sources are provided:
-    flake8_additional_sources = f' {flake8_additional_sources}'
-isort_additional_sources = meta_cfg['isort'].get('additional-sources', '')
-if isort_additional_sources:
-    # Avoid whitespace at end of line if no additional sources are provided:
-    isort_additional_sources = f' {isort_additional_sources}'
-if args.use_flake8 is None:
-    use_flake8 = meta_cfg['tox'].get('use-flake8', True)
-else:
-    use_flake8 = args.use_flake8
-meta_cfg['tox']['use-flake8'] = use_flake8
-copy_with_meta(
-    'tox.ini.j2', path / 'tox.ini', config_type,
-    additional_envlist=additional_envlist,
-    coverage_additional=coverage_additional,
-    coverage_basepython=coverage_basepython,
-    coverage_command=coverage_command,
-    coverage_run_source=coverage_run_source,
-    coverage_run_additional_config=coverage_run_additional_config,
-    coverage_setenv=coverage_setenv,
-    fail_under=fail_under,
-    flake8_additional_sources=flake8_additional_sources,
-    isort_additional_sources=isort_additional_sources,
-    testenv_additional=testenv_additional,
-    testenv_additional_extras=testenv_additional_extras,
-    testenv_commands=testenv_commands,
-    testenv_commands_pre=testenv_commands_pre,
-    testenv_deps=testenv_deps,
-    testenv_setenv=testenv_setenv,
-    use_flake8=use_flake8,
-    with_docs=with_docs,
-    with_future_python=with_future_python,
-    with_pypy=with_pypy,
-    with_sphinx_doctests=with_sphinx_doctests,
-)
+copy_tox(meta_cfg, path, config_type, fail_under)
 
-gha_services = meta_cfg['github-actions'].get('services', [])
-gha_additional_config = meta_cfg['github-actions'].get(
-    'additional-config', [])
-gha_additional_exclude = meta_cfg['github-actions'].get(
-    'additional-exclude', [])
-gha_steps_before_checkout = meta_cfg['github-actions'].get(
-    'steps-before-checkout', [])
-gha_additional_install = meta_cfg['github-actions'].get(
-    'additional-install', [])
-gha_additional_build_dependencies = meta_cfg['github-actions'].get(
-    'additional-build-dependencies', [])
-gha_test_commands = meta_cfg['github-actions'].get(
-    'test-commands', [])
-workflows = path / '.github' / 'workflows'
-workflows.mkdir(parents=True, exist_ok=True)
-copy_with_meta(
-    'tests.yml.j2', workflows / 'tests.yml', config_type,
-    gha_additional_config=gha_additional_config,
-    gha_additional_exclude=gha_additional_exclude,
-    gha_additional_install=gha_additional_install,
-    gha_additional_build_dependencies=gha_additional_build_dependencies,
-    gha_test_commands=gha_test_commands,
-    package_name=path.name,
-    services=gha_services,
-    steps_before_checkout=gha_steps_before_checkout,
-    with_docs=with_docs,
-    with_sphinx_doctests=with_sphinx_doctests,
-    with_future_python=with_future_python,
-    future_python_version=FUTURE_PYTHON_VERSION,
-    with_pypy=with_pypy,
-    with_macos=with_macos,
-    with_windows=with_windows,
-)
+copy_tests_yml(meta_cfg, path, config_type)
 
 
 # Modify MANIFEST.in with meta options
