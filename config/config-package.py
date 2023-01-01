@@ -44,105 +44,114 @@ def copy_with_meta(
         f_.write(content)
 
 
-parser = argparse.ArgumentParser(
-    description='Use configuration for a package.')
-parser.add_argument(
-    'path', type=pathlib.Path, help='path to the repository to be configured')
-parser.add_argument(
-    '--commit-msg',
-    dest='commit_msg',
-    metavar='MSG',
-    help='Use MSG as commit message instead of an artificial one.')
-parser.add_argument(
-    '--no-commit',
-    dest='commit',
-    action='store_false',
-    default=True,
-    help='Prevent automatic committing of changes. Implies --no-push.')
-parser.add_argument(
-    '--no-push',
-    dest='push',
-    action='store_false',
-    default=True,
-    help='Prevent direct push.')
-parser.add_argument(
-    '--no-flake8',
-    dest='use_flake8',
-    action='store_false',
-    default=None,
-    help='Do not include flake8 and isort in the linting configuration.')
-parser.add_argument(
-    '--with-appveyor',
-    dest='with_appveyor',
-    action='store_true',
-    default=None,
-    help='Activate running tests on AppVeyor, too, if not already configured'
-         ' in .meta.toml.')
-parser.add_argument(
-    '--with-macos',
-    dest='with_macos',
-    action='store_true',
-    default=False,
-    help='Activate running tests on macOS on GitHub Actions, too, if not'
-         ' already configured in .meta.toml.')
-parser.add_argument(
-    '--with-windows',
-    dest='with_windows',
-    action='store_true',
-    default=False,
-    help='Activate running tests on Windows on GitHub Actions, too, if not'
-         ' already configured in .meta.toml.')
-parser.add_argument(
-    '--with-pypy',
-    dest='with_pypy',
-    action='store_true',
-    default=False,
-    help='Activate PyPy support if not already configured in .meta.toml.')
-parser.add_argument(
-    '--with-future-python',
-    dest='with_future_python',
-    action='store_true',
-    default=False,
-    help='Activate support for a future non-final Python version if not'
-         ' already configured in .meta.toml.')
-parser.add_argument(
-    '--with-docs',
-    # people (me) use --with-sphinx and accidentally get --with-sphinx-doctests
-    # so let's make --with-sphinx an alias for --with-docs
-    '--with-sphinx',
-    dest='with_docs',
-    action='store_true',
-    default=None,
-    help='Activate building docs if not already configured in .meta.toml.')
-parser.add_argument(
-    '--with-sphinx-doctests',
-    dest='with_sphinx_doctests',
-    action='store_true',
-    default=False,
-    help='Activate running doctests with sphinx if not already configured in'
-         ' .meta.toml.')
-parser.add_argument(
-    '-t', '--type',
-    choices=[
-        'buildout-recipe',
-        'c-code',
-        'pure-python',
-        'zope-product',
-        'groktoolkit',
-    ],
-    default=None,
-    dest='type',
-    help='type of the configuration to be used, see README.rst. Only required'
-         ' when running on a repository for the first time.')
-parser.add_argument(
-    '--branch',
-    dest='branch_name',
-    default=None,
-    help='Define a git branch name to be used for the changes. If not given'
-         ' it is constructed automatically and includes the configuration'
-         ' type')
+def handle_command_line_arguments():
+    """Parse command line options"""
+    parser = argparse.ArgumentParser(
+        description='Use configuration for a package.')
+    parser.add_argument(
+        'path', type=pathlib.Path,
+        help='path to the repository to be configured')
+    parser.add_argument(
+        '--commit-msg',
+        dest='commit_msg',
+        metavar='MSG',
+        help='Use MSG as commit message instead of an artificial one.')
+    parser.add_argument(
+        '--no-commit',
+        dest='commit',
+        action='store_false',
+        default=True,
+        help='Prevent automatic committing of changes. Implies --no-push.')
+    parser.add_argument(
+        '--no-push',
+        dest='push',
+        action='store_false',
+        default=True,
+        help='Prevent direct push.')
+    parser.add_argument(
+        '--no-flake8',
+        dest='use_flake8',
+        action='store_false',
+        default=None,
+        help='Do not include flake8 and isort in the linting configuration.')
+    parser.add_argument(
+        '--with-appveyor',
+        dest='with_appveyor',
+        action='store_true',
+        default=None,
+        help='Activate running tests on AppVeyor, too, '
+        'if not already configured in .meta.toml.')
+    parser.add_argument(
+        '--with-macos',
+        dest='with_macos',
+        action='store_true',
+        default=False,
+        help='Activate running tests on macOS on GitHub Actions, too, if not'
+        ' already configured in .meta.toml.')
+    parser.add_argument(
+        '--with-windows',
+        dest='with_windows',
+        action='store_true',
+        default=False,
+        help='Activate running tests on Windows on GitHub Actions, too, if not'
+        ' already configured in .meta.toml.')
+    parser.add_argument(
+        '--with-pypy',
+        dest='with_pypy',
+        action='store_true',
+        default=False,
+        help='Activate PyPy support if not already configured in .meta.toml.')
+    parser.add_argument(
+        '--with-future-python',
+        dest='with_future_python',
+        action='store_true',
+        default=False,
+        help='Activate support for a future non-final Python version if not'
+        ' already configured in .meta.toml.')
+    parser.add_argument(
+        '--with-docs',
+        # people (me) use --with-sphinx and accidentally
+        # get --with-sphinx-doctests
+        # so let's make --with-sphinx an alias for --with-docs
+        '--with-sphinx',
+        dest='with_docs',
+        action='store_true',
+        default=None,
+        help='Activate building docs if not already configured in .meta.toml.')
+    parser.add_argument(
+        '--with-sphinx-doctests',
+        dest='with_sphinx_doctests',
+        action='store_true',
+        default=False,
+        help='Activate running doctests with sphinx '
+        'if not already configured in  .meta.toml.')
+    parser.add_argument(
+        '-t', '--type',
+        choices=[
+            'buildout-recipe',
+            'c-code',
+            'pure-python',
+            'zope-product',
+            'groktoolkit',
+            'plone',
+        ],
+        default=None,
+        dest='type',
+        help='type of the configuration to be used, see README.rst. '
+        'Only required when running on a repository for the first time.')
+    parser.add_argument(
+        '--branch',
+        dest='branch_name',
+        default=None,
+        help='Define a git branch name to be used for the changes. '
+        'If not given it is constructed automatically and includes '
+        'the configuration type')
 
-args = parser.parse_args()
+    args = parser.parse_args()
+    return args
+
+
+args = handle_command_line_arguments()
 path = args.path.absolute()
 default_path = pathlib.Path(__file__).parent / 'default'
 
