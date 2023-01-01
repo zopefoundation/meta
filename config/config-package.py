@@ -153,7 +153,6 @@ def handle_command_line_arguments():
 
 args = handle_command_line_arguments()
 path = args.path.absolute()
-default_path = pathlib.Path(__file__).parent / 'default'
 
 if not (path / '.git').exists():
     raise ValueError('`path` does not point to a git clone of a repository!')
@@ -191,6 +190,7 @@ else:
     with open(config_type_path / 'packages.txt', 'a') as f:
         f.write(f'{path.name}\n')
 
+default_path = pathlib.Path(__file__).parent / 'default'
 jinja_env = jinja2.Environment(
     loader=jinja2.FileSystemLoader([config_type_path, default_path]),
     variable_start_string='%(',
