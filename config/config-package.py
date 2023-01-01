@@ -257,6 +257,56 @@ def copy_gitignore(meta_cfg, config_type, path):
     )
 
 
+def copy_coveragerc(meta_cfg, path, config_type, config_type_path,
+                    coverage_run_source):
+    coverage_run_additional_config = meta_cfg['coverage-run'].get(
+        'additional-config', [])
+    add = False
+    remove = False
+    if (config_type_path / 'coveragerc.j2').exists():
+        copy_with_meta(
+            'coveragerc.j2', path / '.coveragerc', config_type,
+            coverage_run_source=coverage_run_source,
+            run_additional_config=coverage_run_additional_config,
+        )
+        add = True
+    elif (path / '.coveragerc').exists():
+        remove = True
+
+    return add, remove
+
+
+def copy_manylinux_sh(meta_cfg, path, config_type, config_type_path,
+                      with_future_python):
+    """Add the scripts to produce binary wheels"""
+    manylinux_install_setup = meta_cfg['c-code'].get(
+        'manylinux-install-setup', [])
+    manylinux_aarch64_tests = meta_cfg['c-code'].get(
+        'manylinux-aarch64-tests', [
+            'cd /io/',
+            '${PYBIN}/pip install tox',
+            'TOXENV=$(tox_env_map "${PYBIN}")',
+            '${PYBIN}/tox -e ${TOXENV}',
+            'cd ..',
+        ])
+
+    add_manylinux = False
+    if (config_type_path / 'manylinux.sh').exists():
+        copy_with_meta('manylinux.sh', path / '.manylinux.sh', config_type)
+        (path / '.manylinux.sh').chmod(0o755)
+        copy_with_meta(
+            'manylinux-install.sh.j2', path / '.manylinux-install.sh',
+            config_type,
+            package_name=path.name,
+            setup=manylinux_install_setup,
+            aarch64_tests=manylinux_aarch64_tests,
+            with_future_python=with_future_python,
+        )
+        (path / '.manylinux-install.sh').chmod(0o755)
+        add_manylinux = True
+    return add_manylinux
+
+
 args = handle_command_line_arguments()
 path = args.path.absolute()
 
@@ -309,46 +359,11 @@ with change_dir(path):
     # added.
     call('git', 'add', 'CONTRIBUTING.md')
 
-coverage_run_additional_config = meta_cfg['coverage-run'].get(
-    'additional-config', [])
 coverage_run_source = meta_cfg['coverage-run'].get('source', path.name)
-add_coveragerc = False
-rm_coveragerc = False
-if (config_type_path / 'coveragerc.j2').exists():
-    copy_with_meta(
-        'coveragerc.j2', path / '.coveragerc', config_type,
-        coverage_run_source=coverage_run_source,
-        run_additional_config=coverage_run_additional_config,
-    )
-    add_coveragerc = True
-elif (path / '.coveragerc').exists():
-    rm_coveragerc = True
-
-manylinux_install_setup = meta_cfg['c-code'].get(
-    'manylinux-install-setup', [])
-manylinux_aarch64_tests = meta_cfg['c-code'].get(
-    'manylinux-aarch64-tests', [
-        'cd /io/',
-        '${PYBIN}/pip install tox',
-        'TOXENV=$(tox_env_map "${PYBIN}")',
-        '${PYBIN}/tox -e ${TOXENV}',
-        'cd ..',
-    ])
-if (config_type_path / 'manylinux.sh').exists():
-    copy_with_meta('manylinux.sh', path / '.manylinux.sh', config_type)
-    (path / '.manylinux.sh').chmod(0o755)
-    copy_with_meta(
-        'manylinux-install.sh.j2', path / '.manylinux-install.sh', config_type,
-        package_name=path.name,
-        setup=manylinux_install_setup,
-        aarch64_tests=manylinux_aarch64_tests,
-        with_future_python=with_future_python,
-    )
-    (path / '.manylinux-install.sh').chmod(0o755)
-    add_manylinux = True
-else:
-    add_manylinux = False
-
+add_coveragerc, rm_coveragerc = copy_coveragerc(
+    meta_cfg, path, config_type, config_type_path, coverage_run_source)
+add_manylinux = copy_manylinux_sh(
+    meta_cfg, path, config_type, config_type_path, with_future_python)
 
 additional_envlist = meta_cfg['tox'].get('additional-envlist', [])
 testenv_additional = meta_cfg['tox'].get('testenv-additional', [])
