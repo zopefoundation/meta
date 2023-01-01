@@ -210,6 +210,53 @@ def set_python_config_value(meta_cfg, args, name, default=False):
     return new_value
 
 
+def copy_setup_cfg(meta_cfg, path, config_type):
+    additional_flake8_config = meta_cfg['flake8'].get('additional-config', [])
+    additional_check_manifest_ignores = meta_cfg['check-manifest'].get(
+        'additional-ignores', [])
+    check_manifest_ignore_bad_ideas = meta_cfg['check-manifest'].get(
+        'ignore-bad-ideas', [])
+    isort_known_third_party = meta_cfg['isort'].get(
+        'known_third_party', 'six, docutils, pkg_resources')
+    isort_known_zope = meta_cfg['isort'].get('known_zope', '')
+    isort_known_first_party = meta_cfg['isort'].get('known_first_party', '')
+    isort_known_local_folder = meta_cfg['isort'].get('known_local_folder', '')
+    for var in (
+        'isort_known_third_party',
+        'isort_known_zope',
+        'isort_known_first_party',
+    ):
+        if locals()[var]:
+            # Avoid whitespace at end of line if empty:
+            locals()[var] = ' ' + locals()[var]
+
+    zest_releaser_options = meta_cfg['zest-releaser'].get('options', [])
+    if config_type == 'c-code':
+        zest_releaser_options.append('create-wheel = no')
+
+    copy_with_meta(
+        'setup.cfg.j2', path / 'setup.cfg', config_type,
+        additional_flake8_config=additional_flake8_config,
+        additional_check_manifest_ignores=additional_check_manifest_ignores,
+        check_manifest_ignore_bad_ideas=check_manifest_ignore_bad_ideas,
+        isort_known_third_party=isort_known_third_party,
+        isort_known_zope=isort_known_zope,
+        isort_known_first_party=isort_known_first_party,
+        isort_known_local_folder=isort_known_local_folder,
+        with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
+        zest_releaser_options=zest_releaser_options,
+    )
+
+
+def copy_gitignore(meta_cfg, config_type, path):
+    git_ignore = meta_cfg['git'].get('ignore', [])
+
+    copy_with_meta(
+        'gitignore.j2', path / '.gitignore', config_type,
+        ignore=git_ignore,
+    )
+
+
 args = handle_command_line_arguments()
 path = args.path.absolute()
 
@@ -251,49 +298,8 @@ if with_sphinx_doctests and not with_docs:
     print("The package is configured without sphinx docs, but with sphinx"
           " doctests.  Is this a mistake?")
 
-# Copy template files
-additional_flake8_config = meta_cfg['flake8'].get('additional-config', [])
-additional_check_manifest_ignores = meta_cfg['check-manifest'].get(
-    'additional-ignores', [])
-check_manifest_ignore_bad_ideas = meta_cfg['check-manifest'].get(
-    'ignore-bad-ideas', [])
-isort_known_third_party = meta_cfg['isort'].get(
-    'known_third_party', 'six, docutils, pkg_resources')
-isort_known_zope = meta_cfg['isort'].get('known_zope', '')
-isort_known_first_party = meta_cfg['isort'].get('known_first_party', '')
-isort_known_local_folder = meta_cfg['isort'].get('known_local_folder', '')
-for var in (
-    'isort_known_third_party',
-    'isort_known_zope',
-    'isort_known_first_party',
-):
-    if locals()[var]:
-        # Avoid whitespace at end of line if empty:
-        locals()[var] = ' ' + locals()[var]
-
-zest_releaser_options = meta_cfg['zest-releaser'].get('options', [])
-if config_type == 'c-code':
-    zest_releaser_options.append('create-wheel = no')
-
-copy_with_meta(
-    'setup.cfg.j2', path / 'setup.cfg', config_type,
-    additional_flake8_config=additional_flake8_config,
-    additional_check_manifest_ignores=additional_check_manifest_ignores,
-    check_manifest_ignore_bad_ideas=check_manifest_ignore_bad_ideas,
-    isort_known_third_party=isort_known_third_party,
-    isort_known_zope=isort_known_zope,
-    isort_known_first_party=isort_known_first_party,
-    isort_known_local_folder=isort_known_local_folder,
-    with_docs=with_docs, with_sphinx_doctests=with_sphinx_doctests,
-    zest_releaser_options=zest_releaser_options,
-)
-
-git_ignore = meta_cfg['git'].get('ignore', [])
-
-copy_with_meta(
-    'gitignore.j2', path / '.gitignore', config_type,
-    ignore=git_ignore,
-)
+copy_setup_cfg(meta_cfg)
+copy_gitignore(meta_cfg)
 copy_with_meta('editorconfig', path / '.editorconfig', config_type)
 copy_with_meta(
     'CONTRIBUTING.md', path / 'CONTRIBUTING.md', config_type,
@@ -302,8 +308,6 @@ with change_dir(path):
     # We have to add it here otherwise the linter complains that it is not
     # added.
     call('git', 'add', 'CONTRIBUTING.md')
-workflows = path / '.github' / 'workflows'
-workflows.mkdir(parents=True, exist_ok=True)
 
 coverage_run_additional_config = meta_cfg['coverage-run'].get(
     'additional-config', [])
@@ -414,6 +418,8 @@ gha_additional_build_dependencies = meta_cfg['github-actions'].get(
     'additional-build-dependencies', [])
 gha_test_commands = meta_cfg['github-actions'].get(
     'test-commands', [])
+workflows = path / '.github' / 'workflows'
+workflows.mkdir(parents=True, exist_ok=True)
 copy_with_meta(
     'tests.yml.j2', workflows / 'tests.yml', config_type,
     gha_additional_config=gha_additional_config,
