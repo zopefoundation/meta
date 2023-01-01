@@ -197,6 +197,19 @@ def add_project_to_config_type_list(config_type_path, path):
             f.write(f'{path.name}\n')
 
 
+def set_python_config_value(meta_cfg, args, name, default=False):
+    """Get value from either python section in config file or cmd line arg.
+
+    Return the value and store it in `meta_cfg`.
+    """
+    key = f'with-{name}'
+    existing_value = meta_cfg['python'].get(key, False)
+    arg_value = getattr(args, key.replace('-', '_'))
+    new_value = existing_value or arg_value
+    meta_cfg['python'][key] = new_value
+    return new_value
+
+
 args = handle_command_line_arguments()
 path = args.path.absolute()
 
@@ -217,19 +230,6 @@ jinja_env = jinja2.Environment(
     trim_blocks=True,
     lstrip_blocks=True,
 )
-
-
-def set_python_config_value(meta_cfg, args, name, default=False):
-    """Get value from either python section in config file or cmd line arg.
-
-    Return the value and store it in `meta_cfg`.
-    """
-    key = f'with-{name}'
-    existing_value = meta_cfg['python'].get(key, False)
-    arg_value = getattr(args, key.replace('-', '_'))
-    new_value = existing_value or arg_value
-    meta_cfg['python'][key] = new_value
-    return new_value
 
 
 meta_cfg['meta']['commit-id'] = get_commit_id()
