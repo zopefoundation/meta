@@ -31,15 +31,16 @@ def copy_with_meta(
 
     If kwargs are given they are used as template arguments.
     """
+    template = jinja_env.get_template(template_name)
+    rendered = template.render(config_type=config_type, **kw)
+    meta_hint = meta_hint.format(config_type=config_type)
+    if rendered.startswith('#!'):
+        she_bang, _, body = rendered.partition('\n')
+        content = '\n'.join([she_bang, meta_hint, body])
+    else:
+        content = '\n'.join([meta_hint, rendered])
+
     with open(destination, 'w') as f_:
-        template = jinja_env.get_template(template_name)
-        rendered = template.render(config_type=config_type, **kw)
-        meta_hint = meta_hint.format(config_type=config_type)
-        if rendered.startswith('#!'):
-            she_bang, _, body = rendered.partition('\n')
-            content = '\n'.join([she_bang, meta_hint, body])
-        else:
-            content = '\n'.join([meta_hint, rendered])
         f_.write(content)
 
 
