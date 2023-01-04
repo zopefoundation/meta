@@ -145,7 +145,8 @@ class PackageConfiguration:
 
         if not (self.path / '.git').exists():
             raise ValueError(
-                f'{self.path!r} does not point to a git clone of a repository!')
+                f'{self.path!r} does not point '
+                'to a git clone of a repository!')
 
         self.meta_cfg = self._read_meta_configuration()
         self.meta_cfg['meta']['template'] = self.config_type
@@ -376,14 +377,14 @@ class PackageConfiguration:
 
     def tox_option(self, name, default=DEFAULT):
         """Read a value from the tox options.
-        
+
         Default not existing ones to `[]`.
         """
         return self.cfg_option('tox', name, default)
 
     def gh_option(self, name, default=DEFAULT):
         """Read a value from the GitHub actions options.
-        
+
         Default not existing ones to `[]`.
         """
         return self.cfg_option('github-actions', name, default)
