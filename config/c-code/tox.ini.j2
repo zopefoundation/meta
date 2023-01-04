@@ -3,7 +3,7 @@
 {% set testenv_setenv = ['pure: PURE_PYTHON=1', '!pure-!pypy3: PURE_PYTHON=0'] + testenv_setenv %}
 {% set coverage_setenv = ['PURE_PYTHON=1'] + coverage_setenv %}
 [tox]
-minversion = 3.18
+minversion = 4.0
 envlist =
     lint
     py37,py37-pure
