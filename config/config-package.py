@@ -24,6 +24,7 @@ Generated from:
 https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 --> """
 FUTURE_PYTHON_VERSION = "3.12.0-alpha.2"
+DEFAULT = object()
 
 
 def handle_command_line_arguments():
@@ -144,9 +145,9 @@ class PackageConfiguration:
 
         if not (self.path / '.git').exists():
             raise ValueError(
-                '`path` does not point to a git clone of a repository!')
+                f'{self.path!r} does not point to a git clone of a repository!')
 
-        self._read_meta_configuration()
+        self.meta_cfg = self._read_meta_configuration()
         self.meta_cfg['meta']['template'] = self.config_type
         self.meta_cfg['meta']['commit-id'] = get_commit_id()
 
@@ -165,7 +166,7 @@ class PackageConfiguration:
                 value = (self.path / "appveyor.yml").exists()
                 self.args.with_appveyor = value
                 print(f"Autodetecting --with-appveyor: {value}")
-        self.meta_cfg = meta_cfg
+        return meta_cfg
 
     @cached_property
     def config_type(self):
@@ -366,26 +367,24 @@ class PackageConfiguration:
             (self.path / '.manylinux-install.sh').chmod(0o755)
             self.add_manylinux = True
 
-    def cfg_option(self, section, name, default=44):
-        """An empty list is not a good idea to have it as a default
-
-        Because it is mutable and it gets reused from one call to another.
+    def cfg_option(self, section, name, default=DEFAULT):
+        """Read a value from `self.meta_cfg`, default to `[]` if not existing.
         """
-        if default == 44:
+        if default == DEFAULT:
             default = []
         return self.meta_cfg[section].get(name, default)
 
-    def tox_option(self, name, default=44):
-        """An empty list is not a good idea to have it as a default
-
-        Because it is mutable and it gets reused from one call to another.
+    def tox_option(self, name, default=DEFAULT):
+        """Read a value from the tox options.
+        
+        Default not existing ones to `[]`.
         """
         return self.cfg_option('tox', name, default)
 
-    def gh_option(self, name, default=44):
-        """An empty list is not a good idea to have it as a default
-
-        Because it is mutable and it gets reused from one call to another.
+    def gh_option(self, name, default=DEFAULT):
+        """Read a value from the GitHub actions options.
+        
+        Default not existing ones to `[]`.
         """
         return self.cfg_option('github-actions', name, default)
 
@@ -485,7 +484,7 @@ class PackageConfiguration:
         )
 
     def manifest_in(self):
-        """Modify MANIFEST.in with meta options"""
+        """Modify MANIFEST.in with meta options."""
         additional_manifest_rules = self.meta_cfg['manifest'].get(
             'additional-rules', [])
         if self.config_type == 'c-code' \
