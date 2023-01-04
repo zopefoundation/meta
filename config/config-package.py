@@ -280,7 +280,7 @@ class PackageConfiguration:
             'check-manifest', 'ignore-bad-ideas')
         isort_known_third_party = self.cfg_option(
             'isort', 'known_third_party',
-            default='six, docutils, pkg_resources')
+            default=' six, docutils, pkg_resources')
         isort_known_zope = self.cfg_option('isort', 'known_zope', default='')
         isort_known_first_party = self.cfg_option(
             'isort', 'known_first_party', default='')
