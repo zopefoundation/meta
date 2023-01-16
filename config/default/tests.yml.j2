@@ -105,6 +105,12 @@ jobs:
         %(line)s
 {% endfor %}
     - name: Test
+{% if gha_test_environment %}
+      env:
+      {% for line in gha_test_environment %}
+        %(line)s
+      {% endfor %}
+{% endif %}
 {% if gha_test_commands %}
       run: |
       {% for line in gha_test_commands %}
