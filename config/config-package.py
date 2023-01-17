@@ -462,6 +462,7 @@ class PackageConfiguration:
         additional_install = self.gh_option('additional-install')
         additional_build_dependencies = self.gh_option(
             'additional-build-dependencies')
+        test_environment = self.gh_option('test-environment')
         test_commands = self.gh_option('test-commands')
         self.copy_with_meta(
             'tests.yml.j2',
@@ -471,6 +472,7 @@ class PackageConfiguration:
             gha_additional_exclude=additional_exclude,
             gha_additional_install=additional_install,
             gha_additional_build_dependencies=additional_build_dependencies,
+            gha_test_environment=test_environment,
             gha_test_commands=test_commands,
             package_name=self.path.name,
             services=services,
