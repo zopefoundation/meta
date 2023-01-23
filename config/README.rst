@@ -187,7 +187,7 @@ Options
 It is possible to configure some options in a `.meta.toml` file
 inside the package repository. This file also stores the template name and
 commit id of the *meta* repository at the time of the run. This file is
-generated during the configuration run, if it does not exit or at least gets
+generated during the configuration run, if it does not exist or at least gets
 updated. Example:
 
 .. code-block:: ini
