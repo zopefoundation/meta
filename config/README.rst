@@ -293,8 +293,8 @@ updated. Example:
         "- [\"3.8\",   \"py38-slim\"]",
         ]
     additional-exclude = [
-        "- { os: windows, config: [\"pypy-3.7\", \"pypy\"] }",
-        "- { os: macos, config: [\"pypy-3.7\", \"pypy\"] }",
+        "- { os: windows, config: [\"pypy-3.9\", \"pypy\"] }",
+        "- { os: macos, config: [\"pypy-3.9\", \"pypy\"] }",
         ]
     steps-before-checkout = [
         "- name: \"Set some Postgres settings\"",
