@@ -145,7 +145,7 @@ The following arguments are supported.
   Define a specific git branch name to be created for the changes. By default
   the script creates one which includes the name of the configuration type.
 
-The following options are only needed one time as their values re stored in
+The following options are only needed one time as their values are stored in
 ``.meta.toml.``.
 
 --type
