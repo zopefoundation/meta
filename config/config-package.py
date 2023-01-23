@@ -133,6 +133,16 @@ def handle_command_line_arguments():
     return args
 
 
+def prepend_space(text):
+    """Prepend `text` which a space if not empty.
+
+    This prevents trailing whitespace for empty values.
+    """
+    if text:
+        text = f' {text}'
+    return text
+
+
 class PackageConfiguration:
     add_coveragerc = False
     rm_coveragerc = False
@@ -278,22 +288,15 @@ class PackageConfiguration:
             'check-manifest', 'additional-ignores')
         check_manifest_ignore_bad_ideas = self.cfg_option(
             'check-manifest', 'ignore-bad-ideas')
-        isort_known_third_party = self.cfg_option(
-            'isort', 'known_third_party',
-            default=' six, docutils, pkg_resources')
-        isort_known_zope = self.cfg_option('isort', 'known_zope', default='')
-        isort_known_first_party = self.cfg_option(
-            'isort', 'known_first_party', default='')
-        isort_known_local_folder = self.meta_cfg['isort'].get(
-            'known_local_folder', '')
-        for var in (
-            'isort_known_third_party',
-            'isort_known_zope',
-            'isort_known_first_party',
-        ):
-            if locals()[var]:
-                # Avoid whitespace at end of line if empty:
-                locals()[var] = ' ' + locals()[var]
+        isort_known_third_party = prepend_space(
+            self.cfg_option('isort', 'known_third_party',
+                            default='six, docutils, pkg_resources, pytz'))
+        isort_known_zope = prepend_space(
+            self.cfg_option('isort', 'known_zope', default=''))
+        isort_known_first_party = prepend_space(
+            self.cfg_option('isort', 'known_first_party', default=''))
+        isort_known_local_folder = prepend_space(
+            self.meta_cfg['isort'].get('known_local_folder', ''))
 
         zest_releaser_options = self.meta_cfg['zest-releaser'].get(
             'options', [])
