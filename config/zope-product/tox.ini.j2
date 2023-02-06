@@ -75,6 +75,7 @@ commands =
 basepython = %(coverage_basepython)s
 skip_install = true
 allowlist_externals =
+    {[testenv]allowlist_externals}
     mkdir
 {% if coverage_setenv %}
 setenv =
