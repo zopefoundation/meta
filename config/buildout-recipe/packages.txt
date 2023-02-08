@@ -2,7 +2,6 @@
 # Do not edit the file by hand but use the script config-package.py as
 # described in README.rst
 z3c.recipe.tag
-z3c.recipe.sphinxdoc
 zc.recipe.testrunner
 z3c.recipe.mkdir
 zc.recipe.deployment
