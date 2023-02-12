@@ -29,3 +29,5 @@ Products.ZMySQLDA
 five.customerize
 five.localsitemanager
 five.formlib
+z3c.relationfield
+zc.relation

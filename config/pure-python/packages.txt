@@ -198,3 +198,16 @@ ZopeUndo
 grok
 grokcore.site
 hurry.query
+zope.app.security
+zope.app.server
+z3c.autoinclude
+z3c.sqlalchemy
+zc.lockfile
+z3c.unconfigure
+zope.pluggableauth
+zope.securitypolicy
+zope.intid
+zope.mimetype
+zope.app.form
+roman
+z3c.checkversions
