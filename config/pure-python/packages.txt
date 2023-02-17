@@ -11,7 +11,6 @@ zope.browser
 zope.dublincore
 zLOG
 zc.beforestorage
-z3c.layer.pagelet
 zope.mkzeoinstance
 grokcore.component
 zc.relationship
@@ -94,7 +93,6 @@ z3c.pagelet
 zope.app.container
 zope.app.locales
 zope.app.zcmlfiles
-gocept.xmlrpcskin
 z3c.objpath
 zc.table
 Products.ExternalEditor
@@ -198,7 +196,6 @@ ZopeUndo
 grok
 grokcore.site
 hurry.query
-zope.app.security
 zope.app.server
 z3c.autoinclude
 z3c.sqlalchemy
