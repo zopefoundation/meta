@@ -35,7 +35,6 @@ grokcore.xmlrpc
 hurry.workflow
 pyramid_zope_request
 refline.srccheck
-z3c.configurator
 z3c.csvvocabulary
 z3c.evalexception
 zope.sendmail
