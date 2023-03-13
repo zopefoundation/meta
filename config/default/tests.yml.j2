@@ -65,9 +65,10 @@ jobs:
           - { os: ["macos", "macos-11"], config: ["3.9",   "docs"] }
   {% endif %}
           - { os: ["macos", "macos-11"], config: ["3.9",   "coverage"] }
-          # macOS/Python 3.11 is set up for universal2 architecture
+          # macOS/Python 3.11+ is set up for universal2 architecture
           # which causes build and package selection issues.
           - { os: ["macos", "macos-11"], config: ["3.11",  "py311"] }
+          - { os: ["macos", "macos-11"], config: ["%(future_python_version)s",  "py312"] }
 {% endif %}
 {% for line in gha_additional_exclude %}
           %(line)s
