@@ -543,7 +543,7 @@ configurations.
 known_third_party
   This option defines the value for ``known_third_party`` in the ``isort``
   configuration. This option has to be a string. It defaults to
-  ``"six, docutils, pkg_resources"``.
+  ``"docutils, pkg_resources, pytz"``.
 
 known_zope
   This option defines the value for ``known_zope`` in the ``isort``

@@ -290,7 +290,7 @@ class PackageConfiguration:
             'check-manifest', 'ignore-bad-ideas')
         isort_known_third_party = prepend_space(
             self.cfg_option('isort', 'known_third_party',
-                            default='six, docutils, pkg_resources, pytz'))
+                            default='docutils, pkg_resources, pytz'))
         isort_known_zope = prepend_space(
             self.cfg_option('isort', 'known_zope', default=''))
         isort_known_first_party = prepend_space(
