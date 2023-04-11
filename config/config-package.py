@@ -23,7 +23,7 @@ META_HINT_MARKDOWN = """\
 Generated from:
 https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 --> """
-FUTURE_PYTHON_VERSION = "3.12.0-alpha.6"
+FUTURE_PYTHON_VERSION = "3.12.0-alpha.7"
 DEFAULT = object()
 
 
