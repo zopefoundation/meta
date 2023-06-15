@@ -208,3 +208,6 @@ roman
 z3c.checkversions
 zc.relation
 five.grok
+zope.component
+zope.contentprovider
+z3c.jbot
