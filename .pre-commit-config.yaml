@@ -32,7 +32,7 @@ repos:
           - id: rst
             name: rst
             entry: rst-lint --encoding utf-8
-            exclude: ./doc/*
+            exclude: ./doc/.*
             files: .rst
             language: python
             additional_dependencies: [pygments, restructuredtext_lint]
