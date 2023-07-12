@@ -1,6 +1,10 @@
 
 [testenv]
 usedevelop = true
+{% if config_type == "pure_python" %}
+package = wheel
+wheel_build_env = .pkg
+{% endif %}
 {% if with_future_python %}
 pip_pre = py312: true
 {% endif %}
