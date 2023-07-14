@@ -1,6 +1,10 @@
 
 [testenv]
 usedevelop = true
+{% if with_config_type == "pure-python" %}
+package = wheel
+wheel_build_env = .pkg
+{% endif %}
 {% if with_future_python %}
 pip_pre = py312: true
 {% endif %}
@@ -11,11 +15,15 @@ deps =
   {% if with_sphinx_doctests and with_future_python %}
     Sphinx
   {% endif %}
-{% if testenv_setenv %}
+{% if testenv_setenv or with_future_python %}
 setenv =
   {% for line in testenv_setenv %}
     %(line)s
   {% endfor %}
+  {% if with_future_python %}
+    py312: VIRTUALENV_PIP=23.1.2
+    py312: PIP_REQUIRE_VIRTUALENV=0
+  {% endif %}
 {% endif %}
 {% if testenv_commands_pre %}
 commands_pre =

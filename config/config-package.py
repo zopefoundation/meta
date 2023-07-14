@@ -452,6 +452,7 @@ class PackageConfiguration:
             with_future_python=self.with_future_python,
             with_pypy=self.with_pypy,
             with_sphinx_doctests=self.with_sphinx_doctests,
+            with_config_type=self.config_type,
         )
 
     def tests_yml(self):
