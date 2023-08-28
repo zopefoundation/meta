@@ -1,4 +1,6 @@
 from .call import call
+from .path import change_dir
+import pathlib
 
 
 def get_commit_id():
@@ -9,10 +11,14 @@ def get_commit_id():
 
 
 def get_branch_name(override, config_type):
-    """Get the default branch name but prefer override if not empty."""
-    return (
-        override
-        or f"config-with-{config_type}-template-{get_commit_id()}")
+    """Get the default branch name but prefer override if not empty.
+
+    The commit ID is based on the meta repository.
+    """
+    with change_dir(pathlib.Path(__file__).parent):
+        return (
+            override
+            or f"config-with-{config_type}-template-{get_commit_id()}")
 
 
 def git_branch(branch_name) -> bool:
