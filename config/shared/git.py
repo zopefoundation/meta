@@ -5,9 +5,10 @@ import pathlib
 
 def get_commit_id():
     """Return the first 8 digits of the commit id of this repository."""
-    return call(
-        'git', 'rev-parse', '--short=8', 'HEAD',
-        capture_output=True).stdout.strip()
+    with change_dir(pathlib.Path(__file__).parent):
+        return call(
+            'git', 'rev-parse', '--short=8', 'HEAD',
+            capture_output=True).stdout.strip()
 
 
 def get_branch_name(override, config_type):
@@ -15,10 +16,9 @@ def get_branch_name(override, config_type):
 
     The commit ID is based on the meta repository.
     """
-    with change_dir(pathlib.Path(__file__).parent):
-        return (
-            override
-            or f"config-with-{config_type}-template-{get_commit_id()}")
+    return (
+        override
+        or f"config-with-{config_type}-template-{get_commit_id()}")
 
 
 def git_branch(branch_name) -> bool:
