@@ -497,10 +497,11 @@ class PackageConfiguration:
         if self.config_type == 'c-code' \
                 and 'include *.sh' not in additional_manifest_rules:
             additional_manifest_rules.insert(0, 'include *.sh')
-        self.copy_with_meta(
-            'MANIFEST.in.j2', self.path / 'MANIFEST.in', self.config_type,
-            additional_rules=additional_manifest_rules,
-            with_docs=self.with_docs, with_appveyor=self.with_appveyor)
+        if self.config_type != 'toolkit':
+            self.copy_with_meta(
+                'MANIFEST.in.j2', self.path / 'MANIFEST.in', self.config_type,
+                additional_rules=additional_manifest_rules,
+                with_docs=self.with_docs, with_appveyor=self.with_appveyor)
 
     def appveyor(self):
         appveyor_global_env_vars = self.meta_cfg['appveyor'].get(
