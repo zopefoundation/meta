@@ -115,7 +115,7 @@ def handle_command_line_arguments():
             'c-code',
             'pure-python',
             'zope-product',
-            'groktoolkit',
+            'toolkit',
         ],
         default=None,
         dest='type',

@@ -35,9 +35,9 @@ packages:
     ``tox.ini`` to be able to pin the installed dependency versions the same
     way ``buildout.cfg`` does it.
 
-* groktoolkit
+* toolkit
 
-  - Configuration currently only used for the groktoolkit repository.
+  - Configuration used for the zopetoolkit and groktoolkit repositories.
 
 Contents
 --------

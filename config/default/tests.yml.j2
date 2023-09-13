@@ -1,3 +1,8 @@
+{% if config_type == 'toolkit' %}
+{% set with_coverage = False %}
+{% else %}
+{% set with_coverage = True %}
+{% endif %}
 name: tests
 
 on:
@@ -45,7 +50,9 @@ jobs:
 {% if with_docs %}
         - ["3.9",   "docs"]
 {% endif %}
+{% if with_coverage %}
         - ["3.9",   "coverage"]
+{% endif %}
 {% for line in gha_additional_config %}
         %(line)s
 {% endfor %}
