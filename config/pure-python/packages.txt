@@ -24,7 +24,6 @@ grokcore.chameleon
 grokcore.content
 grokcore.error
 grokcore.formlib
-grokcore.json
 grokcore.layout
 grokcore.message
 grokcore.startup
