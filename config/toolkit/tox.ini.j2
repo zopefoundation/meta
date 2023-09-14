@@ -1,0 +1,81 @@
+{% set with_coverage = False %}
+{% include 'tox-envlist.j2' %}
+
+[testenv]
+skip_install = true
+deps =
+    zc.buildout >= 3.0.1
+    wheel > 0.37
+{% for line in testenv_deps %}
+    %(line)s
+{% endfor %}
+{% if testenv_setenv or with_future_python %}
+setenv =
+  {% for line in testenv_setenv %}
+    %(line)s
+  {% endfor %}
+  {% if with_future_python %}
+    py312: VIRTUALENV_PIP=23.1.2
+    py312: PIP_REQUIRE_VIRTUALENV=0
+  {% endif %}
+{% endif %}
+commands_pre =
+{% if testenv_commands_pre %}
+  {% for line in testenv_commands_pre %}
+    %(line)s
+  {% endfor %}
+{% else %}
+    {envbindir}/buildout -nc {toxinidir}/buildout.cfg buildout:directory={envdir}
+{% endif %}
+commands =
+{% if testenv_commands %}
+  {% for line in testenv_commands %}
+    %(line)s
+  {% endfor %}
+{% else %}
+    Error! set set `[tox] testenv-commands` in .meta.toml
+{% endif %}
+{% for line in testenv_additional %}
+%(line)s
+{% endfor %}
+
+[testenv:lint]
+basepython = python3
+commands_pre =
+{% if use_flake8 %}
+    mkdir -p {toxinidir}/parts/flake8
+allowlist_externals =
+    mkdir
+{% endif %}
+commands =
+{% if use_flake8 %}
+    isort --check-only --diff {toxinidir}/docs%(isort_additional_sources)s
+    flake8 {toxinidir}/docs%(flake8_additional_sources)s
+{% endif %}
+deps =
+{% if use_flake8 %}
+    flake8
+    isort
+
+[testenv:isort-apply]
+basepython = python3
+skip_install = true
+commands_pre =
+deps =
+    isort
+commands =
+    isort {toxinidir}/docs%(isort_additional_sources)s []
+{% endif %}
+{% if with_docs %}
+
+[testenv:docs]
+basepython = python3
+deps =
+   -r doc-requirements.txt
+commands_pre =
+commands =
+    sphinx-build -b html -d docs/_build/doctrees docs docs/_build/html
+{% if with_sphinx_doctests %}
+    sphinx-build -b doctest -d docs/_build/doctrees docs docs/_build/doctest
+{% endif %}
+{% endif %}
