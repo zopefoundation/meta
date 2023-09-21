@@ -328,6 +328,10 @@ class PackageConfiguration:
             ignore=git_ignore,
         )
 
+    def readthedocs(self):
+        self.copy_with_meta('readthedocs.yaml.j2', self.path / '.readthedocs.yaml',
+            self.config_type)
+
     def coveragerc(self):
         coverage_run_additional_config = self.meta_cfg['coverage-run'].get(
             'additional-config', [])
@@ -494,6 +498,8 @@ class PackageConfiguration:
         """Modify MANIFEST.in with meta options."""
         additional_manifest_rules = self.meta_cfg['manifest'].get(
             'additional-rules', [])
+        if self.with_docs and 'include *.yaml' not in additional_manifest_rules:
+            additional_manifest_rules.insert(0, 'include *.yaml')
         if self.config_type == 'c-code' \
                 and 'include *.sh' not in additional_manifest_rules:
             additional_manifest_rules.insert(0, 'include *.sh')
@@ -560,6 +566,9 @@ class PackageConfiguration:
         if self.with_sphinx_doctests and not self.with_docs:
             print("The package is configured without sphinx docs, "
                   "but with sphinx doctests.  Is this a mistake?")
+
+        if self.with_docs:
+            self.readthedocs()
 
         self.setup_cfg()
         self.gitignore()
