@@ -622,7 +622,7 @@ class PackageConfiguration:
 
             tox_path = shutil.which('tox') or (
                 pathlib.Path(cwd) / 'bin' / 'tox')
-            #call(tox_path, '-p', 'auto')
+            call(tox_path, '-p', 'auto')
 
             updating = git_branch(self.branch_name)
 
