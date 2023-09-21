@@ -329,8 +329,10 @@ class PackageConfiguration:
         )
 
     def readthedocs(self):
-        self.copy_with_meta('readthedocs.yaml.j2', self.path / '.readthedocs.yaml',
-            self.config_type)
+        self.copy_with_meta(
+            'readthedocs.yaml.j2', self.path / '.readthedocs.yaml',
+            self.config_type
+        )
 
     def coveragerc(self):
         coverage_run_additional_config = self.meta_cfg['coverage-run'].get(
@@ -498,7 +500,8 @@ class PackageConfiguration:
         """Modify MANIFEST.in with meta options."""
         additional_manifest_rules = self.meta_cfg['manifest'].get(
             'additional-rules', [])
-        if self.with_docs and 'include *.yaml' not in additional_manifest_rules:
+        if (self.with_docs and 'include *.yaml'
+                not in additional_manifest_rules):
             additional_manifest_rules.insert(0, 'include *.yaml')
         if self.config_type == 'c-code' \
                 and 'include *.sh' not in additional_manifest_rules:
