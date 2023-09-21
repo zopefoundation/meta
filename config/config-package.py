@@ -606,6 +606,8 @@ class PackageConfiguration:
                 call('git', 'add', '.coveragerc')
             if self.with_appveyor:
                 call('git', 'add', 'appveyor.yml')
+            if self.with_docs:
+                call('git', 'add', '.readthedocs.yaml')
             if self.add_manylinux:
                 call('git', 'add', '.manylinux.sh', '.manylinux-install.sh')
             # Remove empty sections:
@@ -620,7 +622,7 @@ class PackageConfiguration:
 
             tox_path = shutil.which('tox') or (
                 pathlib.Path(cwd) / 'bin' / 'tox')
-            call(tox_path, '-p', 'auto')
+            #call(tox_path, '-p', 'auto')
 
             updating = git_branch(self.branch_name)
 
