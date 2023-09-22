@@ -6,13 +6,13 @@ from shared.git import get_branch_name
 from shared.git import get_commit_id
 from shared.git import git_branch
 from shared.path import change_dir
-from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
 import jinja2
 import pathlib
 import shutil
-import toml
+import tomli_w
+import tomllib
 
 
 META_HINT = """\
@@ -143,6 +143,17 @@ def prepend_space(text):
     return text
 
 
+def remove_empty_dict_entries(data):
+    """Remove None/{} entries in data recursively."""
+    # The tomli-w writer cannot handle it.
+    if not isinstance(data, dict):
+        return data
+
+    return {k: remove_empty_dict_entries(v)
+            for k, v in data.items()
+            if v not in (None, {})}
+
+
 class PackageConfiguration:
     add_coveragerc = False
     rm_coveragerc = False
@@ -166,7 +177,8 @@ class PackageConfiguration:
         """Read and update meta configuration"""
         meta_toml_path = self.path / '.meta.toml'
         if meta_toml_path.exists():
-            meta_cfg = toml.load(meta_toml_path)
+            with open(meta_toml_path, 'rb') as meta_f:
+                meta_cfg = tomllib.load(meta_f)
             meta_cfg = collections.defaultdict(dict, **meta_cfg)
         else:
             meta_cfg = collections.defaultdict(dict)
@@ -611,14 +623,12 @@ class PackageConfiguration:
             if self.add_manylinux:
                 call('git', 'add', '.manylinux.sh', '.manylinux-install.sh')
             # Remove empty sections:
-            meta_cfg = {k: v for k, v in self.meta_cfg.items() if v}
-            with open('.meta.toml', 'w') as meta_f:
-                meta_f.write(META_HINT.format(config_type=self.config_type))
-                meta_f.write('\n')
-                toml.dump(
-                    meta_cfg, meta_f,
-                    TomlArraySeparatorEncoderWithNewline(
-                        separator=',\n   ', indent_first_line=True))
+            meta_cfg = remove_empty_dict_entries(self.meta_cfg)
+            with open('.meta.toml', 'wb') as meta_f:
+                meta_f.write(
+                    META_HINT.format(config_type=self.config_type).encode())
+                meta_f.write(b'\n')
+                tomli_w.dump(meta_cfg, meta_f)
 
             tox_path = shutil.which('tox') or (
                 pathlib.Path(cwd) / 'bin' / 'tox')

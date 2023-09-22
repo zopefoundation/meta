@@ -1,6 +1,6 @@
 check-python-versions==0.20.0
 Jinja2==3.1.2
 pyupgrade==3.3.1
-toml==0.10.2
+tomli-w==1.0.0
 tox==4.0.14
 zest.releaser==7.2.0

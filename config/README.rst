@@ -91,7 +91,8 @@ Usage
 Preparation
 +++++++++++
 
-The script needs a ``venv`` with some packages installed::
+The script needs a ``venv`` with at Python > 3.11 with some packages
+installed::
 
     $ python3.11 -m venv .
     $ bin/pip install -r requirements.txt
