@@ -279,12 +279,14 @@ jobs:
         run:
         {% if gha_test_commands %}
         {% for line in gha_test_commands %}
-          PURE_PYTHON=1 %(line)s
+          %(line)s
         {% endfor %}
         {% else %}
           # coverage makes PyPy run about 3x slower!
-          PURE_PYTHON=1 python -m coverage run -p -m zope.testrunner --test-path=src --auto-color --auto-progress
+          python -m coverage run -p -m zope.testrunner --test-path=src --auto-color --auto-progress
         {% endif %}
+        env:
+          PURE_PYTHON: 1
       - name: Report Coverage
         run: |
           coverage combine
@@ -403,7 +405,7 @@ jobs:
           path: wheelhouse/*whl
           name: manylinux_${{ matrix.image }}_wheels.zip
       - name: Restore pip cache permissions
-        run: sudo chown -R $(whoami) ${{ steps.pip-cache.outputs.dir }}
+        run: sudo chown -R $(whoami) ${{ steps.pip-cache-default.outputs.dir }}
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         if: >
