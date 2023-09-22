@@ -5,6 +5,7 @@ from shared.call import call
 from shared.git import get_branch_name
 from shared.git import get_commit_id
 from shared.git import git_branch
+from shared.packages import MANYLINUX_PYTHON_VERSION
 from shared.path import change_dir
 from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
@@ -488,6 +489,7 @@ class PackageConfiguration:
             with_pypy=self.with_pypy,
             with_macos=self.with_macos,
             with_windows=self.with_windows,
+            manylinux_python_version=MANYLINUX_PYTHON_VERSION,
         )
 
     def manifest_in(self):

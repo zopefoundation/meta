@@ -1,15 +1,13 @@
 #!/bin/env python3
 from shared.call import call
-from shared.packages import list_packages
+from shared.packages import ALL_REPOS
+from shared.packages import ORG
 import argparse
-import itertools
 import pathlib
 
 
-org = 'zopefoundation'
-base_url = f'https://github.com/{org}'
-base_path = pathlib.Path(__file__).parent
-types = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product']
+base_url = f'https://github.com/{ORG}'
+BASE_PATH = pathlib.Path(__file__).parent
 
 
 parser = argparse.ArgumentParser(
@@ -21,9 +19,6 @@ parser.add_argument(
     action='store_true')
 
 args = parser.parse_args()
-repos = itertools.chain(
-    *[list_packages(base_path / type / 'packages.txt')
-      for type in types])
 
 
 def run_workflow(base_url, org, repo):
@@ -38,18 +33,18 @@ def run_workflow(base_url, org, repo):
     return True
 
 
-for repo in repos:
+for repo in ALL_REPOS:
     print(repo)
     wfs = call(
-        'gh', 'workflow', 'list', '--all', '-R', f'{org}/{repo}',
+        'gh', 'workflow', 'list', '--all', '-R', f'{ORG}/{repo}',
         capture_output=True).stdout
     test_line = [x for x in wfs.splitlines() if x.startswith('test')][0]
     if 'disabled_inactivity' not in test_line:
         print('    ☑️  already enabled')
         if args.force_run:
-            run_workflow(base_url, org, repo)
+            run_workflow(base_url, ORG, repo)
         continue
     test_id = test_line.split()[-1]
-    call('gh', 'workflow', 'enable', test_id, '-R', f'{org}/{repo}')
-    if run_workflow(base_url, org, repo):
+    call('gh', 'workflow', 'enable', test_id, '-R', f'{ORG}/{repo}')
+    if run_workflow(base_url, ORG, repo):
         print('    ✅ enabled')
