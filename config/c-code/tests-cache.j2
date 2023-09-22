@@ -15,7 +15,7 @@
         if: ${{ !startsWith(runner.os, 'Windows') }}
         run: |
           echo "dir=$(pip cache dir)" >>$GITHUB_OUTPUT
-      
+
       - name: Get pip cache dir (Windows)
         id: pip-cache-windows
         if: ${{ startsWith(runner.os, 'Windows') }}
@@ -30,7 +30,7 @@
           key: %(cache_key)s
           restore-keys: |
             ${{ runner.os }}-pip-
-      
+
       - name: pip cache (Windows)
         uses: actions/cache@v3
         if: ${{ startsWith(runner.os, 'Windows') }}
