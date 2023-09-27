@@ -489,7 +489,7 @@ coverage-additional
 docs-deps
   This option allows to add additional install dependencies for
   ``[testenv:docs]`` in ``tox.ini``. This option has to be a list of strings
-  and is empty by default. Caution: The values set for this option overwrite
+  and is empty by default. Caution: The values set for this option override
   the ones set in ``[testenv]``.
 
 use-flake8
