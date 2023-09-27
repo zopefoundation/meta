@@ -3,6 +3,12 @@
 [testenv:docs]
 basepython = python3
 skip_install = false
+{% if docs_deps %}
+deps =
+  {% for line in docs_deps %}
+    %(line)s
+  {% endfor %}
+{% endif %}
 {% if not with_sphinx_doctests %}
 extras =
     docs

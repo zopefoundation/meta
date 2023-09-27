@@ -432,6 +432,7 @@ class PackageConfiguration:
             use_flake8 = self.tox_option('use-flake8', default=True)
         else:
             use_flake8 = self.args.use_flake8
+        docs_deps = self.tox_option('docs-deps', default=[])
         self.meta_cfg['tox']['use-flake8'] = use_flake8
         self.copy_with_meta(
             'tox.ini.j2',
@@ -458,7 +459,7 @@ class PackageConfiguration:
             with_future_python=self.with_future_python,
             with_pypy=self.with_pypy,
             with_sphinx_doctests=self.with_sphinx_doctests,
-            with_config_type=self.config_type,
+            docs_deps=docs_deps,
         )
 
     def tests_yml(self):
