@@ -633,13 +633,18 @@ class PackageConfiguration:
                     '"fail-under" is  0. Please enter a valid minimum '
                     'coverage and rerun.')
                 abort(1)
+            to_add = [
+                '.editorconfig',
+                '.github/workflows/tests.yml',
+                '.gitignore',
+                '.meta.toml',
+                'setup.cfg',
+                'tox.ini',
+            ]
+            if self.config_type != 'toolkit':
+                to_add.append('MANIFEST.in')
             if self.args.commit:
-                call(
-                    'git', 'add',
-                    'setup.cfg', 'tox.ini', '.gitignore',
-                    '.github/workflows/tests.yml', 'MANIFEST.in',
-                    '.editorconfig',
-                    '.meta.toml')
+                call('git', 'add', *to_add)
                 if self.args.commit_msg:
                     commit_msg = self.args.commit_msg
                 else:
