@@ -444,6 +444,7 @@ class PackageConfiguration:
             use_flake8 = self.tox_option('use-flake8', default=True)
         else:
             use_flake8 = self.args.use_flake8
+        docs_deps = self.tox_option('docs-deps', default=[])
         self.meta_cfg['tox']['use-flake8'] = use_flake8
         self.copy_with_meta(
             'tox.ini.j2',
@@ -470,7 +471,7 @@ class PackageConfiguration:
             with_future_python=self.with_future_python,
             with_pypy=self.with_pypy,
             with_sphinx_doctests=self.with_sphinx_doctests,
-            with_config_type=self.config_type,
+            docs_deps=docs_deps,
         )
 
     def tests_yml(self):
@@ -642,13 +643,18 @@ class PackageConfiguration:
                     '"fail-under" is  0. Please enter a valid minimum '
                     'coverage and rerun.')
                 abort(1)
+            to_add = [
+                '.editorconfig',
+                '.github/workflows/tests.yml',
+                '.gitignore',
+                '.meta.toml',
+                'setup.cfg',
+                'tox.ini',
+            ]
+            if self.config_type != 'toolkit':
+                to_add.append('MANIFEST.in')
             if self.args.commit:
-                call(
-                    'git', 'add',
-                    'setup.cfg', 'tox.ini', '.gitignore',
-                    '.github/workflows/tests.yml', 'MANIFEST.in',
-                    '.editorconfig',
-                    '.meta.toml')
+                call('git', 'add', *to_add)
                 if self.args.commit_msg:
                     commit_msg = self.args.commit_msg
                 else:

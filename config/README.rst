@@ -242,13 +242,16 @@ updated. Example:
         ]
     coverage-basepython = "python3.9"
     coverage-command = [
-        "coverage run {envbindir}/test_with_gs []"
+        "coverage run {envbindir}/test_with_gs []",
         ]
     coverage-setenv = [
         "COVERAGE_HOME={toxinidir}",
         ]
     coverage-additional = [
-        "depends = py37,docs"
+        "depends = py37,docs",
+        ]
+    docs-deps = [
+        "urllib3 < 2",
         ]
     use-flake8 = true
 
@@ -483,6 +486,12 @@ coverage-setenv
 coverage-additional
   This option allows to add additional lines below ``[testenv:coverage]`` in
   ``tox.ini``. This option has to be a list of strings.
+
+docs-deps
+  This option allows to add additional install dependencies for
+  ``[testenv:docs]`` in ``tox.ini``. This option has to be a list of strings
+  and is empty by default. Caution: The values set for this option override
+  the ones set in ``[testenv]``.
 
 use-flake8
   Whether to add the ``flake8`` and ``isort`` linting steps to the section
