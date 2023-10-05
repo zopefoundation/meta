@@ -312,7 +312,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.9"]
+        python-version: ["%(manylinux_python_version)s"]
         os: [ubuntu-20.04]
 
     steps:
@@ -338,7 +338,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.9"]
+        python-version: ["%(manylinux_python_version)s"]
         os: [ubuntu-20.04]
 
     steps:
@@ -363,7 +363,7 @@ jobs:
     # We use a regular Python matrix entry to share as much code as possible.
     strategy:
       matrix:
-        python-version: ["3.9"]
+        python-version: ["%(manylinux_python_version)s"]
         image: [manylinux2014_x86_64, manylinux2014_i686, manylinux2014_aarch64]
 
     steps:
