@@ -175,7 +175,9 @@ The following options are only needed one time as their values are stored in
   packages.
 
 --with-docs
-  Enable building the documentation using Sphinx.
+  Enable building the documentation using Sphinx. This will also create a
+  configuration file `.readthedocs.yaml` for integration with
+  https://readthedocs.org.
 
 --with-sphinx-doctests
   Enable running the documentation as doctest using Sphinx.
