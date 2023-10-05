@@ -23,7 +23,7 @@ META_HINT_MARKDOWN = """\
 Generated from:
 https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 --> """
-FUTURE_PYTHON_VERSION = "3.12.0-rc.3"
+FUTURE_PYTHON_VERSION = ""
 DEFAULT = object()
 
 
@@ -226,7 +226,10 @@ class PackageConfiguration:
 
     @cached_property
     def with_future_python(self):
-        return self._set_python_config_value('future-python')
+        if FUTURE_PYTHON_VERSION:
+            return self._set_python_config_value('future-python')
+        else:
+            return False
 
     @cached_property
     def with_docs(self):
