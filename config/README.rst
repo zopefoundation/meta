@@ -70,7 +70,12 @@ Each directory contains the following files if they differ from the default
   - Configuration file for the MANIFEST to include all needed files in sdist
     and wheel.
 
-* setup.cfg
+* readthedocs.yaml.j2
+
+  - Configuration for https://readthedocs.org to build the documentation over
+    there if the package has documentation.
+
+* setup.cfg.j2
 
   - common setup.cfg, which should be copied to the repository of the
     package
@@ -106,8 +111,8 @@ The script does the following steps:
 
 1. Add the package name to ``packages.txt`` of the selected configuration type
    if it is not yet added.
-2. Copy ``setup.cfg``, ``tox.ini``, ``tests.yml``, ``MANIFEST.in`` and
-   ``.gitignore`` to the repository.
+2. Copy ``setup.cfg``, ``tox.ini``, ``tests.yml``, ``MANIFEST.in``,
+   ``.readthedocs.yaml`` (if needed), and ``.gitignore`` to the repository.
 3. Remove a possibly existing ``.coveragerc`` and ``bootstrap.py``. (Coverage
    is now configured in ``tox.ini`` for packages which are no buildout
    recipes.)
