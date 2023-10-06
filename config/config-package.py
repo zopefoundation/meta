@@ -23,7 +23,7 @@ META_HINT_MARKDOWN = """\
 Generated from:
 https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 --> """
-FUTURE_PYTHON_VERSION = "3.12.0-rc.3"
+FUTURE_PYTHON_VERSION = ""
 DEFAULT = object()
 
 
@@ -238,7 +238,10 @@ class PackageConfiguration:
 
     @cached_property
     def with_future_python(self):
-        return self._set_python_config_value('future-python')
+        if FUTURE_PYTHON_VERSION:
+            return self._set_python_config_value('future-python')
+        else:
+            return False
 
     @cached_property
     def with_docs(self):
@@ -341,9 +344,13 @@ class PackageConfiguration:
         )
 
     def readthedocs(self):
+        build_extra = self.cfg_option(
+            'readthedocs', 'build-extra', default=[])
         self.copy_with_meta(
-            'readthedocs.yaml.j2', self.path / '.readthedocs.yaml',
-            self.config_type
+            'readthedocs.yaml.j2',
+            self.path / '.readthedocs.yaml',
+            self.config_type,
+            build_extra=build_extra,
         )
 
     def coveragerc(self):
@@ -597,7 +604,8 @@ class PackageConfiguration:
         with change_dir(self.path):
             # We have to add it here otherwise the linter complains
             # that it is not added.
-            call('git', 'add', 'CONTRIBUTING.md')
+            if self.args.commit:
+                call('git', 'add', 'CONTRIBUTING.md')
 
         self.coveragerc()
         self.manylinux_sh()
@@ -615,13 +623,13 @@ class PackageConfiguration:
                 call('git', 'rm', '.travis.yml')
             if self.rm_coveragerc:
                 call('git', 'rm', '.coveragerc')
-            if self.add_coveragerc:
+            if self.add_coveragerc and self.args.commit:
                 call('git', 'add', '.coveragerc')
-            if self.with_appveyor:
+            if self.with_appveyor and self.args.commit:
                 call('git', 'add', 'appveyor.yml')
-            if self.with_docs:
+            if self.with_docs and self.args.commit:
                 call('git', 'add', '.readthedocs.yaml')
-            if self.add_manylinux:
+            if self.add_manylinux and self.args.commit:
                 call('git', 'add', '.manylinux.sh', '.manylinux-install.sh')
             # Remove empty sections:
             meta_cfg = remove_empty_dict_entries(self.meta_cfg)
