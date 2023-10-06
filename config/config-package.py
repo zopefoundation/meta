@@ -332,9 +332,13 @@ class PackageConfiguration:
         )
 
     def readthedocs(self):
+        build_extra = self.cfg_option(
+            'readthedocs', 'build-extra', default=[])
         self.copy_with_meta(
-            'readthedocs.yaml.j2', self.path / '.readthedocs.yaml',
-            self.config_type
+            'readthedocs.yaml.j2',
+            self.path / '.readthedocs.yaml',
+            self.config_type,
+            build_extra=build_extra,
         )
 
     def coveragerc(self):
