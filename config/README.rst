@@ -377,6 +377,12 @@ updated. Example:
         "*.mo",
         ]
 
+    [readthedocs]
+    build-extra = [
+        "apt_packages:",
+        "  - libldap2-dev",
+        ]
+
 
 Meta Options
 ````````````
@@ -688,7 +694,6 @@ options
   (Additional) options used to configure ``zest.releaser``. This option has to
   be a list of strings and defaults to an empty list.
 
-
 git options
 ```````````
 
@@ -696,6 +701,16 @@ The corresponding section is named: ``[git]``.
 
 ignore
   Additional lines to be added to the ``.gitignore`` file. This option has to
+  be a list of strings and defaults to an empty list.
+
+ReadTheDocs options
+```````````````````
+
+The corresponding section is named: ``[readthedocs]``.
+
+build-extra
+  Additional lines to be added to the ``build`` configuration in the
+  ReadTheDocs configuration file ``.readthedocs.yaml``. This option has to
   be a list of strings and defaults to an empty list.
 
 Hints
