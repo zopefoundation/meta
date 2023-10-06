@@ -14,7 +14,11 @@
 {% if with_future_python %}
           - "%(future_python_version)s"
 {% endif %}
+{% if with_windows %}
         os: [ubuntu-20.04, macos-11, windows-latest]
+{% else %}
+        os: [ubuntu-20.04, macos-11]
+{% endif %}
 {% if with_pypy or gha_additional_exclude %}
         exclude:
 {% endif %}
