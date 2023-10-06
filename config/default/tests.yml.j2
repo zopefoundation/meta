@@ -77,7 +77,9 @@ jobs:
           # which causes build and package selection issues.
           - { os: ["macos", "macos-11"], config: ["3.11",  "py311"] }
           - { os: ["macos", "macos-11"], config: ["3.12",  "py312"] }
+  {% if with_future_python %}
           - { os: ["macos", "macos-11"], config: ["%(future_python_version)s",  "py313"] }
+  {% endif %}
 {% endif %}
 {% for line in gha_additional_exclude %}
           %(line)s
