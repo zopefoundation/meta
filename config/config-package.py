@@ -622,8 +622,7 @@ class PackageConfiguration:
             # Remove empty sections:
             meta_cfg = {k: v for k, v in self.meta_cfg.items() if v}
             with open('.meta.toml', 'w') as meta_f:
-                meta_f.write(
-                    META_HINT.format(config_type=self.config_type))
+                meta_f.write(META_HINT.format(config_type=self.config_type))
                 meta_f.write('\n')
                 tomlkit.dump(meta_cfg, meta_f)
 

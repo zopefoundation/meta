@@ -71,7 +71,6 @@ with change_dir(path) as cwd_str:
         '--no-push',
     ]
     if args.interactive:
-        config_package_args.remove('--no-push')
         config_package_args.append('--no-commit')
     call(*config_package_args, cwd=cwd_str)
     print('Remove `six` from the list of dependencies and other Py 2 things.')
