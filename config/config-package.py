@@ -456,6 +456,7 @@ class PackageConfiguration:
             coverage_setenv=coverage_setenv,
             fail_under=self.fail_under,
             flake8_additional_sources=flake8_additional_sources,
+            flake8_additional_plugins=flake8_additional_plugins,
             isort_additional_sources=isort_additional_sources,
             testenv_additional=testenv_additional,
             testenv_additional_extras=testenv_additional_extras,
