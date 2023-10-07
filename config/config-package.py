@@ -6,13 +6,12 @@ from shared.git import get_branch_name
 from shared.git import get_commit_id
 from shared.git import git_branch
 from shared.path import change_dir
-from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
 import jinja2
 import pathlib
 import shutil
-import toml
+import tomlkit
 
 
 META_HINT = """\
@@ -166,7 +165,8 @@ class PackageConfiguration:
         """Read and update meta configuration"""
         meta_toml_path = self.path / '.meta.toml'
         if meta_toml_path.exists():
-            meta_cfg = toml.load(meta_toml_path)
+            with open(meta_toml_path, 'rb') as meta_f:
+                meta_cfg = tomlkit.load(meta_f)
             meta_cfg = collections.defaultdict(dict, **meta_cfg)
         else:
             meta_cfg = collections.defaultdict(dict)
@@ -274,7 +274,7 @@ class PackageConfiguration:
         existing_value = self.meta_cfg['python'].get(key, default)
         arg_value = getattr(self.args, key.replace('-', '_'))
         new_value = existing_value or arg_value
-        self.meta_cfg['python'][key] = new_value
+        self.meta_cfg['python'][key] = new_value or default
         return new_value
 
     def _clean_up_old_settings(self):
@@ -622,12 +622,10 @@ class PackageConfiguration:
             # Remove empty sections:
             meta_cfg = {k: v for k, v in self.meta_cfg.items() if v}
             with open('.meta.toml', 'w') as meta_f:
-                meta_f.write(META_HINT.format(config_type=self.config_type))
+                meta_f.write(
+                    META_HINT.format(config_type=self.config_type))
                 meta_f.write('\n')
-                toml.dump(
-                    meta_cfg, meta_f,
-                    TomlArraySeparatorEncoderWithNewline(
-                        separator=',\n   ', indent_first_line=True))
+                tomlkit.dump(meta_cfg, meta_f)
 
             tox_path = shutil.which('tox') or (
                 pathlib.Path(cwd) / 'bin' / 'tox')

@@ -10,7 +10,7 @@ import os
 import pathlib
 import shutil
 import sys
-import toml
+import tomlkit
 
 
 parser = argparse.ArgumentParser(
@@ -44,7 +44,8 @@ if not (path / '.meta.toml').exists():
 with change_dir(path) as cwd_str:
     cwd = pathlib.Path(cwd_str)
     bin_dir = cwd / 'bin'
-    meta_cfg = collections.defaultdict(dict, **toml.load('.meta.toml'))
+    with open('.meta.toml', 'rb') as meta_f:
+        meta_cfg = collections.defaultdict(dict, **tomlkit.load(meta_f))
     config_type = meta_cfg['meta']['template']
     branch_name = get_branch_name(args.branch_name, config_type)
     updating = git_branch(branch_name)
@@ -70,6 +71,7 @@ with change_dir(path) as cwd_str:
         '--no-push',
     ]
     if args.interactive:
+        config_package_args.remove('--no-push')
         config_package_args.append('--no-commit')
     call(*config_package_args, cwd=cwd_str)
     print('Remove `six` from the list of dependencies and other Py 2 things.')
