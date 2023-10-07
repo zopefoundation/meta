@@ -98,7 +98,7 @@ Preparation
 
 The script needs a ``venv`` with some packages installed::
 
-    $ python3.11 -m venv .
+    $ python3 -m venv .
     $ bin/pip install -r requirements.txt
 
 To use the configuration provided here in a package call the following script::

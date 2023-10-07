@@ -1,21 +1,24 @@
+[testenv:package-checks]
+basepython = python3
+skip_install = true
+deps =
+    check-manifest
+    check-python-versions >= 0.20.0
+    wheel
+commands =
+    check-manifest
+    check-python-versions
 
+{% if use_flake8 %}
 [testenv:lint]
 basepython = python3
 skip_install = true
-commands =
-{% if use_flake8 %}
-    isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s
-    flake8 src setup.py%(flake8_additional_sources)s
-{% endif %}
-    check-manifest
-    check-python-versions
 deps =
-    check-manifest
-    check-python-versions >= 0.19.1
-    wheel
-{% if use_flake8 %}
     flake8
     isort
+commands =
+    isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s
+    flake8 src setup.py%(flake8_additional_sources)s
 
 [testenv:isort-apply]
 basepython = python3
