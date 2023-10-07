@@ -9,16 +9,22 @@ commands =
     check-manifest
     check-python-versions
 
-{% if use_flake8 %}
 [testenv:lint]
 basepython = python3
 skip_install = true
 deps =
-    flake8
     isort
+{% if use_flake8 %}
+    flake8
+{% for line in flake8_addons %}
+    %(line)s
+{% endfor %}
+{% endif %}
 commands =
     isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s
+{% if use_flake8 %}
     flake8 src setup.py%(flake8_additional_sources)s
+{% endif %}
 
 [testenv:isort-apply]
 basepython = python3
@@ -28,4 +34,4 @@ deps =
     isort
 commands =
     isort {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s []
-{% endif %}
+
