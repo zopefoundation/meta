@@ -54,13 +54,13 @@ def handle_command_line_arguments():
         '--no-flake8',
         dest='use_flake8',
         action='store_false',
-        default=None,
+        default=True,
         help='Do not include flake8 and isort in the linting configuration.')
     parser.add_argument(
         '--with-appveyor',
         dest='with_appveyor',
         action='store_true',
-        default=None,
+        default=False,
         help='Activate running tests on AppVeyor, too, '
         'if not already configured in .meta.toml.')
     parser.add_argument(
@@ -98,7 +98,7 @@ def handle_command_line_arguments():
         '--with-sphinx',
         dest='with_docs',
         action='store_true',
-        default=None,
+        default=False,
         help='Activate building docs if not already configured in .meta.toml.')
     parser.add_argument(
         '--with-sphinx-doctests',
@@ -274,7 +274,7 @@ class PackageConfiguration:
         existing_value = self.meta_cfg['python'].get(key, default)
         arg_value = getattr(self.args, key.replace('-', '_'))
         new_value = existing_value or arg_value
-        self.meta_cfg['python'][key] = new_value or default
+        self.meta_cfg['python'][key] = new_value
         return new_value
 
     def _clean_up_old_settings(self):
