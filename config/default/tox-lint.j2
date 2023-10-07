@@ -16,7 +16,7 @@ deps =
     isort
 {% if use_flake8 %}
     flake8
-{% for line in flake8_addons %}
+{% for line in flake8_additional_plugins %}
     %(line)s
 {% endfor %}
 {% endif %}

@@ -271,6 +271,9 @@ updated. Example:
         "    src/foo/bar.py: E221 E222",
         "extend-ignore = D203, W503",
         ]
+    additional-addons = [
+        "maccabe"
+        ]
     additional-sources = "testproj foo bar.py"
 
     [manifest]
@@ -521,6 +524,10 @@ additional-config
   configuration section in ``setup.cfg``. *Caution:* This option has to be a
   list of strings so the leading white spaces and comments are preserved when
   writing the value to ``setup.cfg``.
+
+additional-plugins
+  Some packages want to have additional flake8 plugins installed.
+  *Caution:* This option has to be a list of strings.
 
 additional-sources
   Sometimes not only ``src`` and ``setup.py`` contain Python code to be checked

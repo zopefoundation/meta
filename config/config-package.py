@@ -423,6 +423,8 @@ class PackageConfiguration:
         coverage_setenv = self.tox_option('coverage-setenv')
         coverage_run_additional_config = self.meta_cfg['coverage-run'].get(
             'additional-config', [])
+        flake8_additional_plugins = self.meta_cfg['flake8'].get(
+            'additional-plugins', '')
         flake8_additional_sources = self.meta_cfg['flake8'].get(
             'additional-sources', '')
         if flake8_additional_sources:
