@@ -271,7 +271,7 @@ updated. Example:
         "    src/foo/bar.py: E221 E222",
         "extend-ignore = D203, W503",
         ]
-    additional-addons = [
+    additional-plugins = [
         "maccabe"
         ]
     additional-sources = "testproj foo bar.py"
