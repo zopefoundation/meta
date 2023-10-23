@@ -98,7 +98,7 @@ Preparation
 
 The script needs a ``venv`` with some packages installed::
 
-    $ python3 -m venv .
+    $ python3.11 -m venv .
     $ bin/pip install -r requirements.txt
 
 To use the configuration provided here in a package call the following script::
@@ -272,7 +272,7 @@ updated. Example:
         "extend-ignore = D203, W503",
         ]
     additional-plugins = [
-        "maccabe"
+        "mccabe",
         ]
     additional-sources = "testproj foo bar.py"
 
@@ -527,7 +527,7 @@ additional-config
 
 additional-plugins
   Some packages want to have additional flake8 plugins installed.
-  *Caution:* This option has to be a list of strings.
+  This option is a list of strings.
 
 additional-sources
   Sometimes not only ``src`` and ``setup.py`` contain Python code to be checked
