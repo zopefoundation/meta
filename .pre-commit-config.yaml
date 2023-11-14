@@ -1,7 +1,7 @@
 ---
 repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v4.4.0
+      rev: v4.5.0
       hooks:
           - id: trailing-whitespace
           - id: end-of-file-fixer
@@ -11,13 +11,13 @@ repos:
           - id: debug-statements
             language_version: python3
     - repo: https://github.com/PyCQA/flake8
-      rev: 6.0.0
+      rev: 6.1.0
       hooks:
           - id: flake8
             language_version: python3
             additional_dependencies: [flake8-typing-imports==1.14.0]
     - repo: https://github.com/pre-commit/mirrors-autopep8
-      rev: v2.0.1
+      rev: v2.0.4
       hooks:
           - id: autopep8
     - repo: https://github.com/timothycrosley/isort
@@ -38,7 +38,7 @@ repos:
             additional_dependencies: [pygments, restructuredtext_lint]
 # This can deal with sphinx directives
     - repo: https://github.com/myint/rstcheck
-      rev: "v6.1.1"
+      rev: "v6.2.0"
       hooks:
       - id: rstcheck
         args: [--ignore-messages, Duplicate implicit target.*]
