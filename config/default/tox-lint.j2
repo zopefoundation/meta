@@ -1,21 +1,35 @@
+[testenv:release-check]
+description = ensure that the distribution is ready to release
+basepython = python3
+skip_install = true
+deps =
+    twine
+    build
+    check-manifest
+    check-python-versions >= 0.20.0
+    wheel
+commands =
+    check-manifest
+    check-python-versions
+    python -m build --sdist --no-isolation
+    twine check dist/*
 
 [testenv:lint]
 basepython = python3
 skip_install = true
-commands =
-{% if use_flake8 %}
-    isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s
-    flake8 src setup.py%(flake8_additional_sources)s
-{% endif %}
-    check-manifest
-    check-python-versions
 deps =
-    check-manifest
-    check-python-versions >= 0.19.1
-    wheel
+    isort
 {% if use_flake8 %}
     flake8
-    isort
+{% for line in flake8_additional_plugins %}
+    %(line)s
+{% endfor %}
+{% endif %}
+commands =
+    isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s
+{% if use_flake8 %}
+    flake8 src setup.py%(flake8_additional_sources)s
+{% endif %}
 
 [testenv:isort-apply]
 basepython = python3
@@ -25,4 +39,3 @@ deps =
     isort
 commands =
     isort {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s []
-{% endif %}
