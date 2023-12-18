@@ -9,7 +9,7 @@ import pathlib
 org = 'zopefoundation'
 base_url = f'https://github.com/{org}'
 base_path = pathlib.Path(__file__).parent
-types = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product']
+types = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
 
 
 parser = argparse.ArgumentParser(
