@@ -54,6 +54,7 @@ deps =
 {% if use_flake8 %}
     flake8
     isort
+{% include 'tox-release-check.j2' %}
 
 [testenv:isort-apply]
 basepython = python3
