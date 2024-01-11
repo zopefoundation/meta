@@ -182,7 +182,7 @@ jobs:
     {% else %}
           !startsWith(runner.os, 'Mac')
     {% endif %}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
   {% if kind == 'macOS arm64' %}
           # The arm64 wheel is uploaded with a different name just so it can be
@@ -398,7 +398,7 @@ jobs:
           bash .manylinux.sh
 
       - name: Upload %(package_name)s wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: wheelhouse/*whl
           name: manylinux_${{ matrix.image }}_wheels.zip
