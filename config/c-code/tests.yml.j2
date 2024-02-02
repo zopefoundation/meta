@@ -104,7 +104,8 @@ jobs:
           pip install -U setuptools wheel twine
           # cffi will probably have no public release until a Python 3.13 beta
           # or even RC release, see https://github.com/python-cffi/cffi/issues/23
-          pip install -U "cffi @ https://github.com/python-cffi/cffi/archive/refs/heads/main.zip"
+          echo "cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58" > cffi_constraint.txt
+          PIP_CONSTRAINT=cffi_constraint.txt pip install cffi
           # twine has no release for 3.13, yet, see https://github.com/pypa/twine/issues/1030
           pip install -U "git+https://github.com/pypa/twine.git#egg=twine"
 {% endif %}
@@ -167,9 +168,12 @@ jobs:
         if: matrix.python-version == '%(future_python_version)s'
         run: |
           # Install to collect dependencies into the (pip) cache.
+          # cffi will probably have no public release until a Python 3.13 beta
+          # or even RC release, see https://github.com/python-cffi/cffi/issues/23
+          echo "cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58" > cffi_constraint.txt
           # Use "--pre" here because dependencies with support for this future
           # Python release may only be available as pre-releases
-          pip install --pre .[test]
+          PIP_CONSTRAINT=cffi_constraint.txt pip install --pre .[test]
 {% endif %}
       - name: Install %(package_name)s and dependencies
 {% if with_future_python %}
@@ -258,17 +262,17 @@ jobs:
           pip install -U wheel setuptools
           # cffi will probably have no public release until a beta or even RC
           # version of Python 3.13, see https://github.com/python-cffi/cffi/issues/23
-          pip install -U 'cffi @ https://github.com/python-cffi/cffi/archive/refs/heads/main.zip ; platform_python_implementation == "CPython"'
+          echo 'cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58 ; platform_python_implementation == "CPython"' > cffi_constraint.txt
           # coverage has a wheel on PyPI for a future python version which is
           # not ABI compatible with the current one, so build it from sdist:
           pip install -U --no-binary :all: coverage
           # Unzip into src/ so that testrunner can find the .so files
           # when we ask it to load tests from that directory. This
           # might also save some build time?
-          unzip -n dist/%(package_name)s-*whl -d src
+          unzip -n dist/zope.index-*whl -d src
           # Use "--pre" here because dependencies with support for this future
           # Python release may only be available as pre-releases
-          pip install --pre -U -e .[test]
+          PIP_CONSTRAINT=cffi_constraint.txt pip install --pre -U -e .[test]
 {% endif %}
       - name: Install %(package_name)s
 {% if with_future_python %}
