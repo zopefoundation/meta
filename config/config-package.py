@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 ##############################################################################
 #
 # Copyright (c) 2019 Zope Foundation and Contributors.
@@ -10,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-#!/usr/bin/env python3
 from functools import cached_property
 from shared.call import abort
 from shared.call import call

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 ##############################################################################
 #
 # Copyright (c) 2021 Zope Foundation and Contributors.
@@ -10,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-#!/bin/env python3
 from shared.call import call
 from shared.packages import list_packages
 import argparse

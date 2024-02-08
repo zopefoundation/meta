@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 ##############################################################################
 #
 # Copyright (c) 2022 Zope Foundation and Contributors.
@@ -10,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-#!/usr/bin/env', 'python3
 from shared.call import call
 from shared.call import wait_for_accept
 from shared.git import get_branch_name

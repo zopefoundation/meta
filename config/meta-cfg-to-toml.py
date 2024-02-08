@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 ##############################################################################
 #
 # Copyright (c) 2020 Zope Foundation and Contributors.
@@ -10,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-#!/usr/bin/env python3
 from configparser import ConfigParser
 from shared.call import call
 from shared.path import change_dir
