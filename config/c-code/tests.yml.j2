@@ -106,8 +106,6 @@ jobs:
           # or even RC release, see https://github.com/python-cffi/cffi/issues/23
           echo "cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58" > cffi_constraint.txt
           PIP_CONSTRAINT=cffi_constraint.txt pip install cffi
-          # twine has no release for 3.13, yet, see https://github.com/pypa/twine/issues/1030
-          pip install -U "git+https://github.com/pypa/twine.git#egg=twine"
 {% endif %}
       - name: Install Build Dependencies
 {% if with_future_python %}
