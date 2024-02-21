@@ -105,7 +105,7 @@ jobs:
           # cffi will probably have no public release until a Python 3.13 beta
           # or even RC release, see https://github.com/python-cffi/cffi/issues/23
           echo "cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58" > cffi_constraint.txt
-          PIP_CONSTRAINT=cffi_constraint.txt pip install cffi
+          PIP_CONSTRAINT=$PWD/cffi_constraint.txt pip install cffi
 {% endif %}
       - name: Install Build Dependencies
 {% if with_future_python %}
@@ -171,7 +171,7 @@ jobs:
           echo "cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58" > cffi_constraint.txt
           # Use "--pre" here because dependencies with support for this future
           # Python release may only be available as pre-releases
-          PIP_CONSTRAINT=cffi_constraint.txt pip install --pre .[test]
+          PIP_CONSTRAINT=$PWD/cffi_constraint.txt pip install --pre .[test]
 {% endif %}
       - name: Install %(package_name)s and dependencies
 {% if with_future_python %}
@@ -270,7 +270,7 @@ jobs:
           unzip -n dist/%(package_name)s-*whl -d src
           # Use "--pre" here because dependencies with support for this future
           # Python release may only be available as pre-releases
-          PIP_CONSTRAINT=cffi_constraint.txt pip install --pre -U -e .[test]
+          PIP_CONSTRAINT=$PWD/cffi_constraint.txt pip install --pre -U -e .[test]
 {% endif %}
       - name: Install %(package_name)s
 {% if with_future_python %}
