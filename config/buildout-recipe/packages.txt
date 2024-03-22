@@ -9,7 +9,6 @@ z3c.recipe.i18n
 zc.recipe.cmmi
 zdaemon
 zc.recipe.filestorage
-five.customerize
 z3c.recipe.compattest
 zc.relation
 zc.zodbrecipes
