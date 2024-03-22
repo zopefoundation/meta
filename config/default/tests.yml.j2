@@ -47,7 +47,7 @@ jobs:
         - ["%(future_python_version)s",  "py313"]
 {% endif %}
 {% if with_pypy %}
-        - ["pypy-3.9", "pypy3"]
+        - ["pypy-3.10", "pypy3"]
 {% endif %}
 {% if with_docs %}
         - ["3.9",   "docs"]
@@ -99,13 +99,13 @@ jobs:
 {% for line in steps_before_checkout %}
     %(line)s
 {% endfor %}
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.config[0] }}
     - name: Pip cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ matrix.config[0] }}-${{ hashFiles('setup.*', 'tox.ini') }}

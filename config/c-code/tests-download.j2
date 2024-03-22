@@ -1,6 +1,6 @@
 
       - name: Download %(package_name)s wheel
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}.whl
           path: dist/

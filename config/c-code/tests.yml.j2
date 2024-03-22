@@ -96,7 +96,21 @@ jobs:
     steps:
 {% include 'tests-cache.j2' %}
 
+{% if with_future_python %}
+      - name: Install Build Dependencies (%(future_python_version)s)
+        if: matrix.python-version == '%(future_python_version)s'
+        run: |
+          pip install -U pip
+          pip install -U setuptools wheel twine
+          # cffi will probably have no public release until a Python 3.13 beta
+          # or even RC release, see https://github.com/python-cffi/cffi/issues/23
+          echo "cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58" > cffi_constraint.txt
+          PIP_CONSTRAINT=$PWD/cffi_constraint.txt pip install cffi
+{% endif %}
       - name: Install Build Dependencies
+{% if with_future_python %}
+        if: matrix.python-version != '%(future_python_version)s'
+{% endif %}
         run: |
           pip install -U pip
           pip install -U setuptools wheel twine cffi
@@ -152,9 +166,12 @@ jobs:
         if: matrix.python-version == '%(future_python_version)s'
         run: |
           # Install to collect dependencies into the (pip) cache.
+          # cffi will probably have no public release until a Python 3.13 beta
+          # or even RC release, see https://github.com/python-cffi/cffi/issues/23
+          echo "cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58" > cffi_constraint.txt
           # Use "--pre" here because dependencies with support for this future
           # Python release may only be available as pre-releases
-          pip install --pre .[test]
+          PIP_CONSTRAINT=$PWD/cffi_constraint.txt pip install --pre .[test]
 {% endif %}
       - name: Install %(package_name)s and dependencies
 {% if with_future_python %}
@@ -182,7 +199,7 @@ jobs:
     {% else %}
           !startsWith(runner.os, 'Mac')
     {% endif %}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
   {% if kind == 'macOS arm64' %}
           # The arm64 wheel is uploaded with a different name just so it can be
@@ -241,6 +258,9 @@ jobs:
         if: ${{ startsWith(matrix.python-version, '%(future_python_version)s') }}
         run: |
           pip install -U wheel setuptools
+          # cffi will probably have no public release until a beta or even RC
+          # version of Python 3.13, see https://github.com/python-cffi/cffi/issues/23
+          echo 'cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58 ; platform_python_implementation == "CPython"' > cffi_constraint.txt
           # coverage has a wheel on PyPI for a future python version which is
           # not ABI compatible with the current one, so build it from sdist:
           pip install -U --no-binary :all: coverage
@@ -250,7 +270,7 @@ jobs:
           unzip -n dist/%(package_name)s-*whl -d src
           # Use "--pre" here because dependencies with support for this future
           # Python release may only be available as pre-releases
-          pip install --pre -U -e .[test]
+          PIP_CONSTRAINT=$PWD/cffi_constraint.txt pip install --pre -U -e .[test]
 {% endif %}
       - name: Install %(package_name)s
 {% if with_future_python %}
@@ -398,7 +418,7 @@ jobs:
           bash .manylinux.sh
 
       - name: Upload %(package_name)s wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: wheelhouse/*whl
           name: manylinux_${{ matrix.image }}_wheels.zip
