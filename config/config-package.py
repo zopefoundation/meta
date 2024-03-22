@@ -1,4 +1,16 @@
 #!/usr/bin/env python3
+##############################################################################
+#
+# Copyright (c) 2019 Zope Foundation and Contributors.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
 from functools import cached_property
 from shared.call import abort
 from shared.call import call
@@ -6,13 +18,12 @@ from shared.git import get_branch_name
 from shared.git import get_commit_id
 from shared.git import git_branch
 from shared.path import change_dir
-from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
 import jinja2
 import pathlib
 import shutil
-import toml
+import tomlkit
 
 
 META_HINT = """\
@@ -23,7 +34,7 @@ META_HINT_MARKDOWN = """\
 Generated from:
 https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 --> """
-FUTURE_PYTHON_VERSION = ""
+FUTURE_PYTHON_VERSION = "3.13.0-alpha - 3.13.0"
 DEFAULT = object()
 
 
@@ -55,13 +66,13 @@ def handle_command_line_arguments():
         '--no-flake8',
         dest='use_flake8',
         action='store_false',
-        default=None,
+        default=True,
         help='Do not include flake8 and isort in the linting configuration.')
     parser.add_argument(
         '--with-appveyor',
         dest='with_appveyor',
         action='store_true',
-        default=None,
+        default=False,
         help='Activate running tests on AppVeyor, too, '
         'if not already configured in .meta.toml.')
     parser.add_argument(
@@ -99,7 +110,7 @@ def handle_command_line_arguments():
         '--with-sphinx',
         dest='with_docs',
         action='store_true',
-        default=None,
+        default=False,
         help='Activate building docs if not already configured in .meta.toml.')
     parser.add_argument(
         '--with-sphinx-doctests',
@@ -166,7 +177,8 @@ class PackageConfiguration:
         """Read and update meta configuration"""
         meta_toml_path = self.path / '.meta.toml'
         if meta_toml_path.exists():
-            meta_cfg = toml.load(meta_toml_path)
+            with open(meta_toml_path, 'rb') as meta_f:
+                meta_cfg = tomlkit.load(meta_f)
             meta_cfg = collections.defaultdict(dict, **meta_cfg)
         else:
             meta_cfg = collections.defaultdict(dict)
@@ -226,10 +238,7 @@ class PackageConfiguration:
 
     @cached_property
     def with_future_python(self):
-        if FUTURE_PYTHON_VERSION:
-            return self._set_python_config_value('future-python')
-        else:
-            return False
+        return self._set_python_config_value('future-python')
 
     @cached_property
     def with_docs(self):
@@ -423,6 +432,8 @@ class PackageConfiguration:
         coverage_setenv = self.tox_option('coverage-setenv')
         coverage_run_additional_config = self.meta_cfg['coverage-run'].get(
             'additional-config', [])
+        flake8_additional_plugins = self.meta_cfg['flake8'].get(
+            'additional-plugins', '')
         flake8_additional_sources = self.meta_cfg['flake8'].get(
             'additional-sources', '')
         if flake8_additional_sources:
@@ -454,6 +465,7 @@ class PackageConfiguration:
             coverage_setenv=coverage_setenv,
             fail_under=self.fail_under,
             flake8_additional_sources=flake8_additional_sources,
+            flake8_additional_plugins=flake8_additional_plugins,
             isort_additional_sources=isort_additional_sources,
             testenv_additional=testenv_additional,
             testenv_additional_extras=testenv_additional_extras,
@@ -624,10 +636,7 @@ class PackageConfiguration:
             with open('.meta.toml', 'w') as meta_f:
                 meta_f.write(META_HINT.format(config_type=self.config_type))
                 meta_f.write('\n')
-                toml.dump(
-                    meta_cfg, meta_f,
-                    TomlArraySeparatorEncoderWithNewline(
-                        separator=',\n   ', indent_first_line=True))
+                tomlkit.dump(meta_cfg, meta_f)
 
             tox_path = shutil.which('tox') or (
                 pathlib.Path(cwd) / 'bin' / 'tox')

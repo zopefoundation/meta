@@ -1,7 +1,7 @@
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       ###
@@ -23,7 +23,7 @@
           echo "dir=$(pip cache dir)" >> $Env:GITHUB_OUTPUT
 
       - name: pip cache (default)
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         if: ${{ !startsWith(runner.os, 'Windows') }}
         with:
           path: ${{ steps.pip-cache-default.outputs.dir }}
@@ -32,7 +32,7 @@
             ${{ runner.os }}-pip-
 
       - name: pip cache (Windows)
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         if: ${{ startsWith(runner.os, 'Windows') }}
         with:
           path: ${{ steps.pip-cache-windows.outputs.dir }}

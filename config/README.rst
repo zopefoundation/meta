@@ -271,6 +271,9 @@ updated. Example:
         "    src/foo/bar.py: E221 E222",
         "extend-ignore = D203, W503",
         ]
+    additional-plugins = [
+        "mccabe",
+        ]
     additional-sources = "testproj foo bar.py"
 
     [manifest]
@@ -303,8 +306,8 @@ updated. Example:
         "- [\"3.8\",   \"py38-slim\"]",
         ]
     additional-exclude = [
-        "- { os: windows, config: [\"pypy-3.9\", \"pypy\"] }",
-        "- { os: macos, config: [\"pypy-3.9\", \"pypy\"] }",
+        "- { os: windows, config: [\"pypy-3.10\", \"pypy3\"] }",
+        "- { os: macos, config: [\"pypy-3.10\", \"pypy3\"] }",
         ]
     steps-before-checkout = [
         "- name: \"Set some Postgres settings\"",
@@ -521,6 +524,10 @@ additional-config
   configuration section in ``setup.cfg``. *Caution:* This option has to be a
   list of strings so the leading white spaces and comments are preserved when
   writing the value to ``setup.cfg``.
+
+additional-plugins
+  Some packages want to have additional flake8 plugins installed.
+  This option is a list of strings.
 
 additional-sources
   Sometimes not only ``src`` and ``setup.py`` contain Python code to be checked
