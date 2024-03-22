@@ -18,13 +18,12 @@ from shared.git import get_branch_name
 from shared.git import get_commit_id
 from shared.git import git_branch
 from shared.path import change_dir
-from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
 import jinja2
 import pathlib
 import shutil
-import toml
+import tomlkit
 
 
 META_HINT = """\
@@ -67,13 +66,13 @@ def handle_command_line_arguments():
         '--no-flake8',
         dest='use_flake8',
         action='store_false',
-        default=None,
+        default=True,
         help='Do not include flake8 and isort in the linting configuration.')
     parser.add_argument(
         '--with-appveyor',
         dest='with_appveyor',
         action='store_true',
-        default=None,
+        default=False,
         help='Activate running tests on AppVeyor, too, '
         'if not already configured in .meta.toml.')
     parser.add_argument(
@@ -111,7 +110,7 @@ def handle_command_line_arguments():
         '--with-sphinx',
         dest='with_docs',
         action='store_true',
-        default=None,
+        default=False,
         help='Activate building docs if not already configured in .meta.toml.')
     parser.add_argument(
         '--with-sphinx-doctests',
@@ -178,7 +177,8 @@ class PackageConfiguration:
         """Read and update meta configuration"""
         meta_toml_path = self.path / '.meta.toml'
         if meta_toml_path.exists():
-            meta_cfg = toml.load(meta_toml_path)
+            with open(meta_toml_path, 'rb') as meta_f:
+                meta_cfg = tomlkit.load(meta_f)
             meta_cfg = collections.defaultdict(dict, **meta_cfg)
         else:
             meta_cfg = collections.defaultdict(dict)
@@ -636,10 +636,7 @@ class PackageConfiguration:
             with open('.meta.toml', 'w') as meta_f:
                 meta_f.write(META_HINT.format(config_type=self.config_type))
                 meta_f.write('\n')
-                toml.dump(
-                    meta_cfg, meta_f,
-                    TomlArraySeparatorEncoderWithNewline(
-                        separator=',\n   ', indent_first_line=True))
+                tomlkit.dump(meta_cfg, meta_f)
 
             tox_path = shutil.which('tox') or (
                 pathlib.Path(cwd) / 'bin' / 'tox')
