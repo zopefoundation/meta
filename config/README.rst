@@ -157,9 +157,6 @@ The following options are only needed one time as their values are stored in
   Define the configuration type (see `Types`_ section above) to be used for the
   repository.
 
---with-appveyor
-  Enable running the tests on AppVeyor, too.
-
 --with-macos
   Enable running the tests on macOS on GitHub Actions.
 
@@ -204,7 +201,6 @@ updated. Example:
     commit-id = "< commit-hash >"
 
     [python]
-    with-appveyor = false
     with-pypy = false
     with-docs = true
     with-sphinx-doctests = false
@@ -328,36 +324,6 @@ updated. Example:
         "tox -f ${{ matrix.config[1] }}",
         ]
 
-    [appveyor]
-    global-env-vars = [
-        "ZOPE_INTERFACE_STRICT_IRO: 1",
-        ]
-    additional-matrix = [
-        "- { PYTHON: 38, PURE_PYTHON: 1 }",
-        "- { PYTHON: 38-x64, PURE_PYTHON: 1 }",
-        ]
-    install-steps = [
-        "- pip install zc.buildout",
-        "- buildout",
-        ]
-    build-script = [
-        "- python -W ignore setup.py -q bdist_wheel",
-        ]
-    test-steps = [
-        "- zope-testrunner --test-path=src",
-        "- jasmine",
-        ]
-    additional-lines = [
-        "artifacts:",
-        "  - path: 'dist\*.whl'",
-        "    name: wheel",
-        ]
-    replacement = [
-        "environment:",
-        "  matrix:",
-        "    ...",
-        ]
-
     [c-code]
     manylinux-install-setup = [
         "export CFLAGS=\"-pipe\"",
@@ -401,9 +367,6 @@ commit-id
 
 Python options
 ``````````````
-
-with-appveyor
-  Run the tests also on AppVeyor: true/false
 
 with-macos
   Run the tests also on macOS on GitHub Actions: true/false, default: false
@@ -634,46 +597,6 @@ test-environment
 test-commands
   Replacement for the test command in ``tests.yml``.
   This option has to be a list of strings.
-
-
-AppVeyor options
-````````````````
-
-The corresponding section is named: ``[appveyor]``.
-
-global-env-vars
-  Environment variables to specify globally. This option has to be a list of
-  strings.
-
-additional-matrix
-  Additional environment matrix rows.  This option has to be a list of strings,
-  each starting with a ``-`` (unless you know what you're doing).
-
-install-steps
-  Steps to install the package under test on AppVeyor. This option has to be a
-  list of strings. It defaults to ``["- pip install -U -e .[test]"]``.
-
-build-script
-  Steps to to build the project. If this option is not given because no
-  additional build steps are necessary ``build: false`` is rendered to the
-  AppVeyor configuration. But if the config type is ``c-code`` it defaults to
-  ``['- python -W ignore setup.py -q bdist_wheel']``. This option has to be a
-  list of strings, each one starting with a ``-``.
-
-test-steps
-  Steps to run the tests on AppVeyor. This option has to be a list of strings
-  , each one starting with a ``-``.  It defaults to
-  ``["- zope-testrunner --test-path=src"]``.
-
-additional-lines
-  This option allows to add arbitrary additional lines to the end of the
-  configuration file. It has to be a list of strings.
-
-replacement
-  Replace the whole template of the AppVeyor configuration with the contents of
-  this option. Use this option as last resort if your needed changes are too
-  big to configure AppVeyor in another way. This option has to be a list of
-  strings.
 
 
 C-code options

@@ -3,9 +3,6 @@ include *.rst
 include *.txt
 include buildout.cfg
 include tox.ini
-{% if with_appveyor %}
-include appveyor.yml
-{% endif %}
 {% if config_type in ('buildout-recipe', 'c-code') %}
 include .coveragerc
 {% endif %}

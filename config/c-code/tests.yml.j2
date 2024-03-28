@@ -97,8 +97,10 @@ jobs:
 {% include 'tests-cache.j2' %}
 
 {% if with_future_python %}
-      - name: Install Build Dependencies (%(future_python_version)s)
-        if: matrix.python-version == '%(future_python_version)s'
+      - name: Install Build Dependencies (%(future_python_version)s) - no Windows
+        if: >
+          matrix.python-version == '%(future_python_version)s'
+          && !startsWith(runner.os, 'Windows')
         run: |
           pip install -U pip
           pip install -U setuptools wheel twine
@@ -106,6 +108,18 @@ jobs:
           # or even RC release, see https://github.com/python-cffi/cffi/issues/23
           echo "cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58" > cffi_constraint.txt
           PIP_CONSTRAINT=$PWD/cffi_constraint.txt pip install cffi
+      - name: Install Build Dependencies (%(future_python_version)s) - on Windows
+        if: >
+          matrix.python-version == '%(future_python_version)s'
+          && startsWith(runner.os, 'Windows')
+        run: |
+          # cffi will probably have no public release until a Python 3.13 beta
+          # or even RC release, see https://github.com/python-cffi/cffi/issues/23
+          echo "cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58" > cffi_constraint.txt
+          set PIP_CONSTRAINT=%cd%\cffi_constraint.txt
+          pip install cffi
+          pip install -U pip
+          pip install -U setuptools wheel twine
 {% endif %}
       - name: Install Build Dependencies
 {% if with_future_python %}
@@ -162,8 +176,10 @@ jobs:
 {% endfor %}
 
 {% if with_future_python %}
-      - name: Install %(package_name)s and dependencies (%(future_python_version)s)
-        if: matrix.python-version == '%(future_python_version)s'
+      - name: Install %(package_name)s and dependencies (%(future_python_version)s) - no Windows
+        if: >
+          matrix.python-version == '%(future_python_version)s'
+          && !startsWith(runner.os, 'Windows')
         run: |
           # Install to collect dependencies into the (pip) cache.
           # cffi will probably have no public release until a Python 3.13 beta
@@ -172,6 +188,19 @@ jobs:
           # Use "--pre" here because dependencies with support for this future
           # Python release may only be available as pre-releases
           PIP_CONSTRAINT=$PWD/cffi_constraint.txt pip install --pre .[test]
+      - name: Install %(package_name)s and dependencies (%(future_python_version)s) - on Windows
+        if: >
+          matrix.python-version == '%(future_python_version)s'
+          && startsWith(runner.os, 'Windows')
+        run: |
+          # Install to collect dependencies into the (pip) cache.
+          # cffi will probably have no public release until a Python 3.13 beta
+          # or even RC release, see https://github.com/python-cffi/cffi/issues/23
+          echo "cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58" > cffi_constraint.txt
+          # Use "--pre" here because dependencies with support for this future
+          # Python release may only be available as pre-releases
+          set PIP_CONSTRAINT=%cd%\cffi_constraint.txt
+          pip install --pre .[test]
 {% endif %}
       - name: Install %(package_name)s and dependencies
 {% if with_future_python %}
@@ -254,8 +283,10 @@ jobs:
   {% endfor %}
 {% else %}
 {% if with_future_python %}
-      - name: Install %(package_name)s %(future_python_version)s
-        if: ${{ startsWith(matrix.python-version, '%(future_python_version)s') }}
+      - name: Install %(package_name)s %(future_python_version)s ${{ matrix.python-version }}- no Windows
+        if: >
+          matrix.python-version == '%(future_python_version)s'
+          && !startsWith(runner.os, 'Windows')
         run: |
           pip install -U wheel setuptools
           # cffi will probably have no public release until a beta or even RC
@@ -271,6 +302,26 @@ jobs:
           # Use "--pre" here because dependencies with support for this future
           # Python release may only be available as pre-releases
           PIP_CONSTRAINT=$PWD/cffi_constraint.txt pip install --pre -U -e .[test]
+      - name: Install %(package_name)s %(future_python_version)s - on Windows
+        if: >
+          matrix.python-version == '%(future_python_version)s'
+          && startsWith(runner.os, 'Windows')
+        run: |
+          pip install -U wheel setuptools
+          # cffi will probably have no public release until a beta or even RC
+          # version of Python 3.13, see https://github.com/python-cffi/cffi/issues/23
+          echo 'cffi @ git+https://github.com/python-cffi/cffi.git@954cab4f889fb019a7f90df153ee1be501495f58 ; platform_python_implementation == "CPython"' > cffi_constraint.txt
+          # coverage has a wheel on PyPI for a future python version which is
+          # not ABI compatible with the current one, so build it from sdist:
+          pip install -U --no-binary :all: coverage
+          # Unzip into src/ so that testrunner can find the .so files
+          # when we ask it to load tests from that directory. This
+          # might also save some build time?
+          unzip -n dist/%(package_name)s-*whl -d src
+          # Use "--pre" here because dependencies with support for this future
+          # Python release may only be available as pre-releases
+          set PIP_CONSTRAINT=%cd%\cffi_constraint.txt
+          pip install --pre -U -e .[test]
 {% endif %}
       - name: Install %(package_name)s
 {% if with_future_python %}
@@ -299,12 +350,14 @@ jobs:
         run:
         {% if gha_test_commands %}
         {% for line in gha_test_commands %}
-          PURE_PYTHON=1 %(line)s
+          %(line)s
         {% endfor %}
         {% else %}
           # coverage makes PyPy run about 3x slower!
-          PURE_PYTHON=1 python -m coverage run -p -m zope.testrunner --test-path=src --auto-color --auto-progress
+          python -m coverage run -p -m zope.testrunner --test-path=src --auto-color --auto-progress
         {% endif %}
+        env:
+          PURE_PYTHON: 1
       - name: Report Coverage
         run: |
           coverage combine
@@ -423,7 +476,7 @@ jobs:
           path: wheelhouse/*whl
           name: manylinux_${{ matrix.image }}_wheels.zip
       - name: Restore pip cache permissions
-        run: sudo chown -R $(whoami) ${{ steps.pip-cache.outputs.dir }}
+        run: sudo chown -R $(whoami) ${{ steps.pip-cache-default.outputs.dir }}
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         if: >

@@ -69,13 +69,6 @@ def handle_command_line_arguments():
         default=True,
         help='Do not include flake8 and isort in the linting configuration.')
     parser.add_argument(
-        '--with-appveyor',
-        dest='with_appveyor',
-        action='store_true',
-        default=False,
-        help='Activate running tests on AppVeyor, too, '
-        'if not already configured in .meta.toml.')
-    parser.add_argument(
         '--with-macos',
         dest='with_macos',
         action='store_true',
@@ -185,10 +178,6 @@ class PackageConfiguration:
             if self.args.with_docs is None:
                 self.args.with_docs = (self.path / "docs" / "conf.py").exists()
                 print(f"Autodetecting --with-docs: {self.args.with_docs}")
-            if self.args.with_appveyor is None:
-                value = (self.path / "appveyor.yml").exists()
-                self.args.with_appveyor = value
-                print(f"Autodetecting --with-appveyor: {value}")
         return meta_cfg
 
     @cached_property
@@ -219,10 +208,6 @@ class PackageConfiguration:
             trim_blocks=True,
             lstrip_blocks=True,
         )
-
-    @cached_property
-    def with_appveyor(self):
-        return self._set_python_config_value('appveyor')
 
     @cached_property
     def with_macos(self):
@@ -530,38 +515,7 @@ class PackageConfiguration:
             self.copy_with_meta(
                 'MANIFEST.in.j2', self.path / 'MANIFEST.in', self.config_type,
                 additional_rules=additional_manifest_rules,
-                with_docs=self.with_docs, with_appveyor=self.with_appveyor)
-
-    def appveyor(self):
-        appveyor_global_env_vars = self.meta_cfg['appveyor'].get(
-            'global-env-vars', [])
-        appveyor_additional_matrix = self.meta_cfg['appveyor'].get(
-            'additional-matrix', [])
-        appveyor_install_steps = self.meta_cfg['appveyor'].get(
-            'install-steps', ['- pip install -U -e .[test]'])
-        appveyor_build_script = self.meta_cfg['appveyor'].get(
-            'build-script', [])
-        if self.config_type == 'c-code' and not appveyor_build_script:
-            appveyor_build_script = [
-                '- python -W ignore setup.py -q bdist_wheel']
-        appveyor_test_steps = self.meta_cfg['appveyor'].get(
-            'test-steps', ['- zope-testrunner --test-path=src'])
-        appveyor_additional_lines = self.meta_cfg['appveyor'].get(
-            'additional-lines', [])
-        appveyor_replacement = self.meta_cfg['appveyor'].get('replacement', [])
-        self.copy_with_meta(
-            'appveyor.yml.j2',
-            self.path / 'appveyor.yml',
-            self.config_type,
-            with_future_python=self.with_future_python,
-            global_env_vars=appveyor_global_env_vars,
-            additional_matrix=appveyor_additional_matrix,
-            install_steps=appveyor_install_steps,
-            test_steps=appveyor_test_steps,
-            build_script=appveyor_build_script,
-            additional_lines=appveyor_additional_lines,
-            replacement=appveyor_replacement,
-        )
+                with_docs=self.with_docs)
 
     def copy_with_meta(
             self, template_name, destination, config_type,
@@ -613,9 +567,6 @@ class PackageConfiguration:
         self.tests_yml()
         self.manifest_in()
 
-        if self.with_appveyor:
-            self.appveyor()
-
         with change_dir(self.path) as cwd:
             if pathlib.Path('bootstrap.py').exists():
                 call('git', 'rm', 'bootstrap.py')
@@ -625,8 +576,8 @@ class PackageConfiguration:
                 call('git', 'rm', '.coveragerc')
             if self.add_coveragerc and self.args.commit:
                 call('git', 'add', '.coveragerc')
-            if self.with_appveyor and self.args.commit:
-                call('git', 'add', 'appveyor.yml')
+            if pathlib.Path('appveyor.yml').exists():
+                call('git', 'rm', 'appveyor.yml')
             if self.with_docs and self.args.commit:
                 call('git', 'add', '.readthedocs.yaml')
             if self.add_manylinux and self.args.commit:
