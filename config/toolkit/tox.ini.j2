@@ -9,16 +9,14 @@ deps =
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}
-{% if testenv_setenv or with_future_python %}
 setenv =
+{% if testenv_setenv %}
   {% for line in testenv_setenv %}
     %(line)s
   {% endfor %}
-  {% if with_future_python %}
+{% endif %}
     py312: VIRTUALENV_PIP=23.1.2
     py312: PIP_REQUIRE_VIRTUALENV=0
-  {% endif %}
-{% endif %}
 commands_pre =
 {% if testenv_commands_pre %}
   {% for line in testenv_commands_pre %}
@@ -56,6 +54,7 @@ deps =
 {% if use_flake8 %}
     flake8
     isort
+{% include 'tox-release-check.j2' %}
 
 [testenv:isort-apply]
 basepython = python3

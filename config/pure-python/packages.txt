@@ -113,7 +113,6 @@ zope.app.dependable
 zope.app.component
 z3c.batching
 zc.set
-cipher.encryptingstorage
 zope.app.testing
 transaction
 zope.sequencesort

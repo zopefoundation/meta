@@ -3,23 +3,28 @@
       matrix:
         python-version:
 {% if with_pypy %}
-          - "pypy-3.9"
+          - "pypy-3.10"
 {% endif %}
           - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
 {% if with_future_python %}
           - "%(future_python_version)s"
 {% endif %}
+{% if with_windows %}
+        os: [ubuntu-20.04, macos-11, windows-latest]
+{% else %}
         os: [ubuntu-20.04, macos-11]
+{% endif %}
 {% if with_pypy or gha_additional_exclude %}
         exclude:
 {% endif %}
 {% if with_pypy %}
           - os: macos-11
-            python-version: "pypy-3.9"
+            python-version: "pypy-3.10"
 {% endif %}
 {% for line in gha_additional_exclude %}
           %(line)s

@@ -1,14 +1,16 @@
 [tox]
 minversion = 3.18
 envlist =
+    release-check
     lint
     py37
     py38
     py39
     py310
     py311
-{% if with_future_python %}
     py312
+{% if with_future_python %}
+    py313
 {% endif %}
 {% if with_pypy %}
     pypy3

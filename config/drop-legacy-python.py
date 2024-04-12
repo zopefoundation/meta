@@ -1,4 +1,16 @@
-#!/usr/bin/env', 'python3
+#!/usr/bin/env python3
+##############################################################################
+#
+# Copyright (c) 2022 Zope Foundation and Contributors.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
 from shared.call import call
 from shared.call import wait_for_accept
 from shared.git import get_branch_name
@@ -10,7 +22,7 @@ import os
 import pathlib
 import shutil
 import sys
-import toml
+import tomlkit
 
 
 parser = argparse.ArgumentParser(
@@ -44,7 +56,8 @@ if not (path / '.meta.toml').exists():
 with change_dir(path) as cwd_str:
     cwd = pathlib.Path(cwd_str)
     bin_dir = cwd / 'bin'
-    meta_cfg = collections.defaultdict(dict, **toml.load('.meta.toml'))
+    with open('.meta.toml', 'rb') as meta_f:
+        meta_cfg = collections.defaultdict(dict, **tomlkit.load(meta_f))
     config_type = meta_cfg['meta']['template']
     branch_name = get_branch_name(args.branch_name, config_type)
     updating = git_branch(branch_name)

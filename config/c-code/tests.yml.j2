@@ -96,7 +96,17 @@ jobs:
     steps:
 {% include 'tests-cache.j2' %}
 
+{% if with_future_python %}
+      - name: Install Build Dependencies (%(future_python_version)s)
+        if: matrix.python-version == '%(future_python_version)s'
+        run: |
+          pip install -U pip
+          pip install -U setuptools wheel twine cffi
+{% endif %}
       - name: Install Build Dependencies
+{% if with_future_python %}
+        if: matrix.python-version != '%(future_python_version)s'
+{% endif %}
         run: |
           pip install -U pip
           pip install -U setuptools wheel twine cffi
@@ -182,7 +192,7 @@ jobs:
     {% else %}
           !startsWith(runner.os, 'Mac')
     {% endif %}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
   {% if kind == 'macOS arm64' %}
           # The arm64 wheel is uploaded with a different name just so it can be
@@ -237,11 +247,11 @@ jobs:
   {% endfor %}
 {% else %}
 {% if with_future_python %}
-      - name: Install %(package_name)s %(future_python_version)s
-        if: ${{ startsWith(matrix.python-version, '%(future_python_version)s') }}
+      - name: Install %(package_name)s %(future_python_version)s ${{ matrix.python-version }}
+        if: matrix.python-version == '%(future_python_version)s'
         run: |
           pip install -U wheel setuptools
-          # coverage has a wheel on PyPI for a future python version which is
+          # coverage might have a wheel on PyPI for a future python version which is
           # not ABI compatible with the current one, so build it from sdist:
           pip install -U --no-binary :all: coverage
           # Unzip into src/ so that testrunner can find the .so files
@@ -279,12 +289,14 @@ jobs:
         run:
         {% if gha_test_commands %}
         {% for line in gha_test_commands %}
-          PURE_PYTHON=1 %(line)s
+          %(line)s
         {% endfor %}
         {% else %}
           # coverage makes PyPy run about 3x slower!
-          PURE_PYTHON=1 python -m coverage run -p -m zope.testrunner --test-path=src --auto-color --auto-progress
+          python -m coverage run -p -m zope.testrunner --test-path=src --auto-color --auto-progress
         {% endif %}
+        env:
+          PURE_PYTHON: 1
       - name: Report Coverage
         run: |
           coverage combine
@@ -398,12 +410,12 @@ jobs:
           bash .manylinux.sh
 
       - name: Upload %(package_name)s wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: wheelhouse/*whl
           name: manylinux_${{ matrix.image }}_wheels.zip
       - name: Restore pip cache permissions
-        run: sudo chown -R $(whoami) ${{ steps.pip-cache.outputs.dir }}
+        run: sudo chown -R $(whoami) ${{ steps.pip-cache-default.outputs.dir }}
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         if: >

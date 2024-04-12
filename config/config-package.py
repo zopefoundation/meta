@@ -1,4 +1,16 @@
 #!/usr/bin/env python3
+##############################################################################
+#
+# Copyright (c) 2019 Zope Foundation and Contributors.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
 from functools import cached_property
 from shared.call import abort
 from shared.call import call
@@ -7,13 +19,12 @@ from shared.git import get_commit_id
 from shared.git import git_branch
 from shared.packages import MANYLINUX_PYTHON_VERSION
 from shared.path import change_dir
-from shared.toml_encoder import TomlArraySeparatorEncoderWithNewline
 import argparse
 import collections
 import jinja2
 import pathlib
 import shutil
-import toml
+import tomlkit
 
 
 META_HINT = """\
@@ -24,7 +35,7 @@ META_HINT_MARKDOWN = """\
 Generated from:
 https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 --> """
-FUTURE_PYTHON_VERSION = "3.12.0-rc.3"
+FUTURE_PYTHON_VERSION = "3.13.0-alpha - 3.13.0"
 DEFAULT = object()
 
 
@@ -56,15 +67,8 @@ def handle_command_line_arguments():
         '--no-flake8',
         dest='use_flake8',
         action='store_false',
-        default=None,
+        default=True,
         help='Do not include flake8 and isort in the linting configuration.')
-    parser.add_argument(
-        '--with-appveyor',
-        dest='with_appveyor',
-        action='store_true',
-        default=None,
-        help='Activate running tests on AppVeyor, too, '
-        'if not already configured in .meta.toml.')
     parser.add_argument(
         '--with-macos',
         dest='with_macos',
@@ -100,7 +104,7 @@ def handle_command_line_arguments():
         '--with-sphinx',
         dest='with_docs',
         action='store_true',
-        default=None,
+        default=False,
         help='Activate building docs if not already configured in .meta.toml.')
     parser.add_argument(
         '--with-sphinx-doctests',
@@ -167,17 +171,14 @@ class PackageConfiguration:
         """Read and update meta configuration"""
         meta_toml_path = self.path / '.meta.toml'
         if meta_toml_path.exists():
-            meta_cfg = toml.load(meta_toml_path)
+            with open(meta_toml_path, 'rb') as meta_f:
+                meta_cfg = tomlkit.load(meta_f)
             meta_cfg = collections.defaultdict(dict, **meta_cfg)
         else:
             meta_cfg = collections.defaultdict(dict)
             if self.args.with_docs is None:
                 self.args.with_docs = (self.path / "docs" / "conf.py").exists()
                 print(f"Autodetecting --with-docs: {self.args.with_docs}")
-            if self.args.with_appveyor is None:
-                value = (self.path / "appveyor.yml").exists()
-                self.args.with_appveyor = value
-                print(f"Autodetecting --with-appveyor: {value}")
         return meta_cfg
 
     @cached_property
@@ -208,10 +209,6 @@ class PackageConfiguration:
             trim_blocks=True,
             lstrip_blocks=True,
         )
-
-    @cached_property
-    def with_appveyor(self):
-        return self._set_python_config_value('appveyor')
 
     @cached_property
     def with_macos(self):
@@ -330,9 +327,13 @@ class PackageConfiguration:
         )
 
     def readthedocs(self):
+        build_extra = self.cfg_option(
+            'readthedocs', 'build-extra', default=[])
         self.copy_with_meta(
-            'readthedocs.yaml.j2', self.path / '.readthedocs.yaml',
-            self.config_type
+            'readthedocs.yaml.j2',
+            self.path / '.readthedocs.yaml',
+            self.config_type,
+            build_extra=build_extra,
         )
 
     def coveragerc(self):
@@ -417,6 +418,8 @@ class PackageConfiguration:
         coverage_setenv = self.tox_option('coverage-setenv')
         coverage_run_additional_config = self.meta_cfg['coverage-run'].get(
             'additional-config', [])
+        flake8_additional_plugins = self.meta_cfg['flake8'].get(
+            'additional-plugins', '')
         flake8_additional_sources = self.meta_cfg['flake8'].get(
             'additional-sources', '')
         if flake8_additional_sources:
@@ -448,6 +451,7 @@ class PackageConfiguration:
             coverage_setenv=coverage_setenv,
             fail_under=self.fail_under,
             flake8_additional_sources=flake8_additional_sources,
+            flake8_additional_plugins=flake8_additional_plugins,
             isort_additional_sources=isort_additional_sources,
             testenv_additional=testenv_additional,
             testenv_additional_extras=testenv_additional_extras,
@@ -513,38 +517,7 @@ class PackageConfiguration:
             self.copy_with_meta(
                 'MANIFEST.in.j2', self.path / 'MANIFEST.in', self.config_type,
                 additional_rules=additional_manifest_rules,
-                with_docs=self.with_docs, with_appveyor=self.with_appveyor)
-
-    def appveyor(self):
-        appveyor_global_env_vars = self.meta_cfg['appveyor'].get(
-            'global-env-vars', [])
-        appveyor_additional_matrix = self.meta_cfg['appveyor'].get(
-            'additional-matrix', [])
-        appveyor_install_steps = self.meta_cfg['appveyor'].get(
-            'install-steps', ['- pip install -U -e .[test]'])
-        appveyor_build_script = self.meta_cfg['appveyor'].get(
-            'build-script', [])
-        if self.config_type == 'c-code' and not appveyor_build_script:
-            appveyor_build_script = [
-                '- python -W ignore setup.py -q bdist_wheel']
-        appveyor_test_steps = self.meta_cfg['appveyor'].get(
-            'test-steps', ['- zope-testrunner --test-path=src'])
-        appveyor_additional_lines = self.meta_cfg['appveyor'].get(
-            'additional-lines', [])
-        appveyor_replacement = self.meta_cfg['appveyor'].get('replacement', [])
-        self.copy_with_meta(
-            'appveyor.yml.j2',
-            self.path / 'appveyor.yml',
-            self.config_type,
-            with_future_python=self.with_future_python,
-            global_env_vars=appveyor_global_env_vars,
-            additional_matrix=appveyor_additional_matrix,
-            install_steps=appveyor_install_steps,
-            test_steps=appveyor_test_steps,
-            build_script=appveyor_build_script,
-            additional_lines=appveyor_additional_lines,
-            replacement=appveyor_replacement,
-        )
+                with_docs=self.with_docs)
 
     def copy_with_meta(
             self, template_name, destination, config_type,
@@ -587,16 +560,14 @@ class PackageConfiguration:
         with change_dir(self.path):
             # We have to add it here otherwise the linter complains
             # that it is not added.
-            call('git', 'add', 'CONTRIBUTING.md')
+            if self.args.commit:
+                call('git', 'add', 'CONTRIBUTING.md')
 
         self.coveragerc()
         self.manylinux_sh()
         self.tox()
         self.tests_yml()
         self.manifest_in()
-
-        if self.with_appveyor:
-            self.appveyor()
 
         with change_dir(self.path) as cwd:
             if pathlib.Path('bootstrap.py').exists():
@@ -605,23 +576,20 @@ class PackageConfiguration:
                 call('git', 'rm', '.travis.yml')
             if self.rm_coveragerc:
                 call('git', 'rm', '.coveragerc')
-            if self.add_coveragerc:
+            if self.add_coveragerc and self.args.commit:
                 call('git', 'add', '.coveragerc')
-            if self.with_appveyor:
-                call('git', 'add', 'appveyor.yml')
-            if self.with_docs:
+            if pathlib.Path('appveyor.yml').exists():
+                call('git', 'rm', 'appveyor.yml')
+            if self.with_docs and self.args.commit:
                 call('git', 'add', '.readthedocs.yaml')
-            if self.add_manylinux:
+            if self.add_manylinux and self.args.commit:
                 call('git', 'add', '.manylinux.sh', '.manylinux-install.sh')
             # Remove empty sections:
             meta_cfg = {k: v for k, v in self.meta_cfg.items() if v}
             with open('.meta.toml', 'w') as meta_f:
                 meta_f.write(META_HINT.format(config_type=self.config_type))
                 meta_f.write('\n')
-                toml.dump(
-                    meta_cfg, meta_f,
-                    TomlArraySeparatorEncoderWithNewline(
-                        separator=',\n   ', indent_first_line=True))
+                tomlkit.dump(meta_cfg, meta_f)
 
             tox_path = shutil.which('tox') or (
                 pathlib.Path(cwd) / 'bin' / 'tox')
