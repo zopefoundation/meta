@@ -19,7 +19,12 @@ ORG = 'zopefoundation'
 BASE_PATH = pathlib.Path(__file__).parent.parent
 OLDEST_PYTHON_VERSION = '3.7'
 NEWEST_PYTHON_VERSION = '3.11'
+FUTURE_PYTHON_VERSION = "3.13.0-alpha - 3.13.0"
+PYPY_VERSION = '3.10'
 MANYLINUX_PYTHON_VERSION = '3.9'
+MANYLINUX_AARCH64 = 'manylinux2014_aarch64'
+MANYLINUX_I686 = 'manylinux2014_i686'
+MANYLINUX_X86_64 = 'manylinux2014_i686'
 
 
 def list_packages(path: pathlib.Path) -> list:

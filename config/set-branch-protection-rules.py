@@ -2,10 +2,14 @@
 from shared.call import abort
 from shared.call import call
 from shared.packages import ALL_REPOS
+from shared.packages import MANYLINUX_AARCH64
+from shared.packages import MANYLINUX_I686
 from shared.packages import MANYLINUX_PYTHON_VERSION
+from shared.packages import MANYLINUX_X86_64
 from shared.packages import NEWEST_PYTHON_VERSION
 from shared.packages import OLDEST_PYTHON_VERSION
 from shared.packages import ORG
+from shared.packages import PYPY_VERSION
 import argparse
 import json
 import os
@@ -29,12 +33,18 @@ parser.add_argument(
          ' parameter.',
     action='store_true',
     required=True)
+parser.add_argument(
+    '-r', '--repos',
+    help='Run the script only for the given repos instead of all.',
+    metavar='NAME', nargs='*', default=[])
 
 args = parser.parse_args()
+repos = args.repos if args.repos else ALL_REPOS
 
 
 def call_gh(
-        method, path, *args, capture_output=False, allowed_return_codes=(0, )):
+        method, path, repo, *args, capture_output=False,
+        allowed_return_codes=(0, )):
     """Call the gh api command."""
     return call(
         'gh', 'api',
@@ -46,10 +56,10 @@ def call_gh(
         allowed_return_codes=allowed_return_codes)
 
 
-for repo in ALL_REPOS:
+for repo in repos:
     print(repo, end="")
     result = call_gh(
-        'GET', 'protection/required_pull_request_reviews',
+        'GET', 'protection/required_pull_request_reviews', repo,
         capture_output=True, allowed_return_codes=(0, 1))
     required_pull_request_reviews = None
     if result.returncode == 1:
@@ -69,35 +79,41 @@ for repo in ALL_REPOS:
     response = requests.get(
         f'{BASE_URL}/{repo}/{DEFAULT_BRANCH}/.meta.toml', timeout=30)
     meta_toml = tomllib.loads(response.text)
-    if meta_toml['python']['with-windows']:
-        required = []
-        print('TBI')
-        import sys
-        sys.exit()
-    elif meta_toml['meta']['template'] == 'c-code':
+    template = meta_toml['meta']['template']
+    with_docs = meta_toml['python'].get('with-docs', False)
+    with_pypy = meta_toml['python']['with-pypy']
+    with_windows = meta_toml['python']['with-windows']
+    if template == 'c-code':
         required = [
-            f'manylinux ({MANYLINUX_PYTHON_VERSION}, manylinux2014_aarch64)',
-            f'manylinux ({MANYLINUX_PYTHON_VERSION}, manylinux2014_i686)',
-            f'manylinux ({MANYLINUX_PYTHON_VERSION}, manylinux2014_x86_64)',
-            f'lint ({MANYLINUX_PYTHON_VERSION}, ubuntu-20.04)',
-            f'test ({OLDEST_PYTHON_VERSION}, macos-11)',
-            f'test ({NEWEST_PYTHON_VERSION}, macos-11)',
-            f'test ({OLDEST_PYTHON_VERSION}, ubuntu-20.04)',
-            f'test ({NEWEST_PYTHON_VERSION}, ubuntu-20.04)',
+            f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_AARCH64})',
+            f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_I686})',
+            f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_X86_64})',
+            f'lint ({MANYLINUX_PYTHON_VERSION}, ubuntu-latest)',
+            f'test ({OLDEST_PYTHON_VERSION}, macos-latest)',
+            f'test ({NEWEST_PYTHON_VERSION}, macos-latest)',
+            f'test ({OLDEST_PYTHON_VERSION}, ubuntu-latest)',
+            f'test ({NEWEST_PYTHON_VERSION}, ubuntu-latest)',
         ]
-        if meta_toml['python'].get('with-docs', False):
-            required.append(f'docs ({MANYLINUX_PYTHON_VERSION}, ubuntu-20.04)')
-        if meta_toml['python']['with-pypy']:
-            required.append('test (pypy-3.9, ubuntu-20.04)')
-    elif meta_toml['meta']['template'] in ('c-code', 'toolkit'):
+        if with_docs:
+            required.append(
+                f'docs ({MANYLINUX_PYTHON_VERSION}, ubuntu-latest)')
+        if with_pypy:
+            required.append(f'test (pypy-{PYPY_VERSION}, ubuntu-latest)')
+        if with_windows:
+            required.extend([
+                f'test ({OLDEST_PYTHON_VERSION}, windows-latest)',
+                f'test ({NEWEST_PYTHON_VERSION}, windows-latest)',
+            ])
+    elif with_windows:
+        required = []
         print('TBI')
         import sys
         sys.exit()
     else:  # default for most packages
         required = ['coverage', 'lint', OLDEST_PYTHON, NEWEST_PYTHON]
-        if meta_toml['python'].get('with-docs', False):
+        if with_docs:
             required.append('docs')
-        if meta_toml['python']['with-pypy']:
+        if with_pypy:
             required.append('pypy3')
 
     data = {
@@ -118,7 +134,8 @@ for repo in ALL_REPOS:
         json.dump(data, file)
         file.close()
         call_gh(
-            'PUT', 'protection', '--input', filename, capture_output=True)
+            'PUT', 'protection', repo, '--input', filename,
+            capture_output=True)
     finally:
         os.unlink(filename)
     print(' ✅')
