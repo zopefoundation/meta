@@ -13,6 +13,7 @@ from shared.packages import PYPY_VERSION
 import argparse
 import json
 import os
+import pathlib
 import requests
 import tempfile
 import tomllib
@@ -37,9 +38,17 @@ parser.add_argument(
     '-r', '--repos',
     help='Run the script only for the given repos instead of all.',
     metavar='NAME', nargs='*', default=[])
+parser.add_argument(
+    '-m', '--meta',
+    help='Use this .meta.toml instead the one on `master` of the repos.',
+    metavar='PATH', default=None, type=pathlib.Path)
 
 args = parser.parse_args()
 repos = args.repos if args.repos else ALL_REPOS
+meta_path = args.meta
+
+if meta_path and len(repos) > 1:
+    print('--meta can only be used together with a single repos.')
 
 
 def call_gh(
@@ -76,9 +85,13 @@ for repo in repos:
         }
         print(f' required reviews={required_approving_review_count}', end='')
 
-    response = requests.get(
-        f'{BASE_URL}/{repo}/{DEFAULT_BRANCH}/.meta.toml', timeout=30)
-    meta_toml = tomllib.loads(response.text)
+    if meta_path is None:
+        response = requests.get(
+            f'{BASE_URL}/{repo}/{DEFAULT_BRANCH}/.meta.toml', timeout=30)
+        meta_toml = tomllib.loads(response.text)
+    else:
+        with open(meta_path) as f:
+            meta_toml = tomllib.loads(f.read())
     template = meta_toml['meta']['template']
     with_docs = meta_toml['python'].get('with-docs', False)
     with_pypy = meta_toml['python']['with-pypy']
@@ -93,6 +106,7 @@ for repo in repos:
             f'test ({NEWEST_PYTHON_VERSION}, macos-latest)',
             f'test ({OLDEST_PYTHON_VERSION}, ubuntu-latest)',
             f'test ({NEWEST_PYTHON_VERSION}, ubuntu-latest)',
+            'coverage/coveralls',
         ]
         if with_docs:
             required.append(
