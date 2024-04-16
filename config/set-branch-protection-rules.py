@@ -106,7 +106,7 @@ for repo in repos:
             f'test ({NEWEST_PYTHON_VERSION}, macos-latest)',
             f'test ({OLDEST_PYTHON_VERSION}, ubuntu-latest)',
             f'test ({NEWEST_PYTHON_VERSION}, ubuntu-latest)',
-            'coverage/coveralls',
+            'coveralls_finish',
         ]
         if with_docs:
             required.append(
