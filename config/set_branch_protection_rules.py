@@ -25,33 +25,7 @@ NEWEST_PYTHON = f'py{NEWEST_PYTHON_VERSION.replace(".", "")}'
 DEFAULT_BRANCH = 'master'
 
 
-parser = argparse.ArgumentParser(
-    description='Set the branch protection rules for all known packages.\n'
-                'Prerequsites: `gh auth login`.')
-parser.add_argument(
-    '--I-am-authenticated',
-    help='If you are authenticated via `gh auth login`, use this required'
-         ' parameter.',
-    action='store_true',
-    required=True)
-parser.add_argument(
-    '-r', '--repos',
-    help='Run the script only for the given repos instead of all.',
-    metavar='NAME', nargs='*', default=[])
-parser.add_argument(
-    '-m', '--meta',
-    help='Use this .meta.toml instead the one on `master` of the repos.',
-    metavar='PATH', default=None, type=pathlib.Path)
-
-args = parser.parse_args()
-repos = args.repos if args.repos else ALL_REPOS
-meta_path = args.meta
-
-if meta_path and len(repos) > 1:
-    print('--meta can only be used together with a single repos.')
-
-
-def call_gh(
+def _call_gh(
         method, path, repo, *args, capture_output=False,
         allowed_return_codes=(0, )):
     """Call the gh api command."""
@@ -65,9 +39,8 @@ def call_gh(
         allowed_return_codes=allowed_return_codes)
 
 
-for repo in repos:
-    print(repo, end="")
-    result = call_gh(
+def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
+    result = _call_gh(
         'GET', 'protection/required_pull_request_reviews', repo,
         capture_output=True, allowed_return_codes=(0, 1))
     required_pull_request_reviews = None
@@ -83,7 +56,6 @@ for repo in repos:
         required_pull_request_reviews = {
             'required_approving_review_count': required_approving_review_count
         }
-        print(f' required reviews={required_approving_review_count}', end='')
 
     if meta_path is None:
         response = requests.get(
@@ -113,6 +85,7 @@ for repo in repos:
                 f'docs ({MANYLINUX_PYTHON_VERSION}, ubuntu-latest)')
         if with_pypy:
             required.append(f'test (pypy-{PYPY_VERSION}, ubuntu-latest)')
+            required.append(f'test (pypy-{PYPY_VERSION}, windows-latest)')
         if with_windows:
             required.extend([
                 f'test ({OLDEST_PYTHON_VERSION}, windows-latest)',
@@ -147,9 +120,41 @@ for repo in repos:
         file = os.fdopen(fd, 'w')
         json.dump(data, file)
         file.close()
-        call_gh(
+        _call_gh(
             'PUT', 'protection', repo, '--input', filename,
             capture_output=True)
     finally:
         os.unlink(filename)
-    print(' ✅')
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Set the branch protection rules for all known packages.\n'
+                    'Prerequsites: `gh auth login`.')
+    parser.add_argument(
+        '--I-am-authenticated',
+        help='If you are authenticated via `gh auth login`, use this required'
+        ' parameter.',
+        action='store_true',
+        required=True)
+    parser.add_argument(
+        '-r', '--repos',
+        help='Run the script only for the given repos instead of all.',
+        metavar='NAME', nargs='*', default=[])
+    parser.add_argument(
+        '-m', '--meta',
+        help='Use this .meta.toml instead the one on `master` of the repos.',
+        metavar='PATH', default=None, type=pathlib.Path)
+
+    args = parser.parse_args()
+    repos = args.repos if args.repos else ALL_REPOS
+    meta_path = args.meta
+
+    if meta_path and len(repos) > 1:
+        print('--meta can only be used together with a single repos.')
+        abort(-1)
+
+    for repo in repos:
+        print(repo, end="")
+        set_branch_protection(repo, meta_path)
+        print(' ✅')
