@@ -479,6 +479,8 @@ class PackageConfiguration:
             'additional-build-dependencies')
         test_environment = self.gh_option('test-environment')
         test_commands = self.gh_option('test-commands')
+        require_cffi = self.meta_cfg.get(
+            'c-code', {}).get('require-cffi', False)
         self.copy_with_meta(
             'tests.yml.j2',
             workflows / 'tests.yml',
@@ -496,6 +498,7 @@ class PackageConfiguration:
             with_sphinx_doctests=self.with_sphinx_doctests,
             with_future_python=self.with_future_python,
             future_python_version=FUTURE_PYTHON_VERSION,
+            require_cffi=require_cffi,
             with_pypy=self.with_pypy,
             with_macos=self.with_macos,
             with_windows=self.with_windows,
