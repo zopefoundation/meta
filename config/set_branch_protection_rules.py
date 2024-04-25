@@ -26,7 +26,7 @@ DEFAULT_BRANCH = 'master'
 
 
 def _call_gh(
-        method, path, repo, *args, capture_output=False,
+        method, path, repo, *args, capture_output=True,
         allowed_return_codes=(0, )):
     """Call the gh api command."""
     return call(
@@ -42,7 +42,7 @@ def _call_gh(
 def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
     result = _call_gh(
         'GET', 'protection/required_pull_request_reviews', repo,
-        capture_output=True, allowed_return_codes=(0, 1))
+        allowed_return_codes=(0, 1))
     required_pull_request_reviews = None
     if result.returncode == 1:
         if json.loads(result.stdout)['message'] != "Branch not protected":
@@ -120,11 +120,10 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
         file = os.fdopen(fd, 'w')
         json.dump(data, file)
         file.close()
-        _call_gh(
-            'PUT', 'protection', repo, '--input', filename,
-            capture_output=True)
+        _call_gh('PUT', 'protection', repo, '--input', filename)
     finally:
         os.unlink(filename)
+    return True
 
 
 if __name__ == '__main__':

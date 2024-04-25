@@ -12,6 +12,7 @@
 #
 ##############################################################################
 from functools import cached_property
+from set_branch_protection_rules import set_branch_protection
 from shared.call import abort
 from shared.call import call
 from shared.git import get_branch_name
@@ -634,6 +635,20 @@ class PackageConfiguration:
                 if self.args.push:
                     call('git', 'push', '--set-upstream',
                          'origin', self.branch_name)
+            print()
+            print('If you are an admin and are logged in via `gh auth login`')
+            print('update branch protection rules? (y/N)?', end=' ')
+            if input().lower() == 'y':
+                remote_url = call(
+                    'git', 'config', '--get', 'remote.origin.url',
+                    capture_output=True).stdout.strip()
+                package_name = remote_url.rsplit('/')[-1].removesuffix('.git')
+                success = set_branch_protection(
+                    package_name, self.path / '.meta.toml')
+                if success:
+                    print('Successfully updated branch protection rules.')
+                else:
+                    abort(-1)
             print()
             print('If everything went fine up to here:')
             if updating:
