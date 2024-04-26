@@ -74,7 +74,7 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
             f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_I686})',
             f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_X86_64})',
             f'lint ({MANYLINUX_PYTHON_VERSION}, ubuntu-latest)',
-            f'test ({OLDEST_PYTHON_VERSION}, macos-latest)',
+            f'test ({OLDEST_PYTHON_VERSION}, macos-12)',
             f'test ({NEWEST_PYTHON_VERSION}, macos-latest)',
             f'test ({OLDEST_PYTHON_VERSION}, ubuntu-latest)',
             f'test ({NEWEST_PYTHON_VERSION}, ubuntu-latest)',
@@ -92,10 +92,22 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
                 f'test ({NEWEST_PYTHON_VERSION}, windows-latest)',
             ])
     elif with_windows:
-        required = []
-        print('TBI')
-        import sys
-        sys.exit()
+        required = [
+            'coverage/coveralls',
+            'ubuntu-lint',
+            'ubuntu-coverage',
+            f'ubuntu-{OLDEST_PYTHON}',
+            f'ubuntu-{NEWEST_PYTHON}',
+            f'windows-{OLDEST_PYTHON}',
+            f'windows-{NEWEST_PYTHON}',
+        ]
+        if with_pypy:
+            required.extend([
+                'ubuntu-pypy3',
+                'windows-pypy3',
+            ])
+        if with_docs:
+            required.append('ubuntu-docs')
     else:  # default for most packages
         required = ['coverage', 'lint', OLDEST_PYTHON, NEWEST_PYTHON]
         if with_docs:
