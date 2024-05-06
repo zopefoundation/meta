@@ -12,11 +12,18 @@
 #
 ##############################################################################
 from functools import cached_property
+from set_branch_protection_rules import set_branch_protection
 from shared.call import abort
 from shared.call import call
 from shared.git import get_branch_name
 from shared.git import get_commit_id
 from shared.git import git_branch
+from shared.packages import FUTURE_PYTHON_VERSION
+from shared.packages import MANYLINUX_AARCH64
+from shared.packages import MANYLINUX_I686
+from shared.packages import MANYLINUX_PYTHON_VERSION
+from shared.packages import MANYLINUX_X86_64
+from shared.packages import PYPY_VERSION
 from shared.path import change_dir
 import argparse
 import collections
@@ -34,7 +41,6 @@ META_HINT_MARKDOWN = """\
 Generated from:
 https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 --> """
-FUTURE_PYTHON_VERSION = "3.13.0-alpha - 3.13.0"
 DEFAULT = object()
 
 
@@ -502,6 +508,11 @@ class PackageConfiguration:
             with_pypy=self.with_pypy,
             with_macos=self.with_macos,
             with_windows=self.with_windows,
+            manylinux_python_version=MANYLINUX_PYTHON_VERSION,
+            manylinux_aarch64=MANYLINUX_AARCH64,
+            manylinux_i686=MANYLINUX_I686,
+            manylinux_x86_64=MANYLINUX_X86_64,
+            pypy_version=PYPY_VERSION,
         )
 
     def manifest_in(self):
@@ -624,6 +635,20 @@ class PackageConfiguration:
                 if self.args.push:
                     call('git', 'push', '--set-upstream',
                          'origin', self.branch_name)
+            print()
+            print('If you are an admin and are logged in via `gh auth login`')
+            print('update branch protection rules? (y/N)?', end=' ')
+            if input().lower() == 'y':
+                remote_url = call(
+                    'git', 'config', '--get', 'remote.origin.url',
+                    capture_output=True).stdout.strip()
+                package_name = remote_url.rsplit('/')[-1].removesuffix('.git')
+                success = set_branch_protection(
+                    package_name, self.path / '.meta.toml')
+                if success:
+                    print('Successfully updated branch protection rules.')
+                else:
+                    abort(-1)
             print()
             print('If everything went fine up to here:')
             if updating:

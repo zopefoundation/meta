@@ -334,7 +334,7 @@ updated. Example:
         "\"${PYBIN}/tox\" -e py",
         "cd ..",
         ]
-    require-cffi = True
+    require-cffi = true
 
     [zest-releaser]
     options = [

@@ -322,7 +322,7 @@ jobs:
 
   coveralls_finish:
     needs: test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Coveralls Finished
       uses: AndreMiras/coveralls-python-action@develop
@@ -335,8 +335,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.9"]
-        os: [ubuntu-20.04]
+        python-version: ["%(manylinux_python_version)s"]
+        os: [ubuntu-latest]
 
     steps:
 {% include 'tests-cache.j2' %}
@@ -361,8 +361,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.9"]
-        os: [ubuntu-20.04]
+        python-version: ["%(manylinux_python_version)s"]
+        os: [ubuntu-latest]
 
     steps:
 {% include 'tests-cache.j2' %}
@@ -381,13 +381,13 @@ jobs:
           # python -m pylint --limit-inference-results=1 --rcfile=.pylintrc %(package_name)s -f parseable -r n
 
   manylinux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     # We use a regular Python matrix entry to share as much code as possible.
     strategy:
       matrix:
-        python-version: ["3.9"]
-        image: [manylinux2014_x86_64, manylinux2014_i686, manylinux2014_aarch64]
+        python-version: ["%(manylinux_python_version)s"]
+        image: [%(manylinux_x86_64)s, %(manylinux_i686)s, %(manylinux_aarch64)s]
 
     steps:
 {% set cache_key = "${{ runner.os }}-pip_manylinux-${{ matrix.image }}-${{ matrix.python-version }}" %}
@@ -396,7 +396,7 @@ jobs:
       - name: Update pip
         run: pip install -U pip
       - name: Build %(package_name)s (x86_64)
-        if: matrix.image == 'manylinux2014_x86_64'
+        if: matrix.image == '%(manylinux_x86_64)s'
         # An alternate way to do this is to run the container directly with a uses:
         # and then the script runs inside it. That may work better with caching.
         # See https://github.com/pyca/bcrypt/blob/f6b5ee2eda76d077c531362ac65e16f045cf1f29/.github/workflows/wheel-builder.yml
@@ -405,14 +405,14 @@ jobs:
         run: |
           bash .manylinux.sh
       - name: Build %(package_name)s (i686)
-        if: matrix.image == 'manylinux2014_i686'
+        if: matrix.image == '%(manylinux_i686)s'
         env:
           DOCKER_IMAGE: quay.io/pypa/${{ matrix.image }}
           PRE_CMD: linux32
         run: |
           bash .manylinux.sh
       - name: Build %(package_name)s (aarch64)
-        if: matrix.image == 'manylinux2014_aarch64'
+        if: matrix.image == '%(manylinux_aarch64)s'
         env:
           DOCKER_IMAGE: quay.io/pypa/${{ matrix.image }}
         run: |

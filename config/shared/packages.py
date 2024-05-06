@@ -10,7 +10,21 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+import itertools
 import pathlib
+
+
+TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
+ORG = 'zopefoundation'
+BASE_PATH = pathlib.Path(__file__).parent.parent
+OLDEST_PYTHON_VERSION = '3.7'
+NEWEST_PYTHON_VERSION = '3.12'
+FUTURE_PYTHON_VERSION = "3.13.0-alpha - 3.13.0"
+PYPY_VERSION = '3.10'
+MANYLINUX_PYTHON_VERSION = '3.9'
+MANYLINUX_AARCH64 = 'manylinux2014_aarch64'
+MANYLINUX_I686 = 'manylinux2014_i686'
+MANYLINUX_X86_64 = 'manylinux2014_x86_64'
 
 
 def list_packages(path: pathlib.Path) -> list:
@@ -23,3 +37,8 @@ def list_packages(path: pathlib.Path) -> list:
         for p in path.read_text().split('\n')
         if p and not p.startswith('#')
     ]
+
+
+ALL_REPOS = itertools.chain(
+    *[list_packages(BASE_PATH / type / 'packages.txt')
+      for type in TYPES])

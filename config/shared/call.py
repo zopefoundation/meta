@@ -12,6 +12,7 @@
 ##############################################################################
 import subprocess
 import sys
+import textwrap
 
 
 def abort(exitcode):
@@ -36,5 +37,12 @@ def call(*args, capture_output=False, cwd=None, allowed_return_codes=(0, )):
     result = subprocess.run(
         args, capture_output=capture_output, text=True, cwd=cwd)
     if result.returncode not in allowed_return_codes:
-        abort(result.returncode)
+        if capture_output:
+            abort_text = textwrap.dedent(f'''
+                error code: {result.returncode}
+                stderr: {result.stderr}
+                stdout: {result.stdout}''')
+        else:
+            abort_text = result.returncode
+        abort(abort_text)
     return result
