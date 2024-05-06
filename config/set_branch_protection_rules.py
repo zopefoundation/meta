@@ -109,7 +109,9 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
         if with_docs:
             required.append('ubuntu-docs')
     else:  # default for most packages
-        required = ['coverage', 'lint', OLDEST_PYTHON, NEWEST_PYTHON]
+        required = ['lint', OLDEST_PYTHON, NEWEST_PYTHON]
+        if template != 'toolkit':
+            required.append('coverage')
         if with_docs:
             required.append('docs')
         if with_pypy:
