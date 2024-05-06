@@ -38,7 +38,7 @@ def call(*args, capture_output=False, cwd=None, allowed_return_codes=(0, )):
         args, capture_output=capture_output, text=True, cwd=cwd)
     if result.returncode not in allowed_return_codes:
         if capture_output:
-            abort_text = textwrap.defent(f'''
+            abort_text = textwrap.dedent(f'''
                 error code: {result.returncode}
                 stderr: {result.stderr}
                 stdout: {result.stdout}''')
