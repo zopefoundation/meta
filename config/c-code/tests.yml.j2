@@ -275,7 +275,7 @@ jobs:
 {% endif %}
       - name: Install %(package_name)s
 {% if with_future_python %}
-        if: ${{ !startsWith(matrix.python-version, '%(future_python_version)s') }}
+        if: matrix.python-version != '%(future_python_version)s'
 {% endif %}
         run: |
           pip install -U wheel setuptools
