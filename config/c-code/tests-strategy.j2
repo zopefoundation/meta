@@ -19,9 +19,7 @@
 {% else %}
         os: [ubuntu-latest, macos-latest]
 {% endif %}
-{% if with_pypy or gha_additional_exclude %}
         exclude:
-{% endif %}
           - os: macos-latest
             python-version: "3.7"
 {% if with_pypy %}
