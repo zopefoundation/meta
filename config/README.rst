@@ -219,8 +219,8 @@ updated. Example:
 
     [tox]
     additional-envlist = [
-        "py37-slim",
-        "py38-fat",
+        "py311-slim",
+        "py312-fat",
         ]
     testenv-additional-extras = [
         "extra-feature",
@@ -250,7 +250,7 @@ updated. Example:
         "COVERAGE_HOME={toxinidir}",
         ]
     coverage-additional = [
-        "depends = py37,docs",
+        "depends = py312,docs",
         ]
     docs-deps = [
         "urllib3 < 2",

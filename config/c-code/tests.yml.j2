@@ -123,31 +123,26 @@ jobs:
   {% endfor %}
 {% endif %}
 
-{% for kind in ('macOS x86_64, Python 3.8+',
-                'macOS arm64, Python 3.8+',
-                'all other versions') %}
+{% for kind in ('macOS x86_64', 'macOS arm64', 'all other versions') %}
       - name: Build %(package_name)s (%(kind)s)
         if: >
-  {% if kind == 'macOS x86_64, Python 3.8+' %}
+  {% if kind == 'macOS x86_64' %}
           startsWith(runner.os, 'Mac')
-          && !(startsWith(matrix.python-version, 'pypy')
-               || matrix.python-version == '3.7')
+          && !startsWith(matrix.python-version, 'pypy')
         env:
           MACOSX_DEPLOYMENT_TARGET: 10.9
           _PYTHON_HOST_PLATFORM: macosx-10.9-x86_64
           ARCHFLAGS: -arch x86_64
-  {% elif kind == 'macOS arm64, Python 3.8+' %}
+  {% elif kind == 'macOS arm64' %}
           startsWith(runner.os, 'Mac')
-          && !(startsWith(matrix.python-version, 'pypy')
-               || matrix.python-version == '3.7')
+          && !startsWith(matrix.python-version, 'pypy')
         env:
           MACOSX_DEPLOYMENT_TARGET: 11.0
           _PYTHON_HOST_PLATFORM: macosx-11.0-arm64
           ARCHFLAGS: -arch arm64
-  {% elif kind == 'macOS universal2, Python 3.8+' %}
+  {% elif kind == 'macOS universal2' %}
           startsWith(runner.os, 'Mac')
-          && !(startsWith(matrix.python-version, 'pypy')
-               || matrix.python-version == '3.7')
+          && !startsWith(matrix.python-version, 'pypy')
         env:
           MACOSX_DEPLOYMENT_TARGET: 10.9
           _PYTHON_HOST_PLATFORM: macosx-10.9-universal2
@@ -155,7 +150,6 @@ jobs:
   {% else %}
           !startsWith(runner.os, 'Mac')
           || startsWith(matrix.python-version, 'pypy')
-          || matrix.python-version == '3.7'
   {% endif %}
         run: |
           # Next, build the wheel *in place*. This helps ccache, and also lets us cache the configure
@@ -185,17 +179,14 @@ jobs:
         run: |
           ls -l dist
           twine check dist/*
-{% for kind in ('macOS x86_64',
-                'macOS arm64',
-                'all other platforms') %}
+{% for kind in ('macOS x86_64', 'macOS arm64', 'all other platforms') %}
       - name: Upload %(package_name)s wheel (%(kind)s)
         if: >
   {% if kind == 'macOS x86_64' %}
           startsWith(runner.os, 'Mac')
   {% elif kind == 'macOS arm64' or kind == 'macOS universal2' %}
           startsWith(runner.os, 'Mac')
-          && !(startsWith(matrix.python-version, 'pypy')
-               || matrix.python-version == '3.7')
+          && !startsWith(matrix.python-version, 'pypy')
     {% else %}
           !startsWith(runner.os, 'Mac')
     {% endif %}
