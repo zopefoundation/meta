@@ -4,6 +4,7 @@
 [testenv]
 skip_install = true
 deps =
+    setuptools < 69
     zc.buildout >= 3.0.1
     wheel > 0.37
 {% for line in testenv_deps %}
@@ -31,11 +32,12 @@ commands =
     %(line)s
   {% endfor %}
 {% else %}
-    {envdir}/bin/test {posargs:-cv}
+    {envbindir}/test {posargs:-cv}
 {% endif %}
 {% for line in testenv_additional %}
 %(line)s
 {% endfor %}
+{% include 'tox-release-check.j2' %}
 
 [testenv:lint]
 basepython = python3
@@ -50,11 +52,7 @@ commands =
     isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s
     flake8 {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
 {% endif %}
-    check-manifest
-    check-python-versions
 deps =
-    check-manifest
-    check-python-versions
 {% if use_flake8 %}
     flake8
     isort
@@ -95,7 +93,7 @@ commands =
     %(line)s
   {% endfor %}
 {% else %}
-    coverage run {envdir}/bin/test {posargs:-cv}
+    coverage run {envbindir}/test {posargs:-cv}
 {% endif %}
     coverage html
     coverage report -m --fail-under=%(fail_under)s

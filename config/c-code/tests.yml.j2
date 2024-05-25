@@ -96,10 +96,27 @@ jobs:
     steps:
 {% include 'tests-cache.j2' %}
 
-      - name: Install Build Dependencies
+{% if with_future_python %}
+      - name: Install Build Dependencies (%(future_python_version)s)
+        if: matrix.python-version == '%(future_python_version)s'
         run: |
           pip install -U pip
-          pip install -U setuptools wheel twine cffi
+          pip install -U "setuptools<69" wheel twine
+  {% if require_cffi %}
+          # Remove this hack once 'cffi' has a release supporting Python 3.13.
+          pip install -e "git+https://github.com/python-cffi/cffi.git#egg=cffi"
+  {% endif %}
+{% endif %}
+      - name: Install Build Dependencies
+{% if with_future_python %}
+        if: matrix.python-version != '%(future_python_version)s'
+{% endif %}
+        run: |
+          pip install -U pip
+          pip install -U "setuptools<69" wheel twine
+  {% if require_cffi %}
+          pip install cffi
+  {% endif %}
 {% if gha_additional_build_dependencies %}
   {% for line in gha_additional_build_dependencies %}
           pip install -U %(line)s
@@ -182,7 +199,7 @@ jobs:
     {% else %}
           !startsWith(runner.os, 'Mac')
     {% endif %}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
   {% if kind == 'macOS arm64' %}
           # The arm64 wheel is uploaded with a different name just so it can be
@@ -206,14 +223,14 @@ jobs:
           path: dist/*whl
   {% endif %}
 {% endfor %}
-      - name: Publish package to PyPI (mac)
-        # We cannot 'uses: pypa/gh-action-pypi-publish@v1.4.1' because
-        # that's apparently a container action, and those don't run on
-        # the Mac.
+      - name: Publish package to PyPI (Non-Linux)
+        # We cannot use pypa/gh-action-pypi-publish because that
+        # is a container action, and those don't run on macOS
+        # or Windows GHA runners.
         if: >
           github.event_name == 'push'
           && startsWith(github.ref, 'refs/tags')
-          && startsWith(runner.os, 'Mac')
+          && !startsWith(runner.os, 'Linux')
           && !startsWith(matrix.python-version, 'pypy')
 {% if with_future_python %}
           && !startsWith(matrix.python-version, '%(future_python_version)s')
@@ -237,11 +254,15 @@ jobs:
   {% endfor %}
 {% else %}
 {% if with_future_python %}
-      - name: Install %(package_name)s %(future_python_version)s
-        if: ${{ startsWith(matrix.python-version, '%(future_python_version)s') }}
+      - name: Install %(package_name)s %(future_python_version)s ${{ matrix.python-version }}
+        if: matrix.python-version == '%(future_python_version)s'
         run: |
-          pip install -U wheel setuptools
-          # coverage has a wheel on PyPI for a future python version which is
+          pip install -U wheel "setuptools<69"
+  {% if require_cffi %}
+          # Remove this hack once 'cffi' has a release supporting Python 3.13.
+          pip install -e "git+https://github.com/python-cffi/cffi.git#egg=cffi"
+  {%  endif %}
+          # coverage might have a wheel on PyPI for a future python version which is
           # not ABI compatible with the current one, so build it from sdist:
           pip install -U --no-binary :all: coverage
           # Unzip into src/ so that testrunner can find the .so files
@@ -254,10 +275,10 @@ jobs:
 {% endif %}
       - name: Install %(package_name)s
 {% if with_future_python %}
-        if: ${{ !startsWith(matrix.python-version, '%(future_python_version)s') }}
+        if: matrix.python-version != '%(future_python_version)s'
 {% endif %}
         run: |
-          pip install -U wheel setuptools
+          pip install -U wheel "setuptools<69"
           pip install -U coverage
           pip install -U 'cffi; platform_python_implementation == "CPython"'
           # Unzip into src/ so that testrunner can find the .so files
@@ -279,12 +300,14 @@ jobs:
         run:
         {% if gha_test_commands %}
         {% for line in gha_test_commands %}
-          PURE_PYTHON=1 %(line)s
+          %(line)s
         {% endfor %}
         {% else %}
           # coverage makes PyPy run about 3x slower!
-          PURE_PYTHON=1 python -m coverage run -p -m zope.testrunner --test-path=src --auto-color --auto-progress
+          python -m coverage run -p -m zope.testrunner --test-path=src --auto-color --auto-progress
         {% endif %}
+        env:
+          PURE_PYTHON: 1
       - name: Report Coverage
         run: |
           coverage combine
@@ -299,7 +322,7 @@ jobs:
 
   coveralls_finish:
     needs: test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Coveralls Finished
       uses: AndreMiras/coveralls-python-action@develop
@@ -312,8 +335,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.9"]
-        os: [ubuntu-20.04]
+        python-version: ["%(manylinux_python_version)s"]
+        os: [ubuntu-latest]
 
     steps:
 {% include 'tests-cache.j2' %}
@@ -338,8 +361,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.9"]
-        os: [ubuntu-20.04]
+        python-version: ["%(manylinux_python_version)s"]
+        os: [ubuntu-latest]
 
     steps:
 {% include 'tests-cache.j2' %}
@@ -358,13 +381,13 @@ jobs:
           # python -m pylint --limit-inference-results=1 --rcfile=.pylintrc %(package_name)s -f parseable -r n
 
   manylinux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     # We use a regular Python matrix entry to share as much code as possible.
     strategy:
       matrix:
-        python-version: ["3.9"]
-        image: [manylinux2014_x86_64, manylinux2014_i686, manylinux2014_aarch64]
+        python-version: ["%(manylinux_python_version)s"]
+        image: [%(manylinux_x86_64)s, %(manylinux_i686)s, %(manylinux_aarch64)s]
 
     steps:
 {% set cache_key = "${{ runner.os }}-pip_manylinux-${{ matrix.image }}-${{ matrix.python-version }}" %}
@@ -373,7 +396,7 @@ jobs:
       - name: Update pip
         run: pip install -U pip
       - name: Build %(package_name)s (x86_64)
-        if: matrix.image == 'manylinux2014_x86_64'
+        if: matrix.image == '%(manylinux_x86_64)s'
         # An alternate way to do this is to run the container directly with a uses:
         # and then the script runs inside it. That may work better with caching.
         # See https://github.com/pyca/bcrypt/blob/f6b5ee2eda76d077c531362ac65e16f045cf1f29/.github/workflows/wheel-builder.yml
@@ -382,14 +405,14 @@ jobs:
         run: |
           bash .manylinux.sh
       - name: Build %(package_name)s (i686)
-        if: matrix.image == 'manylinux2014_i686'
+        if: matrix.image == '%(manylinux_i686)s'
         env:
           DOCKER_IMAGE: quay.io/pypa/${{ matrix.image }}
           PRE_CMD: linux32
         run: |
           bash .manylinux.sh
       - name: Build %(package_name)s (aarch64)
-        if: matrix.image == 'manylinux2014_aarch64'
+        if: matrix.image == '%(manylinux_aarch64)s'
         env:
           DOCKER_IMAGE: quay.io/pypa/${{ matrix.image }}
         run: |
@@ -398,12 +421,12 @@ jobs:
           bash .manylinux.sh
 
       - name: Upload %(package_name)s wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: wheelhouse/*whl
           name: manylinux_${{ matrix.image }}_wheels.zip
       - name: Restore pip cache permissions
-        run: sudo chown -R $(whoami) ${{ steps.pip-cache.outputs.dir }}
+        run: sudo chown -R $(whoami) ${{ steps.pip-cache-default.outputs.dir }}
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         if: >
@@ -412,5 +435,5 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.TWINE_PASSWORD }}
-          skip_existing: true
-          packages_dir: wheelhouse/
+          skip-existing: true
+          packages-dir: wheelhouse/

@@ -9,6 +9,7 @@ wheel_build_env = .pkg
 pip_pre = py313: true
 {% endif %}
 deps =
+  setuptools < 69
   {% for line in testenv_deps %}
     %(line)s
   {% endfor %}

@@ -26,15 +26,16 @@ jobs:
       fail-fast: false
       matrix:
         os:
-        - ["ubuntu", "ubuntu-20.04"]
+        - ["ubuntu", "ubuntu-latest"]
 {% if with_windows %}
         - ["windows", "windows-latest"]
 {% endif %}
 {% if with_macos %}
-        - ["macos", "macos-11"]
+        - ["macos", "macos-latest"]
 {% endif %}
         config:
         # [Python version, tox env]
+        - ["3.9",   "release-check"]
         - ["3.9",   "lint"]
         - ["3.7",   "py37"]
         - ["3.8",   "py38"]
@@ -46,7 +47,7 @@ jobs:
         - ["%(future_python_version)s",  "py313"]
 {% endif %}
 {% if with_pypy %}
-        - ["pypy-3.9", "pypy3"]
+        - ["pypy-3.10", "pypy3"]
 {% endif %}
 {% if with_docs %}
         - ["3.9",   "docs"]
@@ -61,6 +62,7 @@ jobs:
         exclude:
 {% endif %}
 {% if with_windows %}
+          - { os: ["windows", "windows-latest"], config: ["3.9",   "release-check"] }
           - { os: ["windows", "windows-latest"], config: ["3.9",   "lint"] }
   {% if with_docs %}
           - { os: ["windows", "windows-latest"], config: ["3.9",   "docs"] }
@@ -68,17 +70,18 @@ jobs:
           - { os: ["windows", "windows-latest"], config: ["3.9",   "coverage"] }
 {% endif %}
 {% if with_macos %}
-          - { os: ["macos", "macos-11"], config: ["3.9",   "lint"] }
+          - { os: ["macos", "macos-latest"], config: ["3.9",   "release-check"] }
+          - { os: ["macos", "macos-latest"], config: ["3.9",   "lint"] }
   {% if with_docs %}
-          - { os: ["macos", "macos-11"], config: ["3.9",   "docs"] }
+          - { os: ["macos", "macos-latest"], config: ["3.9",   "docs"] }
   {% endif %}
-          - { os: ["macos", "macos-11"], config: ["3.9",   "coverage"] }
+          - { os: ["macos", "macos-latest"], config: ["3.9",   "coverage"] }
           # macOS/Python 3.11+ is set up for universal2 architecture
           # which causes build and package selection issues.
-          - { os: ["macos", "macos-11"], config: ["3.11",  "py311"] }
-          - { os: ["macos", "macos-11"], config: ["3.12",  "py312"] }
+          - { os: ["macos", "macos-latest"], config: ["3.11",  "py311"] }
+          - { os: ["macos", "macos-latest"], config: ["3.12",  "py312"] }
   {% if with_future_python %}
-          - { os: ["macos", "macos-11"], config: ["%(future_python_version)s",  "py313"] }
+          - { os: ["macos", "macos-latest"], config: ["%(future_python_version)s",  "py313"] }
   {% endif %}
 {% endif %}
 {% for line in gha_additional_exclude %}
@@ -96,13 +99,16 @@ jobs:
 {% for line in steps_before_checkout %}
     %(line)s
 {% endfor %}
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.config[0] }}
+{% if with_future_python %}
+        allow-prereleases: true
+{% endif %}
     - name: Pip cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ matrix.config[0] }}-${{ hashFiles('setup.*', 'tox.ini') }}

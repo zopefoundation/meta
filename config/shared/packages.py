@@ -1,4 +1,30 @@
+##############################################################################
+#
+# Copyright (c) 2021 Zope Foundation and Contributors.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+import itertools
 import pathlib
+
+
+TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
+ORG = 'zopefoundation'
+BASE_PATH = pathlib.Path(__file__).parent.parent
+OLDEST_PYTHON_VERSION = '3.7'
+NEWEST_PYTHON_VERSION = '3.12'
+FUTURE_PYTHON_VERSION = '3.13'
+PYPY_VERSION = '3.10'
+MANYLINUX_PYTHON_VERSION = '3.9'
+MANYLINUX_AARCH64 = 'manylinux2014_aarch64'
+MANYLINUX_I686 = 'manylinux2014_i686'
+MANYLINUX_X86_64 = 'manylinux2014_x86_64'
 
 
 def list_packages(path: pathlib.Path) -> list:
@@ -11,3 +37,8 @@ def list_packages(path: pathlib.Path) -> list:
         for p in path.read_text().split('\n')
         if p and not p.startswith('#')
     ]
+
+
+ALL_REPOS = itertools.chain(
+    *[list_packages(BASE_PATH / type / 'packages.txt')
+      for type in TYPES])

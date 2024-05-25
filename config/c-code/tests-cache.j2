@@ -1,24 +1,44 @@
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+{% if with_future_python %}
+          allow-prereleases: true
+{% endif %}
       ###
       # Caching.
       # This actually *restores* a cache and schedules a cleanup action
       # to save the cache. So it must come before the thing we want to use
       # the cache.
       ###
-      - name: Get pip cache dir
-        id: pip-cache
+      - name: Get pip cache dir (default)
+        id: pip-cache-default
+        if: ${{ !startsWith(runner.os, 'Windows') }}
         run: |
           echo "dir=$(pip cache dir)" >>$GITHUB_OUTPUT
 
-      - name: pip cache
-        uses: actions/cache@v3
+      - name: Get pip cache dir (Windows)
+        id: pip-cache-windows
+        if: ${{ startsWith(runner.os, 'Windows') }}
+        run: |
+          echo "dir=$(pip cache dir)" >> $Env:GITHUB_OUTPUT
+
+      - name: pip cache (default)
+        uses: actions/cache@v4
+        if: ${{ !startsWith(runner.os, 'Windows') }}
         with:
-          path: ${{ steps.pip-cache.outputs.dir }}
+          path: ${{ steps.pip-cache-default.outputs.dir }}
+          key: %(cache_key)s
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: pip cache (Windows)
+        uses: actions/cache@v4
+        if: ${{ startsWith(runner.os, 'Windows') }}
+        with:
+          path: ${{ steps.pip-cache-windows.outputs.dir }}
           key: %(cache_key)s
           restore-keys: |
             ${{ runner.os }}-pip-

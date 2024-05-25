@@ -3,7 +3,7 @@
       matrix:
         python-version:
 {% if with_pypy %}
-          - "pypy-3.9"
+          - "pypy-%(pypy_version)s"
 {% endif %}
           - "3.7"
           - "3.8"
@@ -14,14 +14,21 @@
 {% if with_future_python %}
           - "%(future_python_version)s"
 {% endif %}
-        os: [ubuntu-20.04, macos-11]
-{% if with_pypy or gha_additional_exclude %}
-        exclude:
+{% if with_windows %}
+        os: [ubuntu-latest, macos-latest, windows-latest]
+{% else %}
+        os: [ubuntu-latest, macos-latest]
 {% endif %}
+        exclude:
+          - os: macos-latest
+            python-version: "3.7"
 {% if with_pypy %}
-          - os: macos-11
-            python-version: "pypy-3.9"
+          - os: macos-latest
+            python-version: "pypy-%(pypy_version)s"
 {% endif %}
 {% for line in gha_additional_exclude %}
           %(line)s
 {% endfor %}
+        include:
+          - python-version: "3.7"
+            os: macos-12
