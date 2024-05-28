@@ -26,7 +26,7 @@ import tomlkit
 
 
 parser = argparse.ArgumentParser(
-    description='Drop support of Python 2.7 up to 3.6 from a package.')
+    description='Drop support of Python 2.7 up to 3.7 from a package.')
 parser.add_argument(
     'path', type=pathlib.Path, help='path to the repository to be configured')
 parser.add_argument(
@@ -65,13 +65,13 @@ with change_dir(path) as cwd_str:
     if not args.interactive:
         call(bin_dir / 'bumpversion', '--breaking', '--no-input')
         call(bin_dir / 'addchangelogentry',
-             'Drop support for Python 2.7, 3.5, 3.6.', '--no-input')
+             'Drop support for Python 2.7, 3.5, 3.6., 3.7.', '--no-input')
     else:
         call(bin_dir / 'bumpversion', '--breaking')
         call(bin_dir / 'addchangelogentry',
-             'Drop support for Python 2.7, 3.5, 3.6.')
+             'Drop support for Python 2.7, 3.5, 3.6., 3.7.')
     call(bin_dir / 'check-python-versions',
-         '--drop=2.7,3.5,3.6', '--only=setup.py')
+         '--drop=2.7,3.5,3.6,3.7', '--only=setup.py')
     print('Remove legacy Python specific settings from .meta.toml')
     call(os.environ['EDITOR'], '.meta.toml')
 
@@ -89,8 +89,8 @@ with change_dir(path) as cwd_str:
     call(os.environ['EDITOR'], 'setup.py')
     src = path.resolve() / 'src'
     call('find', src, '-name', '*.py', '-exec',
-         bin_dir / 'pyupgrade', '--py3-plus', '--py37-plus', '{}', ';')
-    call(bin_dir / 'pyupgrade', '--py3-plus', '--py37-plus', 'setup.py',
+         bin_dir / 'pyupgrade', '--py3-plus', '--py38-plus', '{}', ';')
+    call(bin_dir / 'pyupgrade', '--py3-plus', '--py38-plus', 'setup.py',
          allowed_return_codes=(0, 1))
 
     excludes = ('--exclude-dir', '__pycache__', '--exclude-dir', '*.egg-info',
@@ -101,7 +101,7 @@ with change_dir(path) as cwd_str:
     wait_for_accept()
     print('Replace any remaining code that may support legacy Python 2:')
     call('egrep', '-rn',
-         '2.7|3.5|3.6|sys.version|PY2|PY3|Py2|Py3|Python 2|Python 3'
+         '2.7|3.5|3.6|3.7|sys.version|PY2|PY3|Py2|Py3|Python 2|Python 3'
          '|__unicode__|ImportError', src, *excludes,
          allowed_return_codes=(0, 1))
     wait_for_accept()
@@ -110,7 +110,7 @@ with change_dir(path) as cwd_str:
     if not args.interactive:
         print('Adding, committing and pushing all changes ...')
         call('git', 'add', '.')
-        call('git', 'commit', '-m', 'Drop support for Python 2.7 up to 3.6.')
+        call('git', 'commit', '-m', 'Drop support for Python 2.7 up to 3.7.')
         call('git', 'push', '--set-upstream', 'origin', branch_name)
         if updating:
             print('Updated the previously created PR.')

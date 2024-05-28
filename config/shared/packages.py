@@ -17,7 +17,7 @@ import pathlib
 TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
 ORG = 'zopefoundation'
 BASE_PATH = pathlib.Path(__file__).parent.parent
-OLDEST_PYTHON_VERSION = '3.7'
+OLDEST_PYTHON_VERSION = '3.8'
 NEWEST_PYTHON_VERSION = '3.12'
 FUTURE_PYTHON_VERSION = '3.13'
 PYPY_VERSION = '3.10'

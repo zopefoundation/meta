@@ -5,7 +5,6 @@
 {% if with_pypy %}
           - "pypy-%(pypy_version)s"
 {% endif %}
-          - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
@@ -19,9 +18,9 @@
 {% else %}
         os: [ubuntu-latest, macos-latest]
 {% endif %}
+{% if with_pypy or gha_additional_exclude %}
         exclude:
-          - os: macos-latest
-            python-version: "3.7"
+{% endif %}
 {% if with_pypy %}
           - os: macos-latest
             python-version: "pypy-%(pypy_version)s"
@@ -29,6 +28,3 @@
 {% for line in gha_additional_exclude %}
           %(line)s
 {% endfor %}
-        include:
-          - python-version: "3.7"
-            os: macos-12
