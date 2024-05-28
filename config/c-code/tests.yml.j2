@@ -187,19 +187,20 @@ jobs:
   {% elif kind == 'macOS arm64' or kind == 'macOS universal2' %}
           startsWith(runner.os, 'Mac')
           && !startsWith(matrix.python-version, 'pypy')
-    {% else %}
+  {% else %}
           !startsWith(runner.os, 'Mac')
-    {% endif %}
+  {% endif %}
         uses: actions/upload-artifact@v4
         with:
-  {% if kind == 'macOS arm64' %}
-          # The arm64 wheel is uploaded with a different name just so it can be
+  {% if kind == 'macOS x86_64' %}
+          # The x86_64 wheel is uploaded with a different name just so it can be
           # manually downloaded when desired. The wheel itself *cannot* be tested
-          # on the GHA runner, which uses x86_64 architecture.
-          name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}-arm64.whl
+          # on the GHA runner, which uses arm64 architecture.
+          name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}-x86_64.whl
   {% elif kind == 'macOS universal2' %}
           # The universal2 wheel is uploaded with a different name just so it
-          # can be manually downloaded when desired.
+          # can be manually downloaded when desired. The GHA runner does not
+          # test this wheel, it uses the arm64 version.
           name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}-universal2.whl
   {% else %}
           name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}.whl
