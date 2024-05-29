@@ -101,10 +101,10 @@ jobs:
         if: matrix.python-version == '%(future_python_version)s'
         run: |
           pip install -U pip
-          pip install -U "setuptools<69" wheel twine
   {% if require_cffi %}
-          pip install --pre cffi
+          pip install -U --pre cffi
   {% endif %}
+          pip install -U "setuptools<69" wheel twine
 {% endif %}
       - name: Install Build Dependencies
 {% if with_future_python %}
@@ -248,10 +248,10 @@ jobs:
       - name: Install %(package_name)s ${{ matrix.python-version }}
         if: matrix.python-version == '%(future_python_version)s'
         run: |
-          pip install -U wheel "setuptools<69"
   {% if require_cffi %}
-          pip install --pre cffi
+          pip install -U --pre cffi
   {%  endif %}
+          pip install -U wheel "setuptools<69"
           # coverage might have a wheel on PyPI for a future python version which is
           # not ABI compatible with the current one, so build it from sdist:
           pip install -U --no-binary :all: coverage
