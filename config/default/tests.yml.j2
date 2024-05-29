@@ -75,10 +75,6 @@ jobs:
           - { os: ["macos", "macos-latest"], config: ["3.9",   "docs"] }
   {% endif %}
           - { os: ["macos", "macos-latest"], config: ["3.9",   "coverage"] }
-          # macOS/Python 3.11+ is set up for universal2 architecture
-          # which causes build and package selection issues.
-          - { os: ["macos", "macos-latest"], config: ["3.11",  "py311"] }
-          - { os: ["macos", "macos-latest"], config: ["3.12",  "py312"] }
   {% if with_future_python %}
           - { os: ["macos", "macos-latest"], config: ["%(future_python_version)s",  "py313"] }
   {% endif %}
@@ -122,6 +118,7 @@ jobs:
         %(line)s
 {% endfor %}
     - name: Test
+      if: ${{ !startsWith(runner.os, 'Mac') }}
 {% if gha_test_environment %}
       env:
       {% for line in gha_test_environment %}
@@ -136,6 +133,15 @@ jobs:
 {% else %}
       run: tox -e ${{ matrix.config[1] }}
 {% endif %}
+    - name: Test (macOS)
+      if: ${{ startsWith(runner.os, 'Mac') }}
+{% if gha_test_environment %}
+      env:
+      {% for line in gha_test_environment %}
+        %(line)s
+      {% endfor %}
+{% endif %}
+      run: tox -e ${{ matrix.config[1] }}-universal2
     - name: Coverage
       if: matrix.config[1] == 'coverage'
       run: |
