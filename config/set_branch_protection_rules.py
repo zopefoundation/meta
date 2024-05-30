@@ -74,7 +74,7 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
             f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_I686})',
             f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_X86_64})',
             f'lint ({MANYLINUX_PYTHON_VERSION}, ubuntu-latest)',
-            f'test ({OLDEST_PYTHON_VERSION}, macos-12)',
+            f'test ({OLDEST_PYTHON_VERSION}, macos-latest)',
             f'test ({NEWEST_PYTHON_VERSION}, macos-latest)',
             f'test ({OLDEST_PYTHON_VERSION}, ubuntu-latest)',
             f'test ({NEWEST_PYTHON_VERSION}, ubuntu-latest)',

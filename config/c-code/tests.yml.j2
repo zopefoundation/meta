@@ -101,11 +101,10 @@ jobs:
         if: matrix.python-version == '%(future_python_version)s'
         run: |
           pip install -U pip
-          pip install -U "setuptools<69" wheel twine
   {% if require_cffi %}
-          # Remove this hack once 'cffi' has a release supporting Python 3.13.
-          pip install -e "git+https://github.com/python-cffi/cffi.git#egg=cffi"
+          pip install -U --pre cffi
   {% endif %}
+          pip install -U "setuptools<69" wheel twine
 {% endif %}
       - name: Install Build Dependencies
 {% if with_future_python %}
@@ -246,14 +245,13 @@ jobs:
   {% endfor %}
 {% else %}
 {% if with_future_python %}
-      - name: Install %(package_name)s %(future_python_version)s ${{ matrix.python-version }}
+      - name: Install %(package_name)s ${{ matrix.python-version }}
         if: matrix.python-version == '%(future_python_version)s'
         run: |
-          pip install -U wheel "setuptools<69"
   {% if require_cffi %}
-          # Remove this hack once 'cffi' has a release supporting Python 3.13.
-          pip install -e "git+https://github.com/python-cffi/cffi.git#egg=cffi"
+          pip install -U --pre cffi
   {%  endif %}
+          pip install -U wheel "setuptools<69"
           # coverage might have a wheel on PyPI for a future python version which is
           # not ABI compatible with the current one, so build it from sdist:
           pip install -U --no-binary :all: coverage
