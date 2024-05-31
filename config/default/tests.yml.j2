@@ -75,9 +75,6 @@ jobs:
           - { os: ["macos", "macos-latest"], config: ["3.9",   "docs"] }
   {% endif %}
           - { os: ["macos", "macos-latest"], config: ["3.9",   "coverage"] }
-  {% if with_future_python %}
-          - { os: ["macos", "macos-latest"], config: ["%(future_python_version)s",  "py313"] }
-  {% endif %}
 {% endif %}
 {% for line in gha_additional_exclude %}
           %(line)s
