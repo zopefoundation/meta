@@ -416,7 +416,6 @@ jobs:
         run: sudo chown -R $(whoami) ${{ steps.pip-cache-default.outputs.dir }}
 {% if with_future_python %}
       - name: Prevent publishing wheels for unreleased Python versions
-        if: '%(future_python_version)s' != ''
         run: VER=$(echo '%(future_python_version)s' | tr -d .) && rm -f wheelhouse/*-cp${VER}*.whl
 {% endif %}
       - name: Publish package to PyPI
