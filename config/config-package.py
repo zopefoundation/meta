@@ -229,6 +229,8 @@ class PackageConfiguration:
 
     @cached_property
     def with_future_python(self):
+        if not FUTURE_PYTHON_VERSION:
+            return 'false'
         return self._set_python_config_value('future-python')
 
     @cached_property
