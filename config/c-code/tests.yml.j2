@@ -223,6 +223,9 @@ jobs:
           && startsWith(github.ref, 'refs/tags')
           && !startsWith(runner.os, 'Linux')
           && !startsWith(matrix.python-version, 'pypy')
+{% if with_future_python %}
+          && !startsWith(matrix.python-version, '%(future_python_version)s')
+{% endif %}
         env:
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
         run: |
