@@ -229,7 +229,12 @@ class PackageConfiguration:
 
     @cached_property
     def with_future_python(self):
-        return self._set_python_config_value('future-python')
+        value = self._set_python_config_value('future-python')
+
+        if not FUTURE_PYTHON_VERSION:
+            return 'false'
+
+        return value
 
     @cached_property
     def with_docs(self):
