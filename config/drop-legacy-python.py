@@ -26,24 +26,24 @@ import tomlkit
 
 
 parser = argparse.ArgumentParser(
-    description='Drop support of Python 2.7 up to 3.7 from a package.')
-parser.add_argument(
-    'path', type=pathlib.Path, help='path to the repository to be configured')
+    description='Drop support of Python 3.7 from a package.')
+parser.add_argument('path',
+                    type=pathlib.Path,
+                    help='path to the repository to be configured')
 parser.add_argument(
     '--branch',
     dest='branch_name',
     default=None,
     help='Define a git branch name to be used for the changes. If not given'
-         ' it is constructed automatically and includes the configuration'
-         ' type')
+    ' it is constructed automatically and includes the configuration'
+    ' type')
 parser.add_argument(
     '--interactive',
     dest='interactive',
     action='store_true',
     default=False,
     help='Run interactively: Scripts will prompt for input and changes will '
-         'not be committed and pushed automatically.')
-
+    'not be committed and pushed automatically.')
 
 args = parser.parse_args()
 path = args.path.absolute()
@@ -64,14 +64,13 @@ with change_dir(path) as cwd_str:
 
     if not args.interactive:
         call(bin_dir / 'bumpversion', '--breaking', '--no-input')
-        call(bin_dir / 'addchangelogentry',
-             'Drop support for Python 2.7, 3.5, 3.6., 3.7.', '--no-input')
+        call(bin_dir / 'addchangelogentry', 'Drop support for Python 3.7.',
+             '--no-input')
     else:
         call(bin_dir / 'bumpversion', '--breaking')
-        call(bin_dir / 'addchangelogentry',
-             'Drop support for Python 2.7, 3.5, 3.6., 3.7.')
-    call(bin_dir / 'check-python-versions',
-         '--drop=2.7,3.5,3.6,3.7', '--only=setup.py')
+        call(bin_dir / 'addchangelogentry', 'Drop support for Python 3.7.')
+    call(bin_dir / 'check-python-versions', '--drop=2.7,3.5,3.6,3.7',
+         '--only=setup.py')
     print('Remove legacy Python specific settings from .meta.toml')
     call(os.environ['EDITOR'], '.meta.toml')
 
@@ -85,24 +84,23 @@ with change_dir(path) as cwd_str:
     if args.interactive:
         config_package_args.append('--no-commit')
     call(*config_package_args, cwd=cwd_str)
-    print('Remove `six` from the list of dependencies and other Py 2 things.')
-    call(os.environ['EDITOR'], 'setup.py')
     src = path.resolve() / 'src'
-    call('find', src, '-name', '*.py', '-exec',
-         bin_dir / 'pyupgrade', '--py3-plus', '--py38-plus', '{}', ';')
-    call(bin_dir / 'pyupgrade', '--py3-plus', '--py38-plus', 'setup.py',
+    call('find', src, '-name', '*.py', '-exec', bin_dir / 'pyupgrade',
+         '--py3-plus', '--py38-plus', '{}', ';')
+    call(bin_dir / 'pyupgrade',
+         '--py3-plus',
+         '--py38-plus',
+         'setup.py',
          allowed_return_codes=(0, 1))
 
     excludes = ('--exclude-dir', '__pycache__', '--exclude-dir', '*.egg-info',
                 '--exclude', '*.pyc', '--exclude', '*.so')
-    print(
-        'Replace all remaining `six` mentions or continue if none are listed.')
-    call('grep', '-rn', 'six', src, *excludes, allowed_return_codes=(0, 1))
-    wait_for_accept()
-    print('Replace any remaining code that may support legacy Python 2:')
-    call('egrep', '-rn',
-         '2.7|3.5|3.6|3.7|sys.version|PY2|PY3|Py2|Py3|Python 2|Python 3'
-         '|__unicode__|ImportError', src, *excludes,
+    print('Replace any remaining code that might support legacy Python:')
+    call('egrep',
+         '-rn',
+         '3.7|sys.version|PY3|Py3|Python 3|__unicode__|ImportError',
+         src,
+         *excludes,
          allowed_return_codes=(0, 1))
     wait_for_accept()
     tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
@@ -110,7 +108,7 @@ with change_dir(path) as cwd_str:
     if not args.interactive:
         print('Adding, committing and pushing all changes ...')
         call('git', 'add', '.')
-        call('git', 'commit', '-m', 'Drop support for Python 2.7 up to 3.7.')
+        call('git', 'commit', '-m', 'Drop support for Python 3.7.')
         call('git', 'push', '--set-upstream', 'origin', branch_name)
         if updating:
             print('Updated the previously created PR.')
