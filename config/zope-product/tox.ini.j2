@@ -37,6 +37,7 @@ commands =
 {% for line in testenv_additional %}
 %(line)s
 {% endfor %}
+
 {% include 'tox-release-check.j2' %}
 
 [testenv:lint]
