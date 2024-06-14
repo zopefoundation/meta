@@ -19,6 +19,10 @@ ORG = 'zopefoundation'
 BASE_PATH = pathlib.Path(__file__).parent.parent
 OLDEST_PYTHON_VERSION = '3.8'
 NEWEST_PYTHON_VERSION = '3.12'
+SUPPORTED_PYTHON_VERSIONS = [
+    f'3.{i}' for i in range(int(OLDEST_PYTHON_VERSION.replace('3.', '')),
+                            int(NEWEST_PYTHON_VERSION.replace('3.', '')) + 1)
+]
 FUTURE_PYTHON_VERSION = '3.13'
 PYPY_VERSION = '3.10'
 MANYLINUX_PYTHON_VERSION = '3.11'
@@ -33,12 +37,9 @@ def list_packages(path: pathlib.Path) -> list:
     ``path`` must point to a packages.txt file.
     """
     return [
-        p
-        for p in path.read_text().split('\n')
-        if p and not p.startswith('#')
+        p for p in path.read_text().split('\n') if p and not p.startswith('#')
     ]
 
 
 ALL_REPOS = itertools.chain(
-    *[list_packages(BASE_PATH / type / 'packages.txt')
-      for type in TYPES])
+    *[list_packages(BASE_PATH / type / 'packages.txt') for type in TYPES])
