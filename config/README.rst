@@ -671,8 +671,11 @@ To update a repository to the currently supported Python versions call::
 
     $ bin/python update-python-support.py <path-to-package>
 
-It supports a parameter ``--interactive`` to not automatically commiting the
-changes.
+It supports a parameter ``--interactive`` to gather user input for its changes
+and not automatically commit them. It also supports a parameter ``--no-commit``
+that prevents automatic commits but attempts to cut down on interactively
+asking for user input. Some of that still happens due to limitations
+of the ``zest.releaser`` scripts used by ``update-python-support.py``.
 
 
 Calling a script on multiple repositories
