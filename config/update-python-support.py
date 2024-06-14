@@ -85,6 +85,8 @@ with change_dir(path) as cwd_str:
 
     if not args.interactive:
         non_interactive_params = ['--no-input']
+    else:
+        non_interactive_params = []
     if no_longer_supported or not_yet_supported:
         call(bin_dir / 'bumpversion', '--feature', *non_interactive_params)
     python_versions_args = ['--add=' + ','.join(SUPPORTED_PYTHON_VERSIONS)]
