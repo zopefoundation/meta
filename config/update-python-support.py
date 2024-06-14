@@ -53,12 +53,18 @@ parser.add_argument(
     ' it is constructed automatically and includes the configuration'
     ' type')
 parser.add_argument(
+    '--no-commit',
+    dest='commit',
+    action='store_false',
+    default=True,
+    help='Don\'t "git commit" changes made by this script.')
+parser.add_argument(
     '--interactive',
     dest='interactive',
     action='store_true',
     default=False,
-    help='Run interactively: Scripts will prompt for input and changes will '
-    'not be committed and pushed automatically.')
+    help='Run interactively: Scripts will prompt for input. Implies '
+    '--no-commit, changes will not be committed and pushed automatically.')
 
 args = parser.parse_args()
 path = args.path.absolute()
@@ -83,10 +89,12 @@ with change_dir(path) as cwd_str:
     not_yet_supported = (set(SUPPORTED_PYTHON_VERSIONS) -
                          set(current_python_versions))
 
-    if not args.interactive:
+    non_interactive_params = []
+    if not args.interactive and args.commit:
         non_interactive_params = ['--no-input']
     else:
-        non_interactive_params = []
+        args.commit = False
+
     if no_longer_supported or not_yet_supported:
         call(bin_dir / 'bumpversion', '--feature', *non_interactive_params)
     python_versions_args = ['--add=' + ','.join(SUPPORTED_PYTHON_VERSIONS)]
@@ -113,7 +121,7 @@ with change_dir(path) as cwd_str:
         f'--branch={branch_name}',
         '--no-push',
     ]
-    if args.interactive:
+    if not args.commit:
         config_package_args.append('--no-commit')
     call(*config_package_args, cwd=cwd_str)
     src = path.resolve() / 'src'
@@ -138,7 +146,7 @@ with change_dir(path) as cwd_str:
     wait_for_accept()
     tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
     call(tox_path, '-p', 'auto')
-    if not args.interactive:
+    if args.commit:
         print('Adding, committing and pushing all changes ...')
         call('git', 'add', '.')
         call('git', 'commit', '-m', 'Update Python version support.')
