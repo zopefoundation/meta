@@ -15,9 +15,12 @@ from shared.call import call
 from shared.call import wait_for_accept
 from shared.git import get_branch_name
 from shared.git import git_branch
+from shared.packages import OLDEST_PYTHON_VERSION
+from shared.packages import SUPPORTED_PYTHON_VERSIONS
 from shared.path import change_dir
 import argparse
 import collections
+import configparser
 import os
 import pathlib
 import shutil
@@ -25,8 +28,20 @@ import sys
 import tomlkit
 
 
+def get_tox_ini_python_versions(path):
+    config = configparser.ConfigParser()
+    config.read(path)
+    envs = config['tox']['envlist'].split()
+    versions = [
+        env.replace('py', '').replace('3', '3.') for env in envs
+        if env.startswith('py') and env != 'pypy3'
+    ]
+    return versions
+
+
 parser = argparse.ArgumentParser(
-    description='Drop support of Python 3.7 from a package.')
+    description='Update Python versions of a package to currently supported'
+    ' ones.')
 parser.add_argument('path',
                     type=pathlib.Path,
                     help='path to the repository to be configured')
@@ -38,12 +53,18 @@ parser.add_argument(
     ' it is constructed automatically and includes the configuration'
     ' type')
 parser.add_argument(
+    '--no-commit',
+    dest='commit',
+    action='store_false',
+    default=True,
+    help='Don\'t "git commit" changes made by this script.')
+parser.add_argument(
     '--interactive',
     dest='interactive',
     action='store_true',
     default=False,
-    help='Run interactively: Scripts will prompt for input and changes will '
-    'not be committed and pushed automatically.')
+    help='Run interactively: Scripts will prompt for input. Implies '
+    '--no-commit, changes will not be committed and pushed automatically.')
 
 args = parser.parse_args()
 path = args.path.absolute()
@@ -57,21 +78,40 @@ with change_dir(path) as cwd_str:
     cwd = pathlib.Path(cwd_str)
     bin_dir = cwd / 'bin'
     with open('.meta.toml', 'rb') as meta_f:
-        meta_cfg = collections.defaultdict(dict, **tomlkit.load(meta_f))
-    config_type = meta_cfg['meta']['template']
+        meta_toml = collections.defaultdict(dict, **tomlkit.load(meta_f))
+    config_type = meta_toml['meta']['template']
     branch_name = get_branch_name(args.branch_name, config_type)
     updating = git_branch(branch_name)
 
-    if not args.interactive:
-        call(bin_dir / 'bumpversion', '--breaking', '--no-input')
-        call(bin_dir / 'addchangelogentry', 'Drop support for Python 3.7.',
-             '--no-input')
+    current_python_versions = get_tox_ini_python_versions('tox.ini')
+    no_longer_supported = (set(current_python_versions) -
+                           set(SUPPORTED_PYTHON_VERSIONS))
+    not_yet_supported = (set(SUPPORTED_PYTHON_VERSIONS) -
+                         set(current_python_versions))
+
+    non_interactive_params = []
+    if not args.interactive and args.commit:
+        non_interactive_params = ['--no-input']
     else:
-        call(bin_dir / 'bumpversion', '--breaking')
-        call(bin_dir / 'addchangelogentry', 'Drop support for Python 3.7.')
-    call(bin_dir / 'check-python-versions', '--drop=2.7,3.5,3.6,3.7',
-         '--only=setup.py')
-    print('Remove legacy Python specific settings from .meta.toml')
+        args.commit = False
+
+    if no_longer_supported or not_yet_supported:
+        call(bin_dir / 'bumpversion', '--feature', *non_interactive_params)
+    python_versions_args = ['--add=' + ','.join(SUPPORTED_PYTHON_VERSIONS)]
+    if no_longer_supported:
+        for version in sorted(list(no_longer_supported)):
+            call(bin_dir / 'addchangelogentry',
+                 f'Drop support for Python {version}.',
+                 *non_interactive_params)
+        python_versions_args.append('--drop=' + ','.join(no_longer_supported))
+    if not_yet_supported:
+        for version in sorted(list(not_yet_supported)):
+            call(bin_dir / 'addchangelogentry',
+                 f'Add support for Python {version}.', *non_interactive_params)
+
+    call(bin_dir / 'check-python-versions', '--only=setup.py',
+         *python_versions_args)
+    print('Look trough .meta.toml to see if it needs changes.')
     call(os.environ['EDITOR'], '.meta.toml')
 
     config_package_args = [
@@ -81,15 +121,16 @@ with change_dir(path) as cwd_str:
         f'--branch={branch_name}',
         '--no-push',
     ]
-    if args.interactive:
+    if not args.commit:
         config_package_args.append('--no-commit')
     call(*config_package_args, cwd=cwd_str)
     src = path.resolve() / 'src'
+    py_version_plus = f'--py{OLDEST_PYTHON_VERSION.replace(".", "")}-plus'
     call('find', src, '-name', '*.py', '-exec', bin_dir / 'pyupgrade',
-         '--py3-plus', '--py38-plus', '{}', ';')
+         '--py3-plus', py_version_plus, '{}', ';')
     call(bin_dir / 'pyupgrade',
          '--py3-plus',
-         '--py38-plus',
+         py_version_plus,
          'setup.py',
          allowed_return_codes=(0, 1))
 
@@ -97,18 +138,18 @@ with change_dir(path) as cwd_str:
                 '--exclude', '*.pyc', '--exclude', '*.so')
     print('Replace any remaining code that might support legacy Python:')
     call('egrep',
-         '-rn',
-         '3.7|sys.version|PY3|Py3|Python 3|__unicode__|ImportError',
+         '-rn', f'{"|".join(no_longer_supported)}|sys.version|PY3|Py3|Python 3'
+         '|__unicode__|ImportError',
          src,
          *excludes,
          allowed_return_codes=(0, 1))
     wait_for_accept()
     tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
     call(tox_path, '-p', 'auto')
-    if not args.interactive:
+    if args.commit:
         print('Adding, committing and pushing all changes ...')
         call('git', 'add', '.')
-        call('git', 'commit', '-m', 'Drop support for Python 3.7.')
+        call('git', 'commit', '-m', 'Update Python version support.')
         call('git', 'push', '--set-upstream', 'origin', branch_name)
         if updating:
             print('Updated the previously created PR.')

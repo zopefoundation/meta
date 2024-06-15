@@ -658,6 +658,25 @@ Hints
 * Call ``bin/check-python-versions <path-to-package> -h`` to see how to fix
   version mismatches in the *lint* tox environment.
 
+Updating to the currently supported Python versions
+---------------------------------------------------
+
+There is `update-python-support.py` which can be used to update a repository to
+the currently supported Python versions as defined in ``shared/package.py``.
+
+Usage
++++++
+
+To update a repository to the currently supported Python versions call::
+
+    $ bin/python update-python-support.py <path-to-package>
+
+It supports a parameter ``--interactive`` to gather user input for its changes
+and not automatically commit them. It also supports a parameter ``--no-commit``
+that prevents automatic commits but attempts to cut down on interactively
+asking for user input. Some of that still happens due to limitations
+of the ``zest.releaser`` scripts used by ``update-python-support.py``.
+
 
 Calling a script on multiple repositories
 -----------------------------------------
