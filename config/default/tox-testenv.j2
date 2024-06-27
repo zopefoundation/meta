@@ -1,6 +1,8 @@
 
 [testenv]
+{% if config_type != 'c-code' %}
 usedevelop = true
+{% endif %}
 {% if config_type == "pure-python" %}
 package = wheel
 wheel_build_env = .pkg
