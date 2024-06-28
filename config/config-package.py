@@ -290,9 +290,9 @@ class PackageConfiguration:
 
     def setup_cfg(self):
         """Copy setup.cfg file to the package being configured."""
-        extra_flake8_config = self.cfg_option(
+        flake8_additional_config = self.cfg_option(
             'flake8', 'additional-config')
-        extra_check_manifest_ignores = self.cfg_option(
+        check_manifest_additional_ign = self.cfg_option(
             'check-manifest', 'additional-ignores')
         check_manifest_ignore_bad_ideas = self.cfg_option(
             'check-manifest', 'ignore-bad-ideas')
@@ -305,6 +305,8 @@ class PackageConfiguration:
             self.cfg_option('isort', 'known_first_party', default=''))
         isort_known_local_folder = prepend_space(
             self.meta_cfg['isort'].get('known_local_folder', ''))
+        isort_additional_config = self.cfg_option(
+            'isort', 'additional-config')
 
         zest_releaser_options = self.meta_cfg['zest-releaser'].get(
             'options', [])
@@ -315,13 +317,14 @@ class PackageConfiguration:
             'setup.cfg.j2',
             self.path / 'setup.cfg',
             self.config_type,
-            flake8_additional_config=extra_flake8_config,
-            check_manifest_additional_ignores=extra_check_manifest_ignores,
+            flake8_additional_config=flake8_additional_config,
+            check_manifest_additional_ignores=check_manifest_additional_ign,
             check_manifest_ignore_bad_ideas=check_manifest_ignore_bad_ideas,
             isort_known_third_party=isort_known_third_party,
             isort_known_zope=isort_known_zope,
             isort_known_first_party=isort_known_first_party,
             isort_known_local_folder=isort_known_local_folder,
+            isort_additional_config=isort_additional_config,
             with_docs=self.with_docs,
             with_sphinx_doctests=self.with_sphinx_doctests,
             zest_releaser_options=zest_releaser_options,

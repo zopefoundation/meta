@@ -558,6 +558,10 @@ additional-sources
   should be applied. This option has to be a string. It defaults to the empty
   string.
 
+additional-config
+  Additional options for the ``[isort]`` section.  This option has to be a
+  list of strings.
+
 GitHub Actions options
 ``````````````````````
 

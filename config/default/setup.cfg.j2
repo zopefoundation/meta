@@ -53,3 +53,6 @@ known_local_folder =%(isort_known_local_folder)s
 default_section = ZOPE
 line_length = 79
 lines_after_imports = 2
+{% for line in isort_additional_config %}
+%(line)s
+{% endfor %}
