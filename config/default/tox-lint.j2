@@ -6,7 +6,7 @@ basepython = python3
 skip_install = true
 deps =
     isort
-{% if use_flake8 %}
+{% if tox_use_flake8 %}
     flake8
 {% for line in flake8_additional_plugins %}
     %(line)s
@@ -14,7 +14,7 @@ deps =
 {% endif %}
 commands =
     isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s
-{% if use_flake8 %}
+{% if tox_use_flake8 %}
     flake8 src setup.py%(flake8_additional_sources)s
 {% endif %}
 

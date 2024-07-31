@@ -35,7 +35,7 @@ commands =
     coverage run -a -m sphinx -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
 {% endif %}
     coverage html --ignore-errors
-    coverage report --show-missing --fail-under=%(fail_under)s
+    coverage report --show-missing --fail-under=%(coverage_fail_under)s
 {% for line in coverage_additional %}
 %(line)s
 {% endfor %}

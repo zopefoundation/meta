@@ -9,8 +9,8 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
-{% if build_extra %}
-  {% for line in build_extra %}
+{% if rtd_build_extra %}
+  {% for line in rtd_build_extra %}
   %(line)s
   {% endfor %}
 {% endif %}

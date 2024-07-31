@@ -16,7 +16,7 @@ builtins = write, system, cat, join
 no-accept-encodings = True
 htmldir = parts/flake8
 {% endif %}
-{% for line in additional_flake8_config %}
+{% for line in flake8_additional_config %}
 %(line)s
 {% endfor %}
 
@@ -30,7 +30,7 @@ ignore =
 {% if with_sphinx_doctests %}
     docs/_build/doctest/*
 {% endif %}
-{% for line in additional_check_manifest_ignores %}
+{% for line in check_manifest_additional_ignores %}
     %(line)s
 {% endfor %}
 {% if check_manifest_ignore_bad_ideas %}

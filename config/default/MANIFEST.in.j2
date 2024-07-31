@@ -15,6 +15,6 @@ recursive-include docs Makefile
 {% endif %}
 
 recursive-include src *.py
-{% for line in additional_rules %}
+{% for line in manifest_additional_rules %}
 %(line)s
 {% endfor %}
