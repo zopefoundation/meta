@@ -3,7 +3,7 @@ source = %(coverage_run_source)s
 # New in 5.0; required for the GHA coveralls submission.
 relative_files = True
 branch = true
-{% for line in run_additional_config %}
+{% for line in coverage_run_additional_config %}
 %(line)s
 {% endfor %}
 

@@ -51,7 +51,7 @@ commands =
     coverage run -m zope.testrunner --test-path=src {posargs:-vc}
 {% endif %}
     coverage html -i
-    coverage report -i -m --fail-under=%(fail_under)s
+    coverage report -i -m --fail-under=%(coverage_fail_under)s
 {% for line in coverage_additional %}
 %(line)s
 {% endfor %}

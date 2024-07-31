@@ -2,7 +2,7 @@
 source = %(coverage_run_source)s
 branch = true
 parallel = true
-{% for line in run_additional_config %}
+{% for line in coverage_run_additional_config %}
 %(line)s
 {% endfor %}
 

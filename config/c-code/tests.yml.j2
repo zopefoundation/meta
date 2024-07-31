@@ -116,8 +116,8 @@ jobs:
   {% if require_cffi %}
           pip install cffi
   {% endif %}
-{% if gha_additional_build_dependencies %}
-  {% for line in gha_additional_build_dependencies %}
+{% if gha_additional_build_deps %}
+  {% for line in gha_additional_build_deps %}
           pip install -U %(line)s
   {% endfor %}
 {% endif %}

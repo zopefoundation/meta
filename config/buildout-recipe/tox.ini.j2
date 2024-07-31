@@ -36,7 +36,7 @@ commands =
 {% endif %}
     coverage combine
     coverage html
-    coverage report -m --fail-under=%(fail_under)s
+    coverage report -m --fail-under=%(coverage_fail_under)s
 {% for line in coverage_additional %}
 %(line)s
 {% endfor %}

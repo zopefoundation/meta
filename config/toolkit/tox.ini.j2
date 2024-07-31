@@ -41,18 +41,18 @@ commands =
 [testenv:lint]
 basepython = python3
 commands_pre =
-{% if use_flake8 %}
+{% if tox_use_flake8 %}
     mkdir -p {toxinidir}/parts/flake8
 allowlist_externals =
     mkdir
 {% endif %}
 commands =
-{% if use_flake8 %}
+{% if tox_use_flake8 %}
     isort --check-only --diff {toxinidir}/docs%(isort_additional_sources)s
     flake8 {toxinidir}/docs%(flake8_additional_sources)s
 {% endif %}
 deps =
-{% if use_flake8 %}
+{% if tox_use_flake8 %}
     flake8
     isort
 {% include 'tox-release-check.j2' %}

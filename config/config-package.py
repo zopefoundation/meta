@@ -249,7 +249,7 @@ class PackageConfiguration:
         return self.meta_cfg['coverage-run'].get('source', self.path.name)
 
     @cached_property
-    def fail_under(self):
+    def coverage_fail_under(self):
         return self.meta_cfg['coverage'].setdefault('fail-under', 0)
 
     @cached_property
@@ -315,8 +315,8 @@ class PackageConfiguration:
             'setup.cfg.j2',
             self.path / 'setup.cfg',
             self.config_type,
-            additional_flake8_config=extra_flake8_config,
-            additional_check_manifest_ignores=extra_check_manifest_ignores,
+            flake8_additional_config=extra_flake8_config,
+            check_manifest_additional_ignores=extra_check_manifest_ignores,
             check_manifest_ignore_bad_ideas=check_manifest_ignore_bad_ideas,
             isort_known_third_party=isort_known_third_party,
             isort_known_zope=isort_known_zope,
@@ -333,17 +333,17 @@ class PackageConfiguration:
         self.copy_with_meta(
             'gitignore.j2', self.path / '.gitignore',
             self.config_type,
-            ignore=git_ignore,
+            git_ignore=git_ignore,
         )
 
     def readthedocs(self):
-        build_extra = self.cfg_option(
+        rtd_build_extra = self.cfg_option(
             'readthedocs', 'build-extra', default=[])
         self.copy_with_meta(
             'readthedocs.yaml.j2',
             self.path / '.readthedocs.yaml',
             self.config_type,
-            build_extra=build_extra,
+            rtd_build_extra=rtd_build_extra,
         )
 
     def coveragerc(self):
@@ -355,7 +355,7 @@ class PackageConfiguration:
                 self.path / '.coveragerc',
                 self.config_type,
                 coverage_run_source=self.coverage_run_source,
-                run_additional_config=coverage_run_additional_config,
+                coverage_run_additional_config=coverage_run_additional_config,
             )
             self.add_coveragerc = True
         elif (self.path / '.coveragerc').exists():
@@ -382,8 +382,8 @@ class PackageConfiguration:
                 'manylinux-install.sh.j2', self.path / '.manylinux-install.sh',
                 self.config_type,
                 package_name=self.path.name,
-                setup=manylinux_install_setup,
-                aarch64_tests=manylinux_aarch64_tests,
+                manylinux_install_setup=manylinux_install_setup,
+                manylinux_aarch64_tests=manylinux_aarch64_tests,
                 with_future_python=self.with_future_python,
             )
             (self.path / '.manylinux-install.sh').chmod(0o755)
@@ -443,11 +443,11 @@ class PackageConfiguration:
             # if no additional sources are provided:
             isort_additional_sources = f' {isort_additional_sources}'
         if self.args.use_flake8 is None:
-            use_flake8 = self.tox_option('use-flake8', default=True)
+            tox_use_flake8 = self.tox_option('use-flake8', default=True)
         else:
-            use_flake8 = self.args.use_flake8
+            tox_use_flake8 = self.args.use_flake8
         docs_deps = self.tox_option('docs-deps', default=[])
-        self.meta_cfg['tox']['use-flake8'] = use_flake8
+        self.meta_cfg['tox']['use-flake8'] = tox_use_flake8
         self.copy_with_meta(
             'tox.ini.j2',
             self.path / 'tox.ini',
@@ -459,7 +459,7 @@ class PackageConfiguration:
             coverage_run_source=self.coverage_run_source,
             coverage_run_additional_config=coverage_run_additional_config,
             coverage_setenv=coverage_setenv,
-            fail_under=self.fail_under,
+            coverage_fail_under=self.coverage_fail_under,
             flake8_additional_sources=flake8_additional_sources,
             flake8_additional_plugins=flake8_additional_plugins,
             isort_additional_sources=isort_additional_sources,
@@ -469,7 +469,7 @@ class PackageConfiguration:
             testenv_commands_pre=testenv_commands_pre,
             testenv_deps=testenv_deps,
             testenv_setenv=testenv_setenv,
-            use_flake8=use_flake8,
+            tox_use_flake8=tox_use_flake8,
             with_docs=self.with_docs,
             with_future_python=self.with_future_python,
             with_pypy=self.with_pypy,
@@ -481,30 +481,30 @@ class PackageConfiguration:
         workflows = self.path / '.github' / 'workflows'
         workflows.mkdir(parents=True, exist_ok=True)
 
-        services = self.gh_option('services')
-        additional_config = self.gh_option('additional-config')
-        additional_exclude = self.gh_option('additional-exclude')
-        steps_before_checkout = self.gh_option('steps-before-checkout')
-        additional_install = self.gh_option('additional-install')
-        additional_build_dependencies = self.gh_option(
+        gha_services = self.gh_option('services')
+        gha_additional_config = self.gh_option('additional-config')
+        gha_additional_exclude = self.gh_option('additional-exclude')
+        gha_steps_before_checkout = self.gh_option('steps-before-checkout')
+        gha_additional_install = self.gh_option('additional-install')
+        gha_additional_build_deps = self.gh_option(
             'additional-build-dependencies')
-        test_environment = self.gh_option('test-environment')
-        test_commands = self.gh_option('test-commands')
+        gha_test_environment = self.gh_option('test-environment')
+        gha_test_commands = self.gh_option('test-commands')
         require_cffi = self.meta_cfg.get(
             'c-code', {}).get('require-cffi', False)
         self.copy_with_meta(
             'tests.yml.j2',
             workflows / 'tests.yml',
             self.config_type,
-            gha_additional_config=additional_config,
-            gha_additional_exclude=additional_exclude,
-            gha_additional_install=additional_install,
-            gha_additional_build_dependencies=additional_build_dependencies,
-            gha_test_environment=test_environment,
-            gha_test_commands=test_commands,
             package_name=self.path.name,
-            services=services,
-            steps_before_checkout=steps_before_checkout,
+            gha_additional_config=gha_additional_config,
+            gha_additional_exclude=gha_additional_exclude,
+            gha_additional_install=gha_additional_install,
+            gha_additional_build_deps=gha_additional_build_deps,
+            gha_test_environment=gha_test_environment,
+            gha_test_commands=gha_test_commands,
+            gha_services=gha_services,
+            gha_steps_before_checkout=gha_steps_before_checkout,
             with_docs=self.with_docs,
             with_sphinx_doctests=self.with_sphinx_doctests,
             with_future_python=self.with_future_python,
@@ -522,18 +522,18 @@ class PackageConfiguration:
 
     def manifest_in(self):
         """Modify MANIFEST.in with meta options."""
-        additional_manifest_rules = self.meta_cfg['manifest'].get(
+        manifest_additional_rules = self.meta_cfg['manifest'].get(
             'additional-rules', [])
         if (self.with_docs and 'include *.yaml'
-                not in additional_manifest_rules):
-            additional_manifest_rules.insert(0, 'include *.yaml')
+                not in manifest_additional_rules):
+            manifest_additional_rules.insert(0, 'include *.yaml')
         if self.config_type == 'c-code' \
-                and 'include *.sh' not in additional_manifest_rules:
-            additional_manifest_rules.insert(0, 'include *.sh')
+                and 'include *.sh' not in manifest_additional_rules:
+            manifest_additional_rules.insert(0, 'include *.sh')
         if self.config_type != 'toolkit':
             self.copy_with_meta(
                 'MANIFEST.in.j2', self.path / 'MANIFEST.in', self.config_type,
-                additional_rules=additional_manifest_rules,
+                manifest_additional_rules=manifest_additional_rules,
                 with_docs=self.with_docs)
 
     def copy_with_meta(
@@ -614,7 +614,7 @@ class PackageConfiguration:
 
             updating = git_branch(self.branch_name)
 
-            if not self.fail_under:
+            if not self.coverage_fail_under:
                 print(
                     'In .meta.toml in section [coverage] the option '
                     '"fail-under" is  0. Please enter a valid minimum '

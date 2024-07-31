@@ -21,7 +21,7 @@ fi
 ls -ld /cache
 ls -ld /cache/pip
 
-{% for line in setup %}
+{% for line in manylinux_install_setup %}
 %(line)s
 {% endfor %}
 # We need some libraries because we build wheels from scratch:
@@ -65,7 +65,7 @@ for PYBIN in /opt/python/*/bin; do
         "${PYBIN}/pip" wheel /io/ -w wheelhouse/
 {% endif %}
         if [ `uname -m` == 'aarch64' ]; then
-{% for line in aarch64_tests %}
+{% for line in manylinux_aarch64_tests %}
           %(line)s
 {% endfor %}
         fi

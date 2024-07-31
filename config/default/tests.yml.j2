@@ -15,9 +15,9 @@ on:
 
 jobs:
   build:
-{% if services %}
+{% if gha_services %}
     services:
-{% for line in services %}
+{% for line in gha_services %}
       %(line)s
 {% endfor %}
 {% endif %}
@@ -88,7 +88,7 @@ jobs:
     name: ${{ matrix.config[1] }}
 {% endif %}
     steps:
-{% for line in steps_before_checkout %}
+{% for line in gha_steps_before_checkout %}
     %(line)s
 {% endfor %}
     - uses: actions/checkout@v4

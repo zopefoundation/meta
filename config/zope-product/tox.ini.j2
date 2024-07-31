@@ -43,18 +43,18 @@ commands =
 [testenv:lint]
 basepython = python3
 commands_pre =
-{% if use_flake8 %}
+{% if tox_use_flake8 %}
     mkdir -p {toxinidir}/parts/flake8
 allowlist_externals =
     mkdir
 {% endif %}
 commands =
-{% if use_flake8 %}
+{% if tox_use_flake8 %}
     isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s
     flake8 {toxinidir}/src {toxinidir}/setup.py%(flake8_additional_sources)s
 {% endif %}
 deps =
-{% if use_flake8 %}
+{% if tox_use_flake8 %}
     flake8
     isort
     # Useful flake8 plugins that are Python and Plone specific:
@@ -97,7 +97,7 @@ commands =
     coverage run {envbindir}/test {posargs:-cv}
 {% endif %}
     coverage html
-    coverage report -m --fail-under=%(fail_under)s
+    coverage report -m --fail-under=%(coverage_fail_under)s
 {% for line in coverage_additional %}
 %(line)s
 {% endfor %}
