@@ -486,7 +486,7 @@ class PackageConfiguration:
         gha_additional_exclude = self.gh_option('additional-exclude')
         gha_steps_before_checkout = self.gh_option('steps-before-checkout')
         gha_additional_install = self.gh_option('additional-install')
-        gha_additional_build_dependencies = self.gh_option(
+        gha_additional_build_deps = self.gh_option(
             'additional-build-dependencies')
         gha_test_environment = self.gh_option('test-environment')
         gha_test_commands = self.gh_option('test-commands')
@@ -500,8 +500,7 @@ class PackageConfiguration:
             gha_additional_config=gha_additional_config,
             gha_additional_exclude=gha_additional_exclude,
             gha_additional_install=gha_additional_install,
-            gha_additional_build_dependencies=
-                gha_additional_build_dependencies,
+            gha_additional_build_deps=gha_additional_build_deps,
             gha_test_environment=gha_test_environment,
             gha_test_commands=gha_test_commands,
             gha_services=gha_services,
