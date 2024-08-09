@@ -93,7 +93,6 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
             ])
     elif with_windows:
         required = [
-            'coverage/coveralls',
             'ubuntu-lint',
             'ubuntu-coverage',
             f'ubuntu-{OLDEST_PYTHON}',
