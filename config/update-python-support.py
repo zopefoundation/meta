@@ -154,7 +154,15 @@ with change_dir(path) as cwd_str:
         if updating:
             print('Updated the previously created PR.')
         else:
-            print('If everything went fine up to here:')
-            print('Create a PR, using the URL shown above.')
+            print(
+                'Are you logged in via `gh auth login` to automatically'
+                ' create a PR? (y/N)?',
+                end=' ')
+            if input().lower() == 'y':
+                call('gh', 'pr', 'create', '--fill', '--title',
+                     'Update Python version support.')
+            else:
+                print('If everything went fine up to here:')
+                print('Create a PR, using the URL shown above.')
     else:
         print('Applied all changes. Please check and commit manually.')
