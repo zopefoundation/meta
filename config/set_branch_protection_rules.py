@@ -68,6 +68,7 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
     with_docs = meta_toml['python'].get('with-docs', False)
     with_pypy = meta_toml['python']['with-pypy']
     with_windows = meta_toml['python']['with-windows']
+    with_macos = meta_toml['python']['with-macos']
     if template == 'c-code':
         required = [
             f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_AARCH64})',
@@ -91,15 +92,23 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
                 f'test ({OLDEST_PYTHON_VERSION}, windows-latest)',
                 f'test ({NEWEST_PYTHON_VERSION}, windows-latest)',
             ])
-    elif with_windows:
+    elif with_windows or with_macos:
         required = [
             'ubuntu-lint',
             'ubuntu-coverage',
             f'ubuntu-{OLDEST_PYTHON}',
             f'ubuntu-{NEWEST_PYTHON}',
-            f'windows-{OLDEST_PYTHON}',
-            f'windows-{NEWEST_PYTHON}',
         ]
+        if with_windows:
+            required.extend([
+                f'windows-{OLDEST_PYTHON}',
+                f'windows-{NEWEST_PYTHON}',
+            ])
+        if with_macos:
+            required.extend([
+                f'macos-{OLDEST_PYTHON}',
+                f'macos-{NEWEST_PYTHON}',
+            ])
         if with_pypy:
             required.extend([
                 'ubuntu-pypy3',
