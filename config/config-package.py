@@ -588,8 +588,12 @@ class PackageConfiguration:
         with change_dir(self.path):
             # We have to add it here otherwise the linter complains
             # that it is not added.
+            early_add = [
+                '.pre-commit-config.yaml',
+                'CONTRIBUTING.md',
+            ]
             if self.args.commit:
-                call('git', 'add', 'CONTRIBUTING.md')
+                call('git', 'add', *early_add)
 
         self.coveragerc()
         self.manylinux_sh()
@@ -638,7 +642,6 @@ class PackageConfiguration:
                 ".github/workflows/pre-commit.yml",
                 ".gitignore",
                 ".meta.toml",
-                ".pre-commit-config.yaml",
                 "setup.cfg",
                 "tox.ini",
             ]

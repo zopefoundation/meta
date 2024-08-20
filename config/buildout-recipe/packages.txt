@@ -4,7 +4,6 @@
 z3c.recipe.tag
 zc.recipe.testrunner
 z3c.recipe.mkdir
-zc.recipe.deployment
 z3c.recipe.i18n
 zc.recipe.cmmi
 zdaemon
