@@ -635,7 +635,7 @@ class PackageConfiguration:
             to_add = [
                 ".editorconfig",
                 ".github/workflows/tests.yml",
-                ".github/workflows/pre_commit_yml",
+                ".github/workflows/pre-commit.yml",
                 ".gitignore",
                 ".meta.toml",
                 ".pre-commit-config.yaml",
