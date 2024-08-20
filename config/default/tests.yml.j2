@@ -36,7 +36,6 @@ jobs:
         config:
         # [Python version, tox env]
         - ["3.11",  "release-check"]
-        - ["3.11",  "lint"]
         - ["3.8",   "py38"]
         - ["3.9",   "py39"]
         - ["3.10",  "py310"]
@@ -62,7 +61,6 @@ jobs:
 {% endif %}
 {% if with_windows %}
           - { os: ["windows", "windows-latest"], config: ["3.11",  "release-check"] }
-          - { os: ["windows", "windows-latest"], config: ["3.11",  "lint"] }
   {% if with_docs %}
           - { os: ["windows", "windows-latest"], config: ["3.11",  "docs"] }
   {% endif %}
@@ -70,7 +68,6 @@ jobs:
 {% endif %}
 {% if with_macos %}
           - { os: ["macos", "macos-latest"], config: ["3.11",  "release-check"] }
-          - { os: ["macos", "macos-latest"], config: ["3.11",  "lint"] }
   {% if with_docs %}
           - { os: ["macos", "macos-latest"], config: ["3.11",  "docs"] }
   {% endif %}

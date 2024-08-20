@@ -179,12 +179,6 @@ The following options are only needed one time as their values are stored in
 --with-sphinx-doctests
   Enable running the documentation as doctest using Sphinx.
 
---no-flake8
-  Don't add ``flake8`` and ``isort`` linting steps to the configuration. If
-  the code is old and numerous linting changes would obscure the package
-  reconfiguration changes it may make sense to use this flag and configure/run
-  ``flake8`` and ``isort`` in a separate step.
-
 Options
 +++++++
 
@@ -255,7 +249,6 @@ updated. Example:
     docs-deps = [
         "urllib3 < 2",
         ]
-    use-flake8 = true
 
     [flake8]
     additional-config = [
@@ -266,9 +259,6 @@ updated. Example:
         "per-file-ignores =",
         "    src/foo/bar.py: E221 E222",
         "extend-ignore = D203, W503",
-        ]
-    additional-plugins = [
-        "mccabe",
         ]
     additional-sources = "testproj foo bar.py"
 
@@ -472,12 +462,6 @@ docs-deps
   and is empty by default. Caution: The values set for this option override
   the ones set in ``[testenv]``.
 
-use-flake8
-  Whether to add the ``flake8`` and ``isort`` linting steps to the section
-  ``[testenv:lint]``. By default these steps are run. On an older code base it
-  may make sense to set this to ``false`` here or by invoking the script with
-  ``--no-flake8`` and handle linting cleanup separate from the reconfiguration.
-
 Flake8 options
 ``````````````
 
@@ -488,10 +472,6 @@ additional-config
   configuration section in ``setup.cfg``. *Caution:* This option has to be a
   list of strings so the leading white spaces and comments are preserved when
   writing the value to ``setup.cfg``.
-
-additional-plugins
-  Some packages want to have additional flake8 plugins installed.
-  This option is a list of strings.
 
 additional-sources
   Sometimes not only ``src`` and ``setup.py`` contain Python code to be checked

@@ -23,6 +23,7 @@ from shared.packages import MANYLINUX_AARCH64
 from shared.packages import MANYLINUX_I686
 from shared.packages import MANYLINUX_PYTHON_VERSION
 from shared.packages import MANYLINUX_X86_64
+from shared.packages import OLDEST_PYTHON_VERSION
 from shared.packages import PYPY_VERSION
 from shared.path import change_dir
 import argparse
@@ -68,12 +69,6 @@ def handle_command_line_arguments():
         action='store_false',
         default=True,
         help='Prevent direct push.')
-    parser.add_argument(
-        '--no-flake8',
-        dest='use_flake8',
-        action='store_false',
-        default=True,
-        help='Do not include flake8 and isort in the linting configuration.')
     parser.add_argument(
         '--with-macos',
         dest='with_macos',
@@ -339,6 +334,16 @@ class PackageConfiguration:
             git_ignore=git_ignore,
         )
 
+    def pre_commit_config_yaml(self):
+        # git_ignore = self.meta_cfg["git"].get("ignore", [])
+
+        self.copy_with_meta(
+            "pre-commit-config.yaml.j2",
+            self.path / ".pre-commit-config.yaml",
+            self.config_type,
+            oldest_python_version=OLDEST_PYTHON_VERSION.replace(".", ""),
+        )
+
     def readthedocs(self):
         rtd_build_extra = self.cfg_option(
             'readthedocs', 'build-extra', default=[])
@@ -431,8 +436,6 @@ class PackageConfiguration:
         coverage_setenv = self.tox_option('coverage-setenv')
         coverage_run_additional_config = self.meta_cfg['coverage-run'].get(
             'additional-config', [])
-        flake8_additional_plugins = self.meta_cfg['flake8'].get(
-            'additional-plugins', '')
         flake8_additional_sources = self.meta_cfg['flake8'].get(
             'additional-sources', '')
         if flake8_additional_sources:
@@ -445,12 +448,7 @@ class PackageConfiguration:
             # Avoid whitespace at end of line
             # if no additional sources are provided:
             isort_additional_sources = f' {isort_additional_sources}'
-        if self.args.use_flake8 is None:
-            tox_use_flake8 = self.tox_option('use-flake8', default=True)
-        else:
-            tox_use_flake8 = self.args.use_flake8
-        docs_deps = self.tox_option('docs-deps', default=[])
-        self.meta_cfg['tox']['use-flake8'] = tox_use_flake8
+        docs_deps = self.tox_option("docs-deps", default=[])
         self.copy_with_meta(
             'tox.ini.j2',
             self.path / 'tox.ini',
@@ -464,7 +462,6 @@ class PackageConfiguration:
             coverage_setenv=coverage_setenv,
             coverage_fail_under=self.coverage_fail_under,
             flake8_additional_sources=flake8_additional_sources,
-            flake8_additional_plugins=flake8_additional_plugins,
             isort_additional_sources=isort_additional_sources,
             testenv_additional=testenv_additional,
             testenv_additional_extras=testenv_additional_extras,
@@ -472,7 +469,6 @@ class PackageConfiguration:
             testenv_commands_pre=testenv_commands_pre,
             testenv_deps=testenv_deps,
             testenv_setenv=testenv_setenv,
-            tox_use_flake8=tox_use_flake8,
             with_docs=self.with_docs,
             with_future_python=self.with_future_python,
             with_pypy=self.with_pypy,
@@ -523,6 +519,17 @@ class PackageConfiguration:
             pypy_version=PYPY_VERSION,
         )
 
+    def pre_commit_yml(self):
+        workflows = self.path / ".github" / "workflows"
+        workflows.mkdir(parents=True, exist_ok=True)
+
+        self.copy_with_meta(
+            "pre-commit.yml.j2",
+            workflows / "pre-commit.yml",
+            self.config_type,
+            package_name=self.path.name,
+        )
+
     def manifest_in(self):
         """Modify MANIFEST.in with meta options."""
         manifest_additional_rules = self.meta_cfg['manifest'].get(
@@ -571,6 +578,7 @@ class PackageConfiguration:
 
         self.setup_cfg()
         self.gitignore()
+        self.pre_commit_config_yaml()
         self.copy_with_meta(
             'editorconfig', self.path / '.editorconfig', self.config_type)
         self.copy_with_meta(
@@ -587,6 +595,7 @@ class PackageConfiguration:
         self.manylinux_sh()
         self.tox()
         self.tests_yml()
+        self.pre_commit_yml()
         self.manifest_in()
 
         with change_dir(self.path) as cwd:
@@ -624,12 +633,14 @@ class PackageConfiguration:
                     'coverage and rerun.')
                 abort(1)
             to_add = [
-                '.editorconfig',
-                '.github/workflows/tests.yml',
-                '.gitignore',
-                '.meta.toml',
-                'setup.cfg',
-                'tox.ini',
+                ".editorconfig",
+                ".github/workflows/tests.yml",
+                ".github/workflows/pre_commit_yml",
+                ".gitignore",
+                ".meta.toml",
+                ".pre-commit-config.yaml",
+                "setup.cfg",
+                "tox.ini",
             ]
             if self.config_type != 'toolkit':
                 to_add.append('MANIFEST.in')
