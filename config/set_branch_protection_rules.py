@@ -69,18 +69,18 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
     with_pypy = meta_toml['python']['with-pypy']
     with_windows = meta_toml['python']['with-windows']
     with_macos = meta_toml['python']['with-macos']
+    required = ['linting']
     if template == 'c-code':
-        required = [
+        required.extend([
             f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_AARCH64})',
             f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_I686})',
             f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_X86_64})',
-            f'lint ({MANYLINUX_PYTHON_VERSION}, ubuntu-latest)',
             f'test ({OLDEST_PYTHON_VERSION}, macos-latest)',
             f'test ({NEWEST_PYTHON_VERSION}, macos-latest)',
             f'test ({OLDEST_PYTHON_VERSION}, ubuntu-latest)',
             f'test ({NEWEST_PYTHON_VERSION}, ubuntu-latest)',
             'coveralls_finish',
-        ]
+        ])
         if with_docs:
             required.append(
                 f'docs ({MANYLINUX_PYTHON_VERSION}, ubuntu-latest)')
@@ -93,12 +93,11 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
                 f'test ({NEWEST_PYTHON_VERSION}, windows-latest)',
             ])
     elif with_windows or with_macos:
-        required = [
-            'ubuntu-lint',
+        required.extend([
             'ubuntu-coverage',
             f'ubuntu-{OLDEST_PYTHON}',
             f'ubuntu-{NEWEST_PYTHON}',
-        ]
+        ])
         if with_windows:
             required.extend([
                 f'windows-{OLDEST_PYTHON}',
@@ -117,7 +116,7 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
         if with_docs:
             required.append('ubuntu-docs')
     else:  # default for most packages
-        required = ['lint', OLDEST_PYTHON, NEWEST_PYTHON]
+        required.extend([OLDEST_PYTHON, NEWEST_PYTHON])
         if template != 'toolkit':
             required.append('coverage')
         if with_docs:
