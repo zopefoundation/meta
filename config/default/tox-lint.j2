@@ -2,27 +2,11 @@
 {% include 'tox-release-check.j2' %}
 
 [testenv:lint]
+description = This env runs all linters configured in .pre-commit-config.yaml
 basepython = python3
 skip_install = true
 deps =
-    isort
-{% if tox_use_flake8 %}
-    flake8
-{% for line in flake8_additional_plugins %}
-    %(line)s
-{% endfor %}
-{% endif %}
-commands =
-    isort --check-only --diff {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s
-{% if tox_use_flake8 %}
-    flake8 src setup.py%(flake8_additional_sources)s
-{% endif %}
-
-[testenv:isort-apply]
-basepython = python3
-skip_install = true
+    pre-commit
 commands_pre =
-deps =
-    isort
 commands =
-    isort {toxinidir}/src {toxinidir}/setup.py%(isort_additional_sources)s []
+    pre-commit run --all-files --show-diff-on-failure

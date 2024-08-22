@@ -37,35 +37,7 @@ commands =
 {% for line in testenv_additional %}
 %(line)s
 {% endfor %}
-
-[testenv:lint]
-basepython = python3
-commands_pre =
-{% if tox_use_flake8 %}
-    mkdir -p {toxinidir}/parts/flake8
-allowlist_externals =
-    mkdir
-{% endif %}
-commands =
-{% if tox_use_flake8 %}
-    isort --check-only --diff {toxinidir}/docs%(isort_additional_sources)s
-    flake8 {toxinidir}/docs%(flake8_additional_sources)s
-{% endif %}
-deps =
-{% if tox_use_flake8 %}
-    flake8
-    isort
-{% include 'tox-release-check.j2' %}
-
-[testenv:isort-apply]
-basepython = python3
-skip_install = true
-commands_pre =
-deps =
-    isort
-commands =
-    isort {toxinidir}/docs%(isort_additional_sources)s []
-{% endif %}
+{% include 'tox-lint.j2' %}
 {% if with_docs %}
 
 [testenv:docs]
