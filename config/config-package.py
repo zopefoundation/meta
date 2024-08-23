@@ -335,13 +335,14 @@ class PackageConfiguration:
         )
 
     def pre_commit_config_yaml(self):
-        # git_ignore = self.meta_cfg["git"].get("ignore", [])
+        teyit_exclude = self.meta_cfg["pre-commit"].get("teyit-exclude", "")
 
         self.copy_with_meta(
             "pre-commit-config.yaml.j2",
             self.path / ".pre-commit-config.yaml",
             self.config_type,
             oldest_python_version=OLDEST_PYTHON_VERSION.replace(".", ""),
+            teyit_exclude=teyit_exclude,
         )
 
     def readthedocs(self):

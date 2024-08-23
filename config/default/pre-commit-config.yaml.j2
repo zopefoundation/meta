@@ -14,6 +14,13 @@ repos:
     hooks:
     - id: pyupgrade
       args: [--py%(oldest_python_version)s-plus]
+  - repo: https://github.com/isidentical/teyit
+    rev: 0.4.3
+    hooks:
+    - id: teyit
+{% if teyit_exclude %}
+      exclude: %(teyit_exclude)s
+{% endif %}
   - repo: https://github.com/PyCQA/flake8
     rev: "7.1.1"
     hooks:

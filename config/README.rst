@@ -337,6 +337,9 @@ updated. Example:
         "*.mo",
         ]
 
+    [pre-commit]
+    teyit-exclude = "App/tests/fixtures/error\.py"
+
     [readthedocs]
     build-extra = [
         "apt_packages:",
@@ -622,6 +625,15 @@ The corresponding section is named: ``[git]``.
 ignore
   Additional lines to be added to the ``.gitignore`` file. This option has to
   be a list of strings and defaults to an empty list.
+
+pre-commit options
+``````````````````
+
+The corresponding section is named: ``[pre-commit]``.
+
+teyit-exclude
+  Regex for files to be hidden from teyit. It fails on files containing syntax
+  errors. This option has to be a string and is omitted when not defined.
 
 ReadTheDocs options
 ```````````````````
