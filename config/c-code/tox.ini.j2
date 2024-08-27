@@ -29,6 +29,7 @@ envlist =
 {% include 'tox-testenv.j2' %}
 
 [testenv:coverage]
+usedevelop = true
 basepython = %(coverage_basepython)s
 allowlist_externals =
     mkdir
