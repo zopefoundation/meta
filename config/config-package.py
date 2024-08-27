@@ -284,6 +284,14 @@ class PackageConfiguration:
         except KeyError:
             pass
 
+    def pyproject_toml(self):
+        self.copy_with_meta(
+            'pyproject.toml',
+            self.path / 'pyproject.toml',
+            self.config_type,
+
+        )
+
     def setup_cfg(self):
         """Copy setup.cfg file to the package being configured."""
         flake8_additional_config = self.cfg_option(
@@ -580,6 +588,7 @@ class PackageConfiguration:
         if self.with_docs:
             self.readthedocs()
 
+        self.pyproject_toml()
         self.setup_cfg()
         self.gitignore()
         self.pre_commit_config_yaml()
