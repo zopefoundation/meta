@@ -54,3 +54,11 @@ extras =
 {% for line in testenv_additional %}
 %(line)s
 {% endfor %}
+
+[testenv:setuptools-latest]
+basepython = python3
+deps =
+    git+https://github.com/pypa/setuptools.git\#egg=setuptools
+{% for line in testenv_deps %}
+    %(line)s
+{% endfor %}
