@@ -25,6 +25,7 @@ from shared.packages import MANYLINUX_PYTHON_VERSION
 from shared.packages import MANYLINUX_X86_64
 from shared.packages import OLDEST_PYTHON_VERSION
 from shared.packages import PYPY_VERSION
+from shared.packages import SETUPTOOLS_VERSION_SPEC
 from shared.path import change_dir
 import argparse
 import collections
@@ -475,6 +476,7 @@ class PackageConfiguration:
             with_pypy=self.with_pypy,
             with_sphinx_doctests=self.with_sphinx_doctests,
             docs_deps=docs_deps,
+            setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
         )
 
     def tests_yml(self):
@@ -518,6 +520,7 @@ class PackageConfiguration:
             manylinux_i686=MANYLINUX_I686,
             manylinux_x86_64=MANYLINUX_X86_64,
             pypy_version=PYPY_VERSION,
+            setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
         )
 
     def pre_commit_yml(self):
