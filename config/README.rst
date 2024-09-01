@@ -113,12 +113,13 @@ The script does the following steps:
    if it is not yet added.
 2. Copy ``setup.cfg``, ``tox.ini``, ``tests.yml``, ``MANIFEST.in``,
    ``.readthedocs.yaml`` (if needed), and ``.gitignore`` to the repository.
-3. Remove a possibly existing ``.coveragerc`` and ``bootstrap.py``. (Coverage
+3. Create or update a ``pyproject.toml`` project configuration file.
+4. Remove a possibly existing ``.coveragerc`` and ``bootstrap.py``. (Coverage
    is now configured in ``tox.ini`` for packages which are no buildout
    recipes.)
-4. Run the tests via: ``tox``. The ``tox`` script may be either on the current
+5. Run the tests via: ``tox``. The ``tox`` script may be either on the current
    ``$PATH`` or in the ``bin`` subfolder of the current working directory.
-5. Create a branch and a pull request. (Prevent an automatic commit of all
+6. Create a branch and a pull request. (Prevent an automatic commit of all
    changes with the command line switch ``--no-commit``, or an automatic push
    to GitHub using the command line switch ``--no-push``.)
 

@@ -550,6 +550,38 @@ class PackageConfiguration:
                 manifest_additional_rules=manifest_additional_rules,
                 with_docs=self.with_docs)
 
+    def pyproject_toml(self):
+        """Modify pyproject.toml with meta options."""
+        pyproject_toml_path = self.path / 'pyproject.toml'
+        if pyproject_toml_path.exists():
+            with open(pyproject_toml_path, 'rb') as fp:
+                pyproject_data = tomlkit.load(fp)
+            pyproject_toml = collections.defaultdict(dict, **pyproject_data)
+        else:
+            pyproject_toml = collections.defaultdict(dict)
+
+        buildsystem_cfg = pyproject_toml['build-system']
+
+        # Insert sane default for build-system:requires
+        requires = buildsystem_cfg.get('requires', [])
+        setuptools_requirement = [
+            x for x in requires if x.startswith('setuptools')]
+        if not setuptools_requirement:
+            requires.append(f'setuptools{SETUPTOOLS_VERSION_SPEC}')
+            buildsystem_cfg['requires'] = requires
+
+        # Insert sane default for build-system:build-backend
+        build_backend = buildsystem_cfg.get('build-backend', '')
+        if not build_backend:
+            buildsystem_cfg['build-backend'] = 'setuptools.build_meta'
+
+        # Remove empty sections before writing to disk
+        pyproject_toml = {k: v for k, v in pyproject_toml.items() if v}
+        with open(pyproject_toml_path, 'w') as fp:
+            fp.write(META_HINT.format(config_type=self.config_type))
+            fp.write('\n')
+            tomlkit.dump(pyproject_toml, fp)
+
     def copy_with_meta(
             self, template_name, destination, config_type,
             meta_hint=META_HINT, **kw):
@@ -580,6 +612,7 @@ class PackageConfiguration:
         if self.with_docs:
             self.readthedocs()
 
+        self.pyproject_toml()
         self.setup_cfg()
         self.gitignore()
         self.pre_commit_config_yaml()
