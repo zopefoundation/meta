@@ -680,6 +680,7 @@ class PackageConfiguration:
                 ".github/workflows/pre-commit.yml",
                 ".gitignore",
                 ".meta.toml",
+                "pyproject.toml",
                 "setup.cfg",
                 "tox.ini",
             ]
