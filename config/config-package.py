@@ -566,9 +566,10 @@ class PackageConfiguration:
         requires = buildsystem_cfg.get('requires', [])
         setuptools_requirement = [
             x for x in requires if x.startswith('setuptools')]
-        if not setuptools_requirement:
-            requires.append(f'setuptools{SETUPTOOLS_VERSION_SPEC}')
-            buildsystem_cfg['requires'] = requires
+        for setuptools_req in setuptools_requirement:
+            requires.remove(setuptools_req)
+        requires.append(f'setuptools{SETUPTOOLS_VERSION_SPEC}')
+        buildsystem_cfg['requires'] = sorted(requires)
 
         # Insert sane default for build-system:build-backend
         build_backend = buildsystem_cfg.get('build-backend', '')
