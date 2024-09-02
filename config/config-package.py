@@ -580,7 +580,7 @@ class PackageConfiguration:
         with open(pyproject_toml_path, 'w') as fp:
             fp.write(META_HINT.format(config_type=self.config_type))
             fp.write('\n')
-            tomlkit.dump(pyproject_toml, fp)
+            tomlkit.dump(pyproject_toml, fp, sort_keys=True)
 
     def copy_with_meta(
             self, template_name, destination, config_type,
