@@ -37,6 +37,16 @@ commands =
 {% for line in testenv_additional %}
 %(line)s
 {% endfor %}
+
+[testenv:setuptools-latest]
+basepython = python3
+deps =
+    git+https://github.com/pypa/setuptools.git\#egg=setuptools
+    zc.buildout >= 3.1
+    wheel > 0.37
+{% for line in testenv_deps %}
+    %(line)s
+{% endfor %}
 {% include 'tox-lint.j2' %}
 {% if with_docs %}
 
