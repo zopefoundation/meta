@@ -629,6 +629,7 @@ class PackageConfiguration:
             early_add = [
                 '.pre-commit-config.yaml',
                 'CONTRIBUTING.md',
+                'pyproject.toml',
             ]
             if self.args.commit:
                 call('git', 'add', *early_add)
@@ -680,7 +681,6 @@ class PackageConfiguration:
                 ".github/workflows/pre-commit.yml",
                 ".gitignore",
                 ".meta.toml",
-                "pyproject.toml",
                 "setup.cfg",
                 "tox.ini",
             ]
