@@ -24,6 +24,7 @@ from shared.packages import MANYLINUX_I686
 from shared.packages import MANYLINUX_PYTHON_VERSION
 from shared.packages import MANYLINUX_X86_64
 from shared.packages import OLDEST_PYTHON_VERSION
+from shared.packages import PYPROJECT_TOML_DEFAULTS
 from shared.packages import PYPY_VERSION
 from shared.packages import SETUPTOOLS_VERSION_SPEC
 from shared.path import change_dir
@@ -553,28 +554,24 @@ class PackageConfiguration:
     def pyproject_toml(self):
         """Modify pyproject.toml with meta options."""
         pyproject_toml_path = self.path / 'pyproject.toml'
+        pyproject_data = {}
+
         if pyproject_toml_path.exists():
             with open(pyproject_toml_path, 'rb') as fp:
                 pyproject_data = tomlkit.load(fp)
-            pyproject_toml = collections.defaultdict(dict, **pyproject_data)
-        else:
-            pyproject_toml = collections.defaultdict(dict)
+        pyproject_toml = collections.defaultdict(dict, **pyproject_data)
+        old_requires = pyproject_toml['build-system'].get('requires', [])
 
-        buildsystem_cfg = pyproject_toml['build-system']
+        # Update/overwrite existing values with our defaults
+        pyproject_toml.update(PYPROJECT_TOML_DEFAULTS)
 
-        # Insert sane default for build-system:requires
-        requires = buildsystem_cfg.get('requires', [])
-        setuptools_requirement = [
-            x for x in requires if x.startswith('setuptools')]
-        for setuptools_req in setuptools_requirement:
-            requires.remove(setuptools_req)
-        requires.append(f'setuptools{SETUPTOOLS_VERSION_SPEC}')
-        buildsystem_cfg['requires'] = sorted(requires)
-
-        # Insert sane default for build-system:build-backend
-        build_backend = buildsystem_cfg.get('build-backend', '')
-        if not build_backend:
-            buildsystem_cfg['build-backend'] = 'setuptools.build_meta'
+        # Add prior requires values back
+        if old_requires:
+            setuptools_requirement = [
+                x for x in old_requires if x.startswith('setuptools')]
+            for setuptools_req in setuptools_requirement:
+                old_requires.remove(setuptools_req)
+            pyproject_toml['build-system']['requires'].extend(old_requires)
 
         # Remove empty sections before writing to disk
         pyproject_toml = {k: v for k, v in pyproject_toml.items() if v}
