@@ -41,7 +41,7 @@ PYPROJECT_TOML_DEFAULTS = {
             'run': {
                 'branch': True,
                 'source': 'src',
-                },
+            },
             'report': {
                 'fail_under': 0,
                 'precision': 2,
@@ -56,12 +56,12 @@ PYPROJECT_TOML_DEFAULTS = {
                                   'raise AssertionError',
                                   'raise unittest.Skip',
                                   ],
-                },
+            },
             'html': {
                 'directory': 'parts/htmlcov',
-                },
             },
         },
+    },
 
 }
 PYPROJECT_TOML_OVERRIDES = {
@@ -70,31 +70,31 @@ PYPROJECT_TOML_OVERRIDES = {
             'coverage': {
                 'run': {
                     'parallel': True,
-                    },
+                },
                 'paths': {
                     'source': ['src/',
                                '.tox/*/lib/python*/site-packages/',
                                '.tox/pypy*/site-packages/',
                                ],
-                    },
                 },
             },
         },
+    },
     'c-code': {
         'tool': {
             'coverage': {
                 'run': {
                     'relative_files': True,
-                    },
+                },
                 'paths': {
                     'source': ['src/',
                                '.tox/*/lib/python*/site-packages/',
                                '.tox/pypy*/site-packages/',
                                ],
-                        },
-                    },
                 },
             },
+        },
+    },
 }
 
 
@@ -145,6 +145,7 @@ def parse_additional_config(cfg):
             data[key] = value
 
     return data
+
 
 def list_packages(path: pathlib.Path) -> list:
     """List the packages in ``path``.

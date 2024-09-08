@@ -19,15 +19,15 @@ from shared.git import get_branch_name
 from shared.git import get_commit_id
 from shared.git import git_branch
 from shared.packages import FUTURE_PYTHON_VERSION
-from shared.packages import get_pyproject_toml_defaults
 from shared.packages import MANYLINUX_AARCH64
 from shared.packages import MANYLINUX_I686
 from shared.packages import MANYLINUX_PYTHON_VERSION
 from shared.packages import MANYLINUX_X86_64
 from shared.packages import OLDEST_PYTHON_VERSION
-from shared.packages import parse_additional_config
 from shared.packages import PYPY_VERSION
 from shared.packages import SETUPTOOLS_VERSION_SPEC
+from shared.packages import get_pyproject_toml_defaults
+from shared.packages import parse_additional_config
 from shared.path import change_dir
 import argparse
 import collections
@@ -566,7 +566,7 @@ class PackageConfiguration:
         coverage = toml_data['tool']['coverage']
         coverage['run']['source'] = self.coverage_run_source.split()
         coverage['report']['fail_under'] = self.coverage_fail_under
-        add_cfg = self.meta_cfg['coverage-run'].get( 'additional-config', [])
+        add_cfg = self.meta_cfg['coverage-run'].get('additional-config', [])
         for key, value in parse_additional_config(add_cfg).items():
             coverage['run'][key] = value
 
