@@ -140,7 +140,7 @@ def parse_additional_config(cfg):
                     try:
                         value = func('dummysection', key)
                         break
-                    except:
+                    except Exception:
                         pass
             data[key] = value
 
