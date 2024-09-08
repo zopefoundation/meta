@@ -9,7 +9,7 @@ basepython = %(coverage_basepython)s
 allowlist_externals =
     mkdir
 deps =
-    coverage
+    coverage[toml]
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}
@@ -34,9 +34,8 @@ commands =
 {% if with_sphinx_doctests %}
     coverage run -a -m sphinx -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
 {% endif %}
-    coverage html --ignore-errors
-    coverage report --show-missing --fail-under=%(coverage_fail_under)s
+    coverage html
+    coverage report
 {% for line in coverage_additional %}
 %(line)s
 {% endfor %}
-{% include 'tox-coverage-config.j2' %}

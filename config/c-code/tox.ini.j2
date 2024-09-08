@@ -33,7 +33,7 @@ basepython = %(coverage_basepython)s
 allowlist_externals =
     mkdir
 deps =
-    coverage
+    coverage[toml]
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}
@@ -50,8 +50,8 @@ commands =
 {% else %}
     coverage run -m zope.testrunner --test-path=src {posargs:-vc}
 {% endif %}
-    coverage html -i
-    coverage report -i -m --fail-under=%(coverage_fail_under)s
+    coverage html
+    coverage report
 {% for line in coverage_additional %}
 %(line)s
 {% endfor %}

@@ -19,12 +19,13 @@ from shared.git import get_branch_name
 from shared.git import get_commit_id
 from shared.git import git_branch
 from shared.packages import FUTURE_PYTHON_VERSION
+from shared.packages import get_pyproject_toml_defaults
 from shared.packages import MANYLINUX_AARCH64
 from shared.packages import MANYLINUX_I686
 from shared.packages import MANYLINUX_PYTHON_VERSION
 from shared.packages import MANYLINUX_X86_64
 from shared.packages import OLDEST_PYTHON_VERSION
-from shared.packages import PYPROJECT_TOML_DEFAULTS
+from shared.packages import parse_additional_config
 from shared.packages import PYPY_VERSION
 from shared.packages import SETUPTOOLS_VERSION_SPEC
 from shared.path import change_dir
@@ -151,8 +152,6 @@ def prepend_space(text):
 
 
 class PackageConfiguration:
-    add_coveragerc = False
-    rm_coveragerc = False
     add_manylinux = False
 
     def __init__(self, args):
@@ -357,21 +356,6 @@ class PackageConfiguration:
             rtd_build_extra=rtd_build_extra,
         )
 
-    def coveragerc(self):
-        coverage_run_additional_config = self.meta_cfg['coverage-run'].get(
-            'additional-config', [])
-        if (self.config_type_path / 'coveragerc.j2').exists():
-            self.copy_with_meta(
-                'coveragerc.j2',
-                self.path / '.coveragerc',
-                self.config_type,
-                coverage_run_source=self.coverage_run_source,
-                coverage_run_additional_config=coverage_run_additional_config,
-            )
-            self.add_coveragerc = True
-        elif (self.path / '.coveragerc').exists():
-            self.rm_coveragerc = True
-
     def manylinux_sh(self):
         """Add the scripts to produce binary wheels"""
         manylinux_install_setup = self.meta_cfg['c-code'].get(
@@ -553,32 +537,46 @@ class PackageConfiguration:
 
     def pyproject_toml(self):
         """Modify pyproject.toml with meta options."""
-        pyproject_toml_path = self.path / 'pyproject.toml'
-        pyproject_data = {}
+        toml_path = self.path / 'pyproject.toml'
 
-        if pyproject_toml_path.exists():
-            with open(pyproject_toml_path, 'rb') as fp:
-                pyproject_data = tomlkit.load(fp)
-        pyproject_toml = collections.defaultdict(dict, **pyproject_data)
-        old_requires = pyproject_toml['build-system'].get('requires', [])
+        if toml_path.exists():
+            with open(toml_path, 'rb') as fp:
+                toml_doc = tomlkit.load(fp)
+        else:
+            toml_doc = tomlkit.document()
+            preamble = f'\n{META_HINT.format(config_type=self.config_type)}'
+            toml_doc.add(tomlkit.comment(preamble))
+        toml_data = collections.defaultdict(dict, **toml_doc)
 
-        # Update/overwrite existing values with our defaults
-        pyproject_toml.update(PYPROJECT_TOML_DEFAULTS)
+        # Capture some pre-transformation data
+        old_requires = toml_data['build-system'].get('requires', [])
 
-        # Add prior requires values back
+        # Apply template-dependent defaults
+        toml_data.update(get_pyproject_toml_defaults(self.config_type))
+
+        # Create or update section "build-system"
         if old_requires:
             setuptools_requirement = [
                 x for x in old_requires if x.startswith('setuptools')]
             for setuptools_req in setuptools_requirement:
                 old_requires.remove(setuptools_req)
-            pyproject_toml['build-system']['requires'].extend(old_requires)
+            toml_data['build-system']['requires'].extend(old_requires)
 
-        # Remove empty sections before writing to disk
-        pyproject_toml = {k: v for k, v in pyproject_toml.items() if v}
-        with open(pyproject_toml_path, 'w') as fp:
-            fp.write(META_HINT.format(config_type=self.config_type))
-            fp.write('\n')
-            tomlkit.dump(pyproject_toml, fp, sort_keys=True)
+        # Update coverage-related data
+        coverage = toml_data['tool']['coverage']
+        coverage['run']['source'] = self.coverage_run_source.split()
+        coverage['report']['fail_under'] = self.coverage_fail_under
+        add_cfg = self.meta_cfg['coverage-run'].get( 'additional-config', [])
+        for key, value in parse_additional_config(add_cfg).items():
+            coverage['run'][key] = value
+
+        # Remove empty sections
+        toml_data = {k: v for k, v in toml_data.items() if v}
+
+        # Update and write out the document
+        toml_doc.update(toml_data)
+        with open(toml_path, 'w') as fp:
+            tomlkit.dump(toml_doc, fp, sort_keys=True)
 
     def copy_with_meta(
             self, template_name, destination, config_type,
@@ -631,7 +629,6 @@ class PackageConfiguration:
             if self.args.commit:
                 call('git', 'add', *early_add)
 
-        self.coveragerc()
         self.manylinux_sh()
         self.tox()
         self.tests_yml()
@@ -643,10 +640,8 @@ class PackageConfiguration:
                 call('git', 'rm', 'bootstrap.py')
             if pathlib.Path('.travis.yml').exists():
                 call('git', 'rm', '.travis.yml')
-            if self.rm_coveragerc:
+            if pathlib.Path('.coveragerc').exists():
                 call('git', 'rm', '.coveragerc')
-            if self.add_coveragerc and self.args.commit:
-                call('git', 'add', '.coveragerc')
             if pathlib.Path('appveyor.yml').exists():
                 call('git', 'rm', 'appveyor.yml')
             if self.with_docs and self.args.commit:
