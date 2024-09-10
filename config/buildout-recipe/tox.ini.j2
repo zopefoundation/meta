@@ -14,7 +14,7 @@ setenv =
     %(line)s
 {% endfor %}
 {% else %}
-    COVERAGE_PROCESS_START={toxinidir}/.coveragerc
+    COVERAGE_PROCESS_START={toxinidir}/pyproject.toml
 {% endif %}
 deps =
     coverage[toml]

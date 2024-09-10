@@ -4,9 +4,6 @@ include *.txt
 include buildout.cfg
 include tox.ini
 include .pre-commit-config.yaml
-{% if config_type in ('buildout-recipe', 'c-code') %}
-include .coveragerc
-{% endif %}
 {% if with_docs %}
 
 recursive-include docs *.py
