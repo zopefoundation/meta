@@ -65,7 +65,7 @@ setenv =
 {% endif %}
 deps =
     {[testenv]deps}
-    coverage
+    coverage[toml]
 commands =
     mkdir -p {toxinidir}/parts/htmlcov
 {% if coverage_command %}
@@ -76,8 +76,7 @@ commands =
     coverage run {envbindir}/test {posargs:-cv}
 {% endif %}
     coverage html
-    coverage report -m --fail-under=%(coverage_fail_under)s
+    coverage report
 {% for line in coverage_additional %}
 %(line)s
 {% endfor %}
-{% include 'tox-coverage-config.j2' %}

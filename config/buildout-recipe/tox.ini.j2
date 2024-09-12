@@ -14,10 +14,10 @@ setenv =
     %(line)s
 {% endfor %}
 {% else %}
-    COVERAGE_PROCESS_START={toxinidir}/.coveragerc
+    COVERAGE_PROCESS_START={toxinidir}/pyproject.toml
 {% endif %}
 deps =
-    coverage
+    coverage[toml]
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}
@@ -36,7 +36,7 @@ commands =
 {% endif %}
     coverage combine
     coverage html
-    coverage report -m --fail-under=%(coverage_fail_under)s
+    coverage report
 {% for line in coverage_additional %}
 %(line)s
 {% endfor %}
