@@ -41,8 +41,9 @@ jobs:
         - ["3.10",  "py310"]
         - ["3.11",  "py311"]
         - ["3.12",  "py312"]
+        - ["3.13",  "py313"]
 {% if with_future_python %}
-        - ["%(future_python_version)s",  "py313"]
+        - ["%(future_python_version)s",  "py314"]
 {% endif %}
 {% if with_pypy %}
         - ["pypy-3.10", "pypy3"]
@@ -93,9 +94,7 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.config[0] }}
-{% if with_future_python %}
         allow-prereleases: true
-{% endif %}
     - name: Pip cache
       uses: actions/cache@v4
       with:
