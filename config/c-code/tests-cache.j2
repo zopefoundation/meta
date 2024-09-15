@@ -4,7 +4,9 @@
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+{% if with_future_python %}
           allow-prereleases: true
+{% endif %}
       ###
       # Caching.
       # This actually *restores* a cache and schedules a cleanup action
