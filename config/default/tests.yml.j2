@@ -41,9 +41,8 @@ jobs:
         - ["3.10",  "py310"]
         - ["3.11",  "py311"]
         - ["3.12",  "py312"]
-        - ["3.13",  "py313"]
 {% if with_future_python %}
-        - ["%(future_python_version)s",  "py314"]
+        - ["%(future_python_version)s",  "py313"]
 {% endif %}
 {% if with_pypy %}
         - ["pypy-3.10", "pypy3"]
