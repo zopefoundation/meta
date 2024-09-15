@@ -19,12 +19,12 @@ TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
 ORG = 'zopefoundation'
 BASE_PATH = pathlib.Path(__file__).parent.parent
 OLDEST_PYTHON_VERSION = '3.8'
-NEWEST_PYTHON_VERSION = '3.12'
+NEWEST_PYTHON_VERSION = '3.13'
 SUPPORTED_PYTHON_VERSIONS = [
     f'3.{i}' for i in range(int(OLDEST_PYTHON_VERSION.replace('3.', '')),
                             int(NEWEST_PYTHON_VERSION.replace('3.', '')) + 1)
 ]
-FUTURE_PYTHON_VERSION = '3.13'
+FUTURE_PYTHON_VERSION = '3.14'
 PYPY_VERSION = '3.10'
 SETUPTOOLS_VERSION_SPEC = '<74'
 MANYLINUX_PYTHON_VERSION = '3.11'
