@@ -16,6 +16,8 @@ setenv =
     %(line)s
   {% endfor %}
 {% endif %}
+    py312: VIRTUALENV_PIP=23.1.2
+    py312: PIP_REQUIRE_VIRTUALENV=0
 commands_pre =
 {% if testenv_commands_pre %}
   {% for line in testenv_commands_pre %}
