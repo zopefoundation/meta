@@ -94,9 +94,7 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.config[0] }}
-{% if with_future_python %}
         allow-prereleases: true
-{% endif %}
     - name: Pip cache
       uses: actions/cache@v4
       with:
