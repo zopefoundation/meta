@@ -45,12 +45,12 @@ tox_env_map() {
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
     if \
-{% if with_future_python %}
-       [[ "${PYBIN}" == *"cp%(future_python_shortversion)s/"* ]] || \
-{% endif %}
        [[ "${PYBIN}" == *"cp311/"* ]] || \
        [[ "${PYBIN}" == *"cp312/"* ]] || \
        [[ "${PYBIN}" == *"cp313/"* ]] || \
+{% if with_future_python %}
+       [[ "${PYBIN}" == *"cp%(future_python_shortversion)s/"* ]] || \
+{% endif %}
        [[ "${PYBIN}" == *"cp38/"* ]] || \
        [[ "${PYBIN}" == *"cp39/"* ]] || \
        [[ "${PYBIN}" == *"cp310/"* ]] ; then
