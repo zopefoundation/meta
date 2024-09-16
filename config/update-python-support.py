@@ -16,7 +16,7 @@ from shared.call import wait_for_accept
 from shared.git import get_branch_name
 from shared.git import git_branch
 from shared.packages import OLDEST_PYTHON_VERSION
-from shared.packages import SUPPORTED_PYTHON_VERSIONS
+from shared.packages import supported_python_versions
 from shared.path import change_dir
 import argparse
 import collections
@@ -85,8 +85,8 @@ with change_dir(path) as cwd_str:
 
     current_python_versions = get_tox_ini_python_versions('tox.ini')
     no_longer_supported = (set(current_python_versions) -
-                           set(SUPPORTED_PYTHON_VERSIONS))
-    not_yet_supported = (set(SUPPORTED_PYTHON_VERSIONS) -
+                           set(supported_python_versions()))
+    not_yet_supported = (set(supported_python_versions()) -
                          set(current_python_versions))
 
     non_interactive_params = []
@@ -97,7 +97,7 @@ with change_dir(path) as cwd_str:
 
     if no_longer_supported or not_yet_supported:
         call(bin_dir / 'bumpversion', '--feature', *non_interactive_params)
-    python_versions_args = ['--add=' + ','.join(SUPPORTED_PYTHON_VERSIONS)]
+    python_versions_args = ['--add=' + ','.join(supported_python_versions())]
     if no_longer_supported:
         for version in sorted(list(no_longer_supported)):
             call(bin_dir / 'addchangelogentry',

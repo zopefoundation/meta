@@ -35,24 +35,21 @@ jobs:
 {% endif %}
         config:
         # [Python version, tox env]
-        - ["3.11",  "release-check"]
-        - ["3.8",   "py38"]
-        - ["3.9",   "py39"]
-        - ["3.10",  "py310"]
-        - ["3.11",  "py311"]
-        - ["3.12",  "py312"]
-        - ["3.13",  "py313"]
+        - ["3.11", "release-check"]
+{% for (py_long_version, py_short_version) in supported_python_versions %}
+        - ["%(py_long_version)s", "py%(py_short_version)s"]
+{% endfor %}
 {% if with_future_python %}
-        - ["%(future_python_version)s",  "py%(future_python_shortversion)s"]
+        - ["%(future_python_version)s", "py%(future_python_shortversion)s"]
 {% endif %}
 {% if with_pypy %}
-        - ["pypy-3.10", "pypy3"]
+        - ["pypy-%(pypi_version)s", "pypy3"]
 {% endif %}
 {% if with_docs %}
-        - ["3.11",   "docs"]
+        - ["3.11", "docs"]
 {% endif %}
 {% if with_coverage %}
-        - ["3.11",   "coverage"]
+        - ["3.11", "coverage"]
 {% endif %}
 {% for line in gha_additional_config %}
         %(line)s
@@ -61,18 +58,18 @@ jobs:
         exclude:
 {% endif %}
 {% if with_windows %}
-          - { os: ["windows", "windows-latest"], config: ["3.11",  "release-check"] }
+          - { os: ["windows", "windows-latest"], config: ["3.11", "release-check"] }
   {% if with_docs %}
-          - { os: ["windows", "windows-latest"], config: ["3.11",  "docs"] }
+          - { os: ["windows", "windows-latest"], config: ["3.11", "docs"] }
   {% endif %}
-          - { os: ["windows", "windows-latest"], config: ["3.11",  "coverage"] }
+          - { os: ["windows", "windows-latest"], config: ["3.11", "coverage"] }
 {% endif %}
 {% if with_macos %}
-          - { os: ["macos", "macos-latest"], config: ["3.11",  "release-check"] }
+          - { os: ["macos", "macos-latest"], config: ["3.11", "release-check"] }
   {% if with_docs %}
-          - { os: ["macos", "macos-latest"], config: ["3.11",  "docs"] }
+          - { os: ["macos", "macos-latest"], config: ["3.11", "docs"] }
   {% endif %}
-          - { os: ["macos", "macos-latest"], config: ["3.11",  "coverage"] }
+          - { os: ["macos", "macos-latest"], config: ["3.11", "coverage"] }
 {% endif %}
 {% for line in gha_additional_exclude %}
           %(line)s

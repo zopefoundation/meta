@@ -6,12 +6,9 @@
 minversion = 4.0
 envlist =
     lint
-    py38,py38-pure
-    py39,py39-pure
-    py310,py310-pure
-    py311,py311-pure
-    py312,py312-pure
-    py313,py313-pure
+{% for py_version in supported_python_versions %}
+    py%(py_version)s,py%(py_version)s-pure
+{% endfor %}
 {% if with_future_python %}
     py%(future_python_shortversion)s,py%(future_python_shortversion)s-pure
 {% endif %}

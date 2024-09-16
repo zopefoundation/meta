@@ -23,11 +23,13 @@ from shared.packages import MANYLINUX_AARCH64
 from shared.packages import MANYLINUX_I686
 from shared.packages import MANYLINUX_PYTHON_VERSION
 from shared.packages import MANYLINUX_X86_64
+from shared.packages import NEWEST_PYTHON_VERSION
 from shared.packages import OLDEST_PYTHON_VERSION
 from shared.packages import PYPY_VERSION
 from shared.packages import SETUPTOOLS_VERSION_SPEC
 from shared.packages import get_pyproject_toml_defaults
 from shared.packages import parse_additional_config
+from shared.packages import supported_python_versions
 from shared.path import change_dir
 import argparse
 import collections
@@ -38,6 +40,7 @@ import tomlkit
 
 
 FUTURE_PYTHON_SHORTVERSION = FUTURE_PYTHON_VERSION.replace('.', '')
+NEWEST_PYTHON_SHORTVERSION = NEWEST_PYTHON_VERSION.replace('.', '')
 META_HINT = """\
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/{config_type}"""
@@ -374,6 +377,9 @@ class PackageConfiguration:
             self.copy_with_meta(
                 'manylinux.sh', self.path / '.manylinux.sh', self.config_type)
             (self.path / '.manylinux.sh').chmod(0o755)
+            stop_at = None
+            if not self.with_future_python:
+                stop_at = NEWEST_PYTHON_SHORTVERSION
             self.copy_with_meta(
                 'manylinux-install.sh.j2', self.path / '.manylinux-install.sh',
                 self.config_type,
@@ -382,6 +388,8 @@ class PackageConfiguration:
                 manylinux_aarch64_tests=manylinux_aarch64_tests,
                 with_future_python=self.with_future_python,
                 future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
+                supported_python_versions=supported_python_versions(True),
+                stop_at=stop_at,
             )
             (self.path / '.manylinux-install.sh').chmod(0o755)
             self.add_manylinux = True
@@ -465,6 +473,7 @@ class PackageConfiguration:
             docs_deps=docs_deps,
             setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
             future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
+            supported_python_versions=supported_python_versions(True),
         )
 
     def tests_yml(self):
@@ -482,6 +491,8 @@ class PackageConfiguration:
         gha_test_commands = self.gh_option('test-commands')
         require_cffi = self.meta_cfg.get(
             'c-code', {}).get('require-cffi', False)
+        py_version_matrix = [x for x in zip(supported_python_versions(False),
+                                            supported_python_versions(True))]
         self.copy_with_meta(
             'tests.yml.j2',
             workflows / 'tests.yml',
@@ -510,6 +521,7 @@ class PackageConfiguration:
             pypy_version=PYPY_VERSION,
             setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
             future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
+            supported_python_versions=py_version_matrix,
         )
 
     def pre_commit_yml(self):

@@ -5,12 +5,9 @@
 {% if with_pypy %}
           - "pypy-%(pypy_version)s"
 {% endif %}
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3.13"
+{% for (py_long_version, py_short_version) in supported_python_versions %}
+          - "%(py_long_version)s"
+{% endfor %}
 {% if with_future_python %}
           - "%(future_python_version)s"
 {% endif %}
