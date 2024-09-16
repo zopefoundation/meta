@@ -37,6 +37,7 @@ import shutil
 import tomlkit
 
 
+FUTURE_PYTHON_SHORTVERSION = FUTURE_PYTHON_VERSION.replace('.', '')
 META_HINT = """\
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/{config_type}"""
@@ -380,6 +381,7 @@ class PackageConfiguration:
                 manylinux_install_setup=manylinux_install_setup,
                 manylinux_aarch64_tests=manylinux_aarch64_tests,
                 with_future_python=self.with_future_python,
+                future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
             )
             (self.path / '.manylinux-install.sh').chmod(0o755)
             self.add_manylinux = True
@@ -462,6 +464,7 @@ class PackageConfiguration:
             with_sphinx_doctests=self.with_sphinx_doctests,
             docs_deps=docs_deps,
             setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
+            future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
         )
 
     def tests_yml(self):
@@ -506,6 +509,7 @@ class PackageConfiguration:
             manylinux_x86_64=MANYLINUX_X86_64,
             pypy_version=PYPY_VERSION,
             setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
+            future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
         )
 
     def pre_commit_yml(self):

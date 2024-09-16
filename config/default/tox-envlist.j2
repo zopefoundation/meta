@@ -10,7 +10,7 @@ envlist =
     py312
     py313
 {% if with_future_python %}
-    py314
+    py%(future_python_shortversion)s
 {% endif %}
 {% if with_pypy %}
     pypy3
