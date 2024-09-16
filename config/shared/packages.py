@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from packaging.version import parse as parse_version
 import configparser
 import itertools
 import pathlib
-from packaging.version import parse as parse_version
 
 
 TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
