@@ -474,7 +474,7 @@ class PackageConfiguration:
             docs_deps=docs_deps,
             setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
             future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
-            supported_python_versions=supported_python_versions(True),
+            supported_python_versions=supported_python_versions(short_version=True),
         )
 
     def tests_yml(self):
