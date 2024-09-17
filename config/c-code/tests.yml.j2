@@ -254,7 +254,7 @@ jobs:
           pip install -U wheel "setuptools %(setuptools_version_spec)s"
           # coverage might have a wheel on PyPI for a future python version which is
           # not ABI compatible with the current one, so build it from sdist:
-          pip install -U --no-binary :all: coverage
+          pip install -U --no-binary :all: coverage[toml]
           # Unzip into src/ so that testrunner can find the .so files
           # when we ask it to load tests from that directory. This
           # might also save some build time?
