@@ -3,13 +3,11 @@ minversion = 3.18
 envlist =
     release-check
     lint
-    py38
-    py39
-    py310
-    py311
-    py312
+{% for py_version in supported_python_versions %}
+    py%(py_version)s
+{% endfor %}
 {% if with_future_python %}
-    py313
+    py%(future_python_shortversion)s
 {% endif %}
 {% if with_pypy %}
     pypy3

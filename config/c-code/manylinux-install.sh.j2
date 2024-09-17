@@ -29,14 +29,12 @@ yum -y install libffi-devel
 
 tox_env_map() {
     case $1 in
+{% for py_version in supported_python_versions %}
+        *"cp%(py_version)s"*) echo 'py%(py_version)s';;
+{% endfor %}
 {% if with_future_python %}
-        *"cp313"*) echo 'py313';;
+        *"cp%(future_python_shortversion)s"*) echo 'py%(future_python_shortversion)s';;
 {% endif %}
-        *"cp38"*) echo 'py38';;
-        *"cp39"*) echo 'py39';;
-        *"cp310"*) echo 'py310';;
-        *"cp311"*) echo 'py311';;
-        *"cp312"*) echo 'py312';;
         *) echo 'py';;
     esac
 }
@@ -44,16 +42,17 @@ tox_env_map() {
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
     if \
-{% if with_future_python %}
-       [[ "${PYBIN}" == *"cp313/"* ]] || \
+{% for py_version in supported_python_versions %}
+       [[ "${PYBIN}" == *"cp%(py_version)s/"* ]] {% if py_version != stop_at %}|| \
 {% endif %}
-       [[ "${PYBIN}" == *"cp311/"* ]] || \
-       [[ "${PYBIN}" == *"cp312/"* ]] || \
-       [[ "${PYBIN}" == *"cp38/"* ]] || \
-       [[ "${PYBIN}" == *"cp39/"* ]] || \
-       [[ "${PYBIN}" == *"cp310/"* ]] ; then
+{% endfor %}
 {% if with_future_python %}
-        if [[ "${PYBIN}" == *"cp313/"* ]] ; then
+       [[ "${PYBIN}" == *"cp%(future_python_shortversion)s/"* ]] ; then
+{% else %}
+; then
+{% endif %}
+{% if with_future_python %}
+        if [[ "${PYBIN}" == *"cp%(future_python_shortversion)s/"* ]] ; then
             "${PYBIN}/pip" install --pre -e /io/
             "${PYBIN}/pip" wheel /io/ --pre -w wheelhouse/
         else

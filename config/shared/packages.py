@@ -10,6 +10,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from packaging.version import parse as parse_version
 import configparser
 import itertools
 import pathlib
@@ -19,12 +20,8 @@ TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
 ORG = 'zopefoundation'
 BASE_PATH = pathlib.Path(__file__).parent.parent
 OLDEST_PYTHON_VERSION = '3.8'
-NEWEST_PYTHON_VERSION = '3.12'
-SUPPORTED_PYTHON_VERSIONS = [
-    f'3.{i}' for i in range(int(OLDEST_PYTHON_VERSION.replace('3.', '')),
-                            int(NEWEST_PYTHON_VERSION.replace('3.', '')) + 1)
-]
-FUTURE_PYTHON_VERSION = '3.13'
+NEWEST_PYTHON_VERSION = '3.13'
+FUTURE_PYTHON_VERSION = '3.14'
 PYPY_VERSION = '3.10'
 SETUPTOOLS_VERSION_SPEC = '<74'
 MANYLINUX_PYTHON_VERSION = '3.11'
@@ -145,6 +142,31 @@ def parse_additional_config(cfg):
             data[key] = value
 
     return data
+
+
+def supported_python_versions(short_version=False):
+    """Create a list containing all supported Python versions
+
+    Uses the configured oldest and newest Python versions to compute a list
+    containing all versions from oldest to newest that can be iterated over in
+    the templates.
+
+    Kwargs:
+
+        short_version (bool):
+            Return short versions like "313" instead of "3.13"
+    """
+    minor_versions = []
+    oldest_python = parse_version(OLDEST_PYTHON_VERSION)
+    newest_python = parse_version(NEWEST_PYTHON_VERSION)
+    for minor in range(oldest_python.minor, newest_python.minor+1):
+        minor_versions.append(minor)
+    supported = [f'{oldest_python.major}.{minor}' for minor in minor_versions]
+
+    if short_version:
+        return [x.replace('.', '') for x in supported]
+
+    return supported
 
 
 def list_packages(path: pathlib.Path) -> list:
