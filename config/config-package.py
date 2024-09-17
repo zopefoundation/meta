@@ -388,7 +388,8 @@ class PackageConfiguration:
                 manylinux_aarch64_tests=manylinux_aarch64_tests,
                 with_future_python=self.with_future_python,
                 future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
-                supported_python_versions=supported_python_versions(True),
+                supported_python_versions=supported_python_versions(
+                    short_version=True),
                 stop_at=stop_at,
             )
             (self.path / '.manylinux-install.sh').chmod(0o755)
