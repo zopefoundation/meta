@@ -43,7 +43,7 @@ jobs:
         - ["%(future_python_version)s", "py%(future_python_shortversion)s"]
 {% endif %}
 {% if with_pypy %}
-        - ["pypy-%(pypi_version)s", "pypy3"]
+        - ["pypy-%(pypy_version)s", "pypy3"]
 {% endif %}
 {% if with_docs %}
         - ["3.11", "docs"]
