@@ -492,8 +492,9 @@ class PackageConfiguration:
         gha_test_commands = self.gh_option('test-commands')
         require_cffi = self.meta_cfg.get(
             'c-code', {}).get('require-cffi', False)
-        py_version_matrix = [x for x in zip(supported_python_versions(False),
-                                            supported_python_versions(True))]
+        py_version_matrix = [
+            x for x in zip(supported_python_versions(short_version=False),
+                           supported_python_versions(short_version=True))]
         self.copy_with_meta(
             'tests.yml.j2',
             workflows / 'tests.yml',
