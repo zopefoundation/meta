@@ -18,8 +18,8 @@ deps =
   {% if with_sphinx_doctests and with_future_python %}
     Sphinx
   {% endif %}
-setenv =
 {% if testenv_setenv %}
+setenv =
   {% for line in testenv_setenv %}
     %(line)s
   {% endfor %}
