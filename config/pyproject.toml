@@ -1,0 +1,13 @@
+[project]
+name = "zopefoundation-meta-config"
+version = "0.1.0"
+description = "Bring the configuration of the zopefoundation packages into a common state and keep it there."
+readme = "README.rst"
+requires-python = ">=3.8.1"
+dynamic = ["dependencies"]
+
+[tool.setuptools]
+py-modules = []
+
+[tool.setuptools.dynamic]
+dependencies = {file = "requirements.txt"}
