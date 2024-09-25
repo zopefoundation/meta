@@ -11,13 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from shared.call import call
-from shared.call import wait_for_accept
-from shared.git import get_branch_name
-from shared.git import git_branch
-from shared.packages import OLDEST_PYTHON_VERSION
-from shared.packages import supported_python_versions
-from shared.path import change_dir
 import argparse
 import collections
 import configparser
@@ -25,7 +18,15 @@ import os
 import pathlib
 import shutil
 import sys
+
 import tomlkit
+from shared.call import call
+from shared.call import wait_for_accept
+from shared.git import get_branch_name
+from shared.git import git_branch
+from shared.packages import OLDEST_PYTHON_VERSION
+from shared.packages import supported_python_versions
+from shared.path import change_dir
 
 
 def get_tox_ini_python_versions(path):

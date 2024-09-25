@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+import argparse
+import json
+import os
+import pathlib
+import tempfile
+import tomllib
+
+import requests
 from shared.call import abort
 from shared.call import call
 from shared.packages import ALL_REPOS
@@ -10,13 +18,6 @@ from shared.packages import NEWEST_PYTHON_VERSION
 from shared.packages import OLDEST_PYTHON_VERSION
 from shared.packages import ORG
 from shared.packages import PYPY_VERSION
-import argparse
-import json
-import os
-import pathlib
-import requests
-import tempfile
-import tomllib
 
 
 BASE_URL = f'https://raw.githubusercontent.com/{ORG}'

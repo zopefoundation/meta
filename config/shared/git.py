@@ -10,9 +10,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+import pathlib
+
 from .call import call
 from .path import change_dir
-import pathlib
 
 
 def get_commit_id():

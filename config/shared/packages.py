@@ -10,10 +10,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from packaging.version import parse as parse_version
 import configparser
 import itertools
 import pathlib
+
+from packaging.version import parse as parse_version
 
 
 TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
@@ -159,7 +160,7 @@ def supported_python_versions(short_version=False):
     minor_versions = []
     oldest_python = parse_version(OLDEST_PYTHON_VERSION)
     newest_python = parse_version(NEWEST_PYTHON_VERSION)
-    for minor in range(oldest_python.minor, newest_python.minor+1):
+    for minor in range(oldest_python.minor, newest_python.minor + 1):
         minor_versions.append(minor)
     supported = [f'{oldest_python.major}.{minor}' for minor in minor_versions]
 

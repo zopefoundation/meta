@@ -11,7 +11,14 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+import argparse
+import collections
+import pathlib
+import shutil
 from functools import cached_property
+
+import jinja2
+import tomlkit
 from set_branch_protection_rules import set_branch_protection
 from shared.call import abort
 from shared.call import call
@@ -31,12 +38,6 @@ from shared.packages import get_pyproject_toml_defaults
 from shared.packages import parse_additional_config
 from shared.packages import supported_python_versions
 from shared.path import change_dir
-import argparse
-import collections
-import jinja2
-import pathlib
-import shutil
-import tomlkit
 
 
 FUTURE_PYTHON_SHORTVERSION = FUTURE_PYTHON_VERSION.replace('.', '')

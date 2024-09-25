@@ -11,11 +11,12 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+import argparse
+import pathlib
+
 from shared.call import call
 from shared.packages import ALL_REPOS
 from shared.packages import ORG
-import argparse
-import pathlib
 
 
 base_url = f'https://github.com/{ORG}'
