@@ -66,10 +66,7 @@ To run the tests via ``zope.testrunner``:
 
    $ /tmp/hack-zope.meta/bin/zope-testrunner --test-path=src
    Running zope.testrunner.layer.UnitTests tests:
-     Set up zope.testrunner.layer.UnitTests in 0.000 seconds.
-     Ran 41 tests with 0 failures, 0 errors and 0 skipped in 0.003 seconds.
-   Tearing down left over layers:
-     Tear down zope.testrunner.layer.UnitTests in 0.000 seconds.
+   ...
 
 Running the tests under :mod:`coverage` lets you see how well the tests
 cover the code:
