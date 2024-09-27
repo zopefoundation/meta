@@ -39,6 +39,7 @@ parser.add_argument(
 args, sub_args = parser.parse_known_args()
 packages = list_packages(args.packages_txt)
 
+
 def main():
     for package in packages:
         print(f'*** Running {args.script.name} on {package} ***')
@@ -53,7 +54,7 @@ def main():
                 print('Cloning repository …')
                 call('git', 'clone',
                      f'https://github.com/zopefoundation/{package}')
-    
+
         call_args = [
             sys.executable,
             args.script,
