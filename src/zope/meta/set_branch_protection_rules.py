@@ -4,9 +4,9 @@ import json
 import os
 import pathlib
 import tempfile
-import tomllib
 
 import requests
+import tomlkit
 
 from .shared.call import abort
 from .shared.call import call
@@ -62,10 +62,10 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
     if meta_path is None:
         response = requests.get(
             f'{BASE_URL}/{repo}/{DEFAULT_BRANCH}/.meta.toml', timeout=30)
-        meta_toml = tomllib.loads(response.text)
+        meta_toml = tomlkit.loads(response.text)
     else:
         with open(meta_path) as f:
-            meta_toml = tomllib.loads(f.read())
+            meta_toml = tomlkit.load(f)
     template = meta_toml['meta']['template']
     with_docs = meta_toml['python'].get('with-docs', False)
     with_pypy = meta_toml['python']['with-pypy']
