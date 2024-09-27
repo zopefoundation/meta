@@ -22,8 +22,10 @@ from .shared.path import path_factory
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Call a script on all repositories listed in a packages.txt.',
-        epilog='Additional optional arguments are passed directly to the script.')
+        description='Call a script on all repositories listed'
+                    ' in a packages.txt.',
+        epilog='Additional optional arguments are passed'
+               ' directly to the script.')
     parser.add_argument(
         'script', type=path_factory('script', has_extension='.py'),
         help='path to the Python script to be called')
@@ -32,7 +34,7 @@ def main():
         type=path_factory(
             'packages.txt',
             has_extension='.txt'),
-        help='path to the packages.txt; script is called on each repository listed'
+        help='path to packages.txt; script is called on each repository listed'
         ' inside',
         metavar='packages.txt')
     parser.add_argument(
