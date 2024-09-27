@@ -56,6 +56,11 @@ setup(
     ],
     license='ZPL 2.1',
     url='https://github.com/zopefoundation/zope.meta',
+    project_urls={
+        'Documentation': 'https://zopemeta.readthedocs.io',
+        'Issue Tracker': 'https://github.com/zopefoundation/meta/issues',
+        'Sources': 'https://github.com/zopefoundation/meta',
+    },
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['zope'],
@@ -75,7 +80,7 @@ setup(
     zip_safe=False,
     extras_require={
         'test': ['zope.testrunner'],
-        'docs': ['Sphinx', 'sphinx_rtd_theme'],
+        'docs': ['Sphinx', 'furo'],
     },
     entry_points={
         'console_scripts': [
