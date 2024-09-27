@@ -28,9 +28,13 @@ def main():
         'script', type=path_factory('script', has_extension='.py'),
         help='path to the Python script to be called')
     parser.add_argument(
-        'packages_txt', type=path_factory('packages.txt', has_extension='.txt'),
+        'packages_txt',
+        type=path_factory(
+            'packages.txt',
+            has_extension='.txt'),
         help='path to the packages.txt; script is called on each repository listed'
-             ' inside', metavar='packages.txt')
+        ' inside',
+        metavar='packages.txt')
     parser.add_argument(
         'clones', type=path_factory('clones', is_dir=True),
         help='path to the directory where the clones of the repositories are'
