@@ -57,6 +57,7 @@ packages:
 
   - Configuration used for the zopetoolkit and groktoolkit repositories.
 
+
 Contents
 --------
 
@@ -114,14 +115,14 @@ Usage
 Preparation
 +++++++++++
 
-The script needs a ``venv`` with some packages installed::
+The scripts needs a ``venv`` with some packages installed::
 
     $ python3.11 -m venv .
-    $ bin/pip install -r requirements.txt
+    $ bin/pip install .
 
 To use the configuration provided here in a package call the following script::
 
-    $ bin/python config-package.py <path-to-package> --type <config-type-name> [<additional-options>]
+    $ bin/config-package <path-to-package> --type <config-type-name> [<additional-options>]
 
 See ``--help`` for details.
 
@@ -197,6 +198,7 @@ The following options are only needed one time as their values are stored in
 
 --with-sphinx-doctests
   Enable running the documentation as doctest using Sphinx.
+
 
 Options
 +++++++
@@ -420,6 +422,7 @@ source
   section. This option has to be a string. It defaults to the name of the
   package if it is not set.
 
+
 tox.ini options
 ```````````````
 
@@ -484,6 +487,7 @@ docs-deps
   and is empty by default. Caution: The values set for this option override
   the ones set in ``[testenv]``.
 
+
 Flake8 options
 ``````````````
 
@@ -524,6 +528,7 @@ ignore-bad-ideas
   Ignore bad idea files/directories matching these patterns. This option has to
   be a list of strings.
 
+
 Isort options
 `````````````
 
@@ -563,6 +568,7 @@ additional-sources
 additional-config
   Additional options for the ``[isort]`` section.  This option has to be a
   list of strings.
+
 
 GitHub Actions options
 ``````````````````````
@@ -626,6 +632,7 @@ require-cffi
   is needed for some packages to circumvent build problems on MacOS. This
   option has to be a boolean (true or false).
 
+
 zest.releaser options
 `````````````````````
 
@@ -636,6 +643,7 @@ options
   (Additional) options used to configure ``zest.releaser``. This option has to
   be a list of strings and defaults to an empty list.
 
+
 git options
 ```````````
 
@@ -645,6 +653,7 @@ ignore
   Additional lines to be added to the ``.gitignore`` file. This option has to
   be a list of strings and defaults to an empty list.
 
+
 pre-commit options
 ``````````````````
 
@@ -653,6 +662,7 @@ The corresponding section is named: ``[pre-commit]``.
 teyit-exclude
   Regex for files to be hidden from teyit. It fails on files containing syntax
   errors. This option has to be a string and is omitted when not defined.
+
 
 ReadTheDocs options
 ```````````````````
@@ -664,49 +674,53 @@ build-extra
   ReadTheDocs configuration file ``.readthedocs.yaml``. This option has to
   be a list of strings and defaults to an empty list.
 
+
 Hints
 -----
 
-* Calling ``config-package.py`` again updates a previously created pull request
-  if there are changes made in the files ``config-package.py`` touches.
+* Calling ``config-package`` again updates a previously created pull request
+  if there are changes made in the files ``config-package`` touches.
 
 * Call ``bin/check-python-versions <path-to-package> -h`` to see how to fix
   version mismatches in the *lint* tox environment.
 
+
 Updating to the currently supported Python versions
 ---------------------------------------------------
 
-There is `update-python-support.py` which can be used to update a repository to
+There is a script `update-python-support` for updating a repository to
 the currently supported Python versions as defined in ``shared/package.py``.
+
 
 Usage
 +++++
 
 To update a repository to the currently supported Python versions call::
 
-    $ bin/python update-python-support.py <path-to-package>
+    $ bin/update-python-support <path-to-package>
 
 It supports a parameter ``--interactive`` to gather user input for its changes
 and not automatically commit them. It also supports a parameter ``--no-commit``
 that prevents automatic commits but attempts to cut down on interactively
 asking for user input. Some of that still happens due to limitations
-of the ``zest.releaser`` scripts used by ``update-python-support.py``.
+of the ``zest.releaser`` scripts used by ``update-python-support``.
 
 
 Calling a script on multiple repositories
 -----------------------------------------
 
-The ``config-package.py`` script only runs on a single repository. To update
-multiple repositories at once you can use ``multi-call.py``. It runs a given
+The ``config-package`` script only runs on a single repository. To update
+multiple repositories at once you can use ``multi-call``. It runs a given
 script on all repositories listed in a ``packages.txt`` file.
+
 
 Usage
 +++++
 
 To run a script on all packages listed in a ``packages.txt`` file call
-``multi-call.py`` the following way::
+``multi-call`` the following way::
 
-    $ bin/python multi-call.py <name-of-the-script.py> <path-to-packages.txt> <path-to-clones> <arguments-for-script>
+    $ bin/multi-call <name-of-the-script> <path-to-packages.txt> <path-to-clones> <arguments-for-script>
 
 See ``--help`` for details.
 
@@ -733,6 +747,7 @@ automatically disables Actions. They can be re-enabled manually per repository.
 There is a script to do this for all repositories. It does no harm if Actions
 is already enabled for a repository.
 
+
 Preparation
 +++++++++++
 
@@ -743,9 +758,10 @@ Preparation
   - ``gh auth login``
   - It is probably enough to do it once.
 
+
 Usage
 +++++
 
 To run the script just call it::
 
-    $ bin/python re-enable-actions.py
+    $ bin/re-enable-actions

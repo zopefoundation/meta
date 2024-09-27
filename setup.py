@@ -80,7 +80,9 @@ setup(
     entry_points={
         'console_scripts': [
             'config-package=zope.meta.config_package:main',
-            'set_branch_protection_rules='
+            'multi-call=zope.meta.multi_call:main',
+            're-enable-actions=zope.meta.re_enable_actions:main',
+            'set-branch-protection-rules='
             'zope.meta.set_branch_protection_rules:main',
             'update-python-support=zope.meta.update_python_support:main',
         ],

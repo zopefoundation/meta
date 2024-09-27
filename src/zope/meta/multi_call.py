@@ -39,24 +39,25 @@ parser.add_argument(
 args, sub_args = parser.parse_known_args()
 packages = list_packages(args.packages_txt)
 
-for package in packages:
-    print(f'*** Running {args.script.name} on {package} ***')
-    if (args.clones / package).exists():
-        with change_dir(args.clones / package):
-            print('Updating existing checkout …')
-            call('git', 'stash')
-            call('git', 'checkout', 'master')
-            call('git', 'pull')
-    else:
-        with change_dir(args.clones):
-            print('Cloning repository …')
-            call('git', 'clone',
-                 f'https://github.com/zopefoundation/{package}')
-
-    call_args = [
-        sys.executable,
-        args.script,
-        args.clones / package
-    ]
-    call_args.extend(sub_args)
-    call(*call_args)
+def main():
+    for package in packages:
+        print(f'*** Running {args.script.name} on {package} ***')
+        if (args.clones / package).exists():
+            with change_dir(args.clones / package):
+                print('Updating existing checkout …')
+                call('git', 'stash')
+                call('git', 'checkout', 'master')
+                call('git', 'pull')
+        else:
+            with change_dir(args.clones):
+                print('Cloning repository …')
+                call('git', 'clone',
+                     f'https://github.com/zopefoundation/{package}')
+    
+        call_args = [
+            sys.executable,
+            args.script,
+            args.clones / package
+        ]
+        call_args.extend(sub_args)
+        call(*call_args)

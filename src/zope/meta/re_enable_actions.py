@@ -46,18 +46,19 @@ def run_workflow(base_url, org, repo):
     return True
 
 
-for repo in ALL_REPOS:
-    print(repo)
-    wfs = call(
-        'gh', 'workflow', 'list', '--all', '-R', f'{ORG}/{repo}',
-        capture_output=True).stdout
-    test_line = [x for x in wfs.splitlines() if x.startswith('test')][0]
-    if 'disabled_inactivity' not in test_line:
-        print('    ☑️  already enabled')
-        if args.force_run:
-            run_workflow(base_url, ORG, repo)
-        continue
-    test_id = test_line.split()[-1]
-    call('gh', 'workflow', 'enable', test_id, '-R', f'{ORG}/{repo}')
-    if run_workflow(base_url, ORG, repo):
-        print('    ✅ enabled')
+def main():
+    for repo in ALL_REPOS:
+        print(repo)
+        wfs = call(
+            'gh', 'workflow', 'list', '--all', '-R', f'{ORG}/{repo}',
+            capture_output=True).stdout
+        test_line = [x for x in wfs.splitlines() if x.startswith('test')][0]
+        if 'disabled_inactivity' not in test_line:
+            print('    ☑️  already enabled')
+            if args.force_run:
+                run_workflow(base_url, ORG, repo)
+            continue
+        test_id = test_line.split()[-1]
+        call('gh', 'workflow', 'enable', test_id, '-R', f'{ORG}/{repo}')
+        if run_workflow(base_url, ORG, repo):
+            print('    ✅ enabled')
