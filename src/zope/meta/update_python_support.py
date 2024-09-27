@@ -94,6 +94,7 @@ def main():
                              set(current_python_versions))
 
         non_interactive_params = []
+        python_versions_args = []
         if not args.interactive and args.commit:
             non_interactive_params = ['--no-input']
         else:
@@ -139,12 +140,12 @@ def main():
                 config_package_args.append('--no-commit')
             call(*config_package_args, cwd=cwd_str)
             src = path.resolve() / 'src'
-            py_version_plus = f'--py{OLDEST_PYTHON_VERSION.replace(".", "")}-plus'
+            py_ver_plus = f'--py{OLDEST_PYTHON_VERSION.replace(".", "")}-plus'
             call('find', src, '-name', '*.py', '-exec', bin_dir / 'pyupgrade',
-                 '--py3-plus', py_version_plus, '{}', ';')
+                 '--py3-plus', py_ver_plus, '{}', ';')
             call(bin_dir / 'pyupgrade',
                  '--py3-plus',
-                 py_version_plus,
+                 py_ver_plus,
                  'setup.py',
                  allowed_return_codes=(0, 1))
 
@@ -157,7 +158,8 @@ def main():
                 '*.pyc',
                 '--exclude',
                 '*.so')
-            print('Replace any remaining code that might support legacy Python:')
+            print('Replace any remaining code that might'
+                  ' support legacy Python:')
             call(
                 'egrep',
                 '-rn',
@@ -180,9 +182,8 @@ def main():
                     print('Updated the previously created PR.')
                 else:
                     print(
-                        'Are you logged in via `gh auth login` to automatically'
-                        ' create a PR? (y/N)?',
-                        end=' ')
+                        'Are you logged in via `gh auth login` to'
+                        ' create a PR? (y/N)?', end=' ')
                     if input().lower() == 'y':
                         call('gh', 'pr', 'create', '--fill', '--title',
                              'Update Python version support.')
