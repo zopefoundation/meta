@@ -35,7 +35,7 @@ def get_tox_ini_python_versions(path):
     config.read(path)
     envs = config['tox']['envlist'].split()
     versions = [
-        env.replace('py', '').replace('3', '3.') for env in envs
+        env.replace('py3', '3.') for env in envs
         if env.startswith('py') and env != 'pypy3'
     ]
     return versions
@@ -101,8 +101,10 @@ def main():
 
         if no_longer_supported or not_yet_supported:
             call(bin_dir / 'bumpversion', '--feature', *non_interactive_params)
-        python_versions_args = ['--add=' +
-                                ','.join(supported_python_versions())]
+        else:
+            print('No changes required.')
+            sys.exit(0)
+
         if no_longer_supported:
             for version in sorted(list(no_longer_supported)):
                 call(bin_dir / 'addchangelogentry',
@@ -110,78 +112,82 @@ def main():
                      *non_interactive_params)
             python_versions_args.append(
                 '--drop=' + ','.join(no_longer_supported))
+
         if not_yet_supported:
             for version in sorted(list(not_yet_supported)):
                 call(
                     bin_dir / 'addchangelogentry',
                     f'Add support for Python {version}.',
                     *non_interactive_params)
+            python_versions_args = ['--add=' +
+                                    ','.join(supported_python_versions())]
 
-        call(bin_dir / 'check-python-versions', '--only=setup.py',
-             *python_versions_args)
-        print('Look trough .meta.toml to see if it needs changes.')
-        call(os.environ['EDITOR'], '.meta.toml')
+        if no_longer_supported or not_yet_supported:
+            call(bin_dir / 'check-python-versions', '--only=setup.py',
+                 *python_versions_args)
+            print('Look through .meta.toml to see if it needs changes.')
+            call(os.environ['EDITOR'], '.meta.toml')
 
-        config_package_args = [
-            sys.executable,
-            'config-package.py',
-            path,
-            f'--branch={branch_name}',
-            '--no-push',
-        ]
-        if not args.commit:
-            config_package_args.append('--no-commit')
-        call(*config_package_args, cwd=cwd_str)
-        src = path.resolve() / 'src'
-        py_version_plus = f'--py{OLDEST_PYTHON_VERSION.replace(".", "")}-plus'
-        call('find', src, '-name', '*.py', '-exec', bin_dir / 'pyupgrade',
-             '--py3-plus', py_version_plus, '{}', ';')
-        call(bin_dir / 'pyupgrade',
-             '--py3-plus',
-             py_version_plus,
-             'setup.py',
-             allowed_return_codes=(0, 1))
+            config_package_args = [
+                sys.executable,
+                'config-package.py',
+                path,
+                f'--branch={branch_name}',
+                '--no-push',
+            ]
+            if not args.commit:
+                config_package_args.append('--no-commit')
+            call(*config_package_args, cwd=cwd_str)
+            src = path.resolve() / 'src'
+            py_version_plus = f'--py{OLDEST_PYTHON_VERSION.replace(".", "")}-plus'
+            call('find', src, '-name', '*.py', '-exec', bin_dir / 'pyupgrade',
+                 '--py3-plus', py_version_plus, '{}', ';')
+            call(bin_dir / 'pyupgrade',
+                 '--py3-plus',
+                 py_version_plus,
+                 'setup.py',
+                 allowed_return_codes=(0, 1))
 
-        excludes = (
-            '--exclude-dir',
-            '__pycache__',
-            '--exclude-dir',
-            '*.egg-info',
-            '--exclude',
-            '*.pyc',
-            '--exclude',
-            '*.so')
-        print('Replace any remaining code that might support legacy Python:')
-        call(
-            'egrep',
-            '-rn',
-            f'{"|".join(no_longer_supported)}|sys.version|PY3|Py3|Python 3'
-            '|__unicode__|ImportError',
-            src,
-            *excludes,
-            allowed_return_codes=(
-                0,
-                1))
-        wait_for_accept()
-        tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
-        call(tox_path, '-p', 'auto')
-        if args.commit:
-            print('Adding, committing and pushing all changes ...')
-            call('git', 'add', '.')
-            call('git', 'commit', '-m', 'Update Python version support.')
-            call('git', 'push', '--set-upstream', 'origin', branch_name)
-            if updating:
-                print('Updated the previously created PR.')
-            else:
-                print(
-                    'Are you logged in via `gh auth login` to automatically'
-                    ' create a PR? (y/N)?',
-                    end=' ')
-                if input().lower() == 'y':
-                    call('gh', 'pr', 'create', '--fill', '--title',
-                         'Update Python version support.')
+            excludes = (
+                '--exclude-dir',
+                '__pycache__',
+                '--exclude-dir',
+                '*.egg-info',
+                '--exclude',
+                '*.pyc',
+                '--exclude',
+                '*.so')
+            print('Replace any remaining code that might support legacy Python:')
+            call(
+                'egrep',
+                '-rn',
+                f'{"|".join(no_longer_supported)}|sys.version|PY3|Py3|Python 3'
+                '|__unicode__|ImportError',
+                src,
+                *excludes,
+                allowed_return_codes=(
+                    0,
+                    1))
+            wait_for_accept()
+            tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
+            call(tox_path, '-p', 'auto')
+            if args.commit:
+                print('Adding, committing and pushing all changes ...')
+                call('git', 'add', '.')
+                call('git', 'commit', '-m', 'Update Python version support.')
+                call('git', 'push', '--set-upstream', 'origin', branch_name)
+                if updating:
+                    print('Updated the previously created PR.')
                 else:
-                    print('If everything went fine up to here:')
-                    print('Create a PR, using the URL shown above.')
-        else:
-            print('Applied all changes. Please check and commit manually.')
+                    print(
+                        'Are you logged in via `gh auth login` to automatically'
+                        ' create a PR? (y/N)?',
+                        end=' ')
+                    if input().lower() == 'y':
+                        call('gh', 'pr', 'create', '--fill', '--title',
+                             'Update Python version support.')
+                    else:
+                        print('If everything went fine up to here:')
+                        print('Create a PR, using the URL shown above.')
+            else:
+                print('Applied all changes. Please check and commit manually.')
