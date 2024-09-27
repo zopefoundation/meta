@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Setup for zope.metalib package
+"""Setup for zope.meta package
 """
 
 import os
@@ -26,7 +26,7 @@ def read(*rnames):
 
 
 setup(
-    name='zope.metalib',
+    name='zope.meta',
     version='1.0.dev0',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
@@ -36,6 +36,7 @@ setup(
         + '\n\n' +
         read('CHANGES.rst')
     ),
+    long_description_content_type='text/x-rst',
     keywords="zope packaging",
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -50,29 +51,38 @@ setup(
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
         'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
         'Natural Language :: English',
         'Operating System :: OS Independent',
     ],
     license='ZPL 2.1',
-    url='https://github.com/zopefoundation/zope.metalib',
+    url='https://github.com/zopefoundation/zope.meta',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['zope'],
     install_requires=[
         'setuptools',
+        'check-python-versions',
         'Jinja2',
         'packaging',
         'pyupgrade',
         'requests',
         'tomlkit',
+        'tox',
         'zest.releaser',
-        ],
+    ],
     python_requires='>=3.8',
     include_package_data=True,
     zip_safe=False,
     extras_require={
         'test': ['zope.testrunner'],
         'docs': ['Sphinx', 'sphinx_rtd_theme'],
+    },
+    entry_points={
+        'console_scripts': [
+            'config-package=zope.meta.config_package:main',
+            'set_branch_protection_rules='
+            'zope.meta.set_branch_protection_rules:main',
+            'update-python-support=zope.meta.update_python_support:main',
+        ],
     },
 )

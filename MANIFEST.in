@@ -15,3 +15,7 @@ recursive-include docs Makefile
 recursive-include src *.py
 include *.yaml
 recursive-include docs *.bat
+recursive-include src *.j2
+recursive-include src *.md
+recursive-include src *.sh
+recursive-include src *.txt

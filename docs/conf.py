@@ -5,6 +5,7 @@
 
 import datetime
 
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 year = datetime.datetime.now().year
@@ -23,7 +24,6 @@ extensions = [
 
 # templates_path = ['_templates']
 exclude_patterns = []
-
 
 
 # -- Options for HTML output -------------------------------------------------

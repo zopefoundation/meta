@@ -7,17 +7,18 @@ import tempfile
 import tomllib
 
 import requests
-from shared.call import abort
-from shared.call import call
-from shared.packages import ALL_REPOS
-from shared.packages import MANYLINUX_AARCH64
-from shared.packages import MANYLINUX_I686
-from shared.packages import MANYLINUX_PYTHON_VERSION
-from shared.packages import MANYLINUX_X86_64
-from shared.packages import NEWEST_PYTHON_VERSION
-from shared.packages import OLDEST_PYTHON_VERSION
-from shared.packages import ORG
-from shared.packages import PYPY_VERSION
+
+from .shared.call import abort
+from .shared.call import call
+from .shared.packages import ALL_REPOS
+from .shared.packages import MANYLINUX_AARCH64
+from .shared.packages import MANYLINUX_I686
+from .shared.packages import MANYLINUX_PYTHON_VERSION
+from .shared.packages import MANYLINUX_X86_64
+from .shared.packages import NEWEST_PYTHON_VERSION
+from .shared.packages import OLDEST_PYTHON_VERSION
+from .shared.packages import ORG
+from .shared.packages import PYPY_VERSION
 
 
 BASE_URL = f'https://raw.githubusercontent.com/{ORG}'
@@ -148,7 +149,7 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
     return True
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(
         description='Set the branch protection rules for all known packages.\n'
                     'Prerequsites: `gh auth login`.')

@@ -19,25 +19,26 @@ from functools import cached_property
 
 import jinja2
 import tomlkit
-from set_branch_protection_rules import set_branch_protection
-from shared.call import abort
-from shared.call import call
-from shared.git import get_branch_name
-from shared.git import get_commit_id
-from shared.git import git_branch
-from shared.packages import FUTURE_PYTHON_VERSION
-from shared.packages import MANYLINUX_AARCH64
-from shared.packages import MANYLINUX_I686
-from shared.packages import MANYLINUX_PYTHON_VERSION
-from shared.packages import MANYLINUX_X86_64
-from shared.packages import NEWEST_PYTHON_VERSION
-from shared.packages import OLDEST_PYTHON_VERSION
-from shared.packages import PYPY_VERSION
-from shared.packages import SETUPTOOLS_VERSION_SPEC
-from shared.packages import get_pyproject_toml_defaults
-from shared.packages import parse_additional_config
-from shared.packages import supported_python_versions
-from shared.path import change_dir
+
+from .set_branch_protection_rules import set_branch_protection
+from .shared.call import abort
+from .shared.call import call
+from .shared.git import get_branch_name
+from .shared.git import get_commit_id
+from .shared.git import git_branch
+from .shared.packages import FUTURE_PYTHON_VERSION
+from .shared.packages import MANYLINUX_AARCH64
+from .shared.packages import MANYLINUX_I686
+from .shared.packages import MANYLINUX_PYTHON_VERSION
+from .shared.packages import MANYLINUX_X86_64
+from .shared.packages import NEWEST_PYTHON_VERSION
+from .shared.packages import OLDEST_PYTHON_VERSION
+from .shared.packages import PYPY_VERSION
+from .shared.packages import SETUPTOOLS_VERSION_SPEC
+from .shared.packages import get_pyproject_toml_defaults
+from .shared.packages import parse_additional_config
+from .shared.packages import supported_python_versions
+from .shared.path import change_dir
 
 
 FUTURE_PYTHON_SHORTVERSION = FUTURE_PYTHON_VERSION.replace('.', '')
@@ -633,7 +634,7 @@ class PackageConfiguration:
         self.gitignore()
         self.pre_commit_config_yaml()
         self.copy_with_meta(
-            'editorconfig', self.path / '.editorconfig', self.config_type)
+            'editorconfig.txt', self.path / '.editorconfig', self.config_type)
         self.copy_with_meta(
             'CONTRIBUTING.md', self.path / 'CONTRIBUTING.md', self.config_type,
             meta_hint=META_HINT_MARKDOWN)
@@ -735,6 +736,3 @@ def main():
 
     package = PackageConfiguration(args)
     package.configure()
-
-
-main()
