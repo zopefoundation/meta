@@ -148,7 +148,7 @@ def handle_command_line_arguments():
 
 
 def prepend_space(text):
-    """Prepend `text` which a space if not empty.
+    """Prepend `text` with a space if not empty.
 
     This prevents trailing whitespace for empty values.
     """

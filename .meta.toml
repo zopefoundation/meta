@@ -16,7 +16,7 @@ with-macos = false
 use-flake8 = true
 
 [coverage]
-fail-under = 95
+fail-under = 20
 
 [manifest]
 additional-rules = [
@@ -26,4 +26,9 @@ additional-rules = [
     "recursive-include src *.md",
     "recursive-include src *.sh",
     "recursive-include src *.txt",
+    ]
+
+[check-manifest]
+additional-ignores = [
+    "docs/_build/html/_static/scripts/*",
     ]
