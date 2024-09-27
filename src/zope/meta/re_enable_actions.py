@@ -23,17 +23,6 @@ base_url = f'https://github.com/{ORG}'
 BASE_PATH = pathlib.Path(__file__).parent
 
 
-parser = argparse.ArgumentParser(
-    description='Re-enable GitHub Actions for all repos in a packages.txt'
-                ' files.')
-parser.add_argument(
-    '--force-run',
-    help='Run workflow even it is already enabled.',
-    action='store_true')
-
-args = parser.parse_args()
-
-
 def run_workflow(base_url, org, repo):
     """Manually start the tests.yml workflow of a repository."""
     result = call('gh', 'workflow', 'run', 'tests.yml', '-R', f'{org}/{repo}')
@@ -47,6 +36,16 @@ def run_workflow(base_url, org, repo):
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description='Re-enable GitHub Actions for all repos in a packages.txt'
+                    ' files.')
+    parser.add_argument(
+        '--force-run',
+        help='Run workflow even it is already enabled.',
+        action='store_true')
+
+    args = parser.parse_args()
+
     for repo in ALL_REPOS:
         print(repo)
         wfs = call(

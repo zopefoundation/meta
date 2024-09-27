@@ -58,8 +58,8 @@ setup(
     url='https://github.com/zopefoundation/zope.meta',
     project_urls={
         'Documentation': 'https://zopemeta.readthedocs.io',
-        'Issue Tracker': 'https://github.com/zopefoundation/meta/issues',
-        'Sources': 'https://github.com/zopefoundation/meta',
+        'Issue Tracker': 'https://github.com/zopefoundation/zope.meta/issues',
+        'Sources': 'https://github.com/zopefoundation/zope.meta',
     },
     packages=find_packages('src'),
     package_dir={'': 'src'},
@@ -87,8 +87,10 @@ setup(
             'config-package=zope.meta.config_package:main',
             'multi-call=zope.meta.multi_call:main',
             're-enable-actions=zope.meta.re_enable_actions:main',
-            'set-branch-protection-rules='
-            'zope.meta.set_branch_protection_rules:main',
+            (
+                'set-branch-protection-rules='
+                'zope.meta.set_branch_protection_rules:main'
+            ),
             'update-python-support=zope.meta.update_python_support:main',
         ],
     },

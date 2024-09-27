@@ -1,6 +1,6 @@
 # 
 # Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/c-code
+# https://github.com/zopefoundation/meta/tree/master/config/pure-python
 
 [build-system]
 requires = ["setuptools<74"]

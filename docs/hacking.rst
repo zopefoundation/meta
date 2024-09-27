@@ -82,11 +82,7 @@ cover the code:
    $ coverage report -i -m --fail-under=100
    Name                                 Stmts   Miss Branch BrPart    Cover   Missing
    ----------------------------------------------------------------------------------
-   src/zope/meta/__init__.py       4      0      0      0  100.00%
-   src/zope/meta/message.py       52      0     18      0  100.00%
-   src/zope/meta/tests.py        189      0     38      0  100.00%
-   ----------------------------------------------------------------------------------
-   TOTAL                                  245      0     56      0  100.00%
+   ...
 
 
 Building the documentation
@@ -156,30 +152,10 @@ as well as installing ``tox``:
    Running zope.testrunner.layer.UnitTests tests:
      Set up zope.testrunner.layer.UnitTests in 0.000 seconds.
      Running:
-   .........................................
-     Ran 41 tests with 0 failures, 0 errors, 0 skipped in 0.003 seconds.
-   Tearing down left over layers:
-     Tear down zope.testrunner.layer.UnitTests in 0.000 seconds.
+   .....
 
 Running ``tox`` with no arguments runs all the configured environments,
-including building the docs and testing their snippets:
-
-.. code-block:: sh
-
-   $ tox
-   lint: commands[0]> isort --check-only --diff /home/tseaver/projects/Zope/Z3/zope.meta/src /home/tseaver/projects/Zope/Z3/zope.meta/setup.py
-   lint: commands[1]> flake8 src setup.py
-     lint: OK (0.50=setup[0.02]+cmd[0.19,0.28] seconds)
-     congratulations :) (0.73 seconds)
-   ...
-   __________________________________ summary ____________________________________
-   lint: commands succeeded
-   py37: commands succeeded
-   ...
-   pypy3: commands succeeded
-   docs: commands succeeded
-   coverage: commands succeeded
-   congratulations :)
+including building the docs and testing their snippets.
 
 
 Contributing to :mod:`zope.meta`
