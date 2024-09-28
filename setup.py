@@ -29,7 +29,7 @@ setup(
     name='zope.meta',
     version='1.0.dev0',
     author='Zope Foundation and Contributors',
-    author_email='zope-dev@zope.org',
+    author_email='zope-dev@zope.dev',
     description='Helper functions for package management',
     long_description=(
         read('README.rst')

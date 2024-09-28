@@ -177,9 +177,16 @@ Sharing Your Changes
    or bug fixes, although it is possible that you may have tested your
    new code by updating existing tests.
 
-If have made a change you would like to share, the best route is to fork
-the Githb repository, check out your fork, make your changes on a branch
-in your fork, and push it.  You can then submit a pull request from your
-branch:
+   Contributions to Plone/Zope Foundation packages require contributor status.
+   Please see https://www.zope.dev/developer/becoming-a-committer.html.
+
+If you have made changes you would like to share, the best route is to create a
+branch in the GitHub repository and push changes there, which requires
+`contributor status 
+<https://www.zope.dev/developer/becoming-a-committer.html>`_. You can
+also fork the GitHub repository, check out your fork, make your changes on a
+branch in your fork, and then push them. A private fork makes it harder for
+others and the package maintainers to work with your changes, so it is
+discouraged. Either way, you can then submit a pull request from your branch:
 
   https://github.com/zopefoundation/zope.meta/pulls
