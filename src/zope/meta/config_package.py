@@ -112,7 +112,7 @@ def handle_command_line_arguments():
         dest='oldest_python',
         default=OLDEST_PYTHON_VERSION,
         help='Oldest supported Python version. Defaults to'
-             f'Python {OLDEST_PYTHON_VERSION}')
+             f'Python {OLDEST_PYTHON_VERSION}.')
     parser.add_argument(
         '--with-docs',
         # people (me) use --with-sphinx and accidentally

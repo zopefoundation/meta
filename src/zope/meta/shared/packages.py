@@ -153,9 +153,6 @@ def supported_python_versions(oldest_version=OLDEST_PYTHON_VERSION,
     containing all versions from oldest to newest that can be iterated over in
     the templates.
 
-    Args:
-        oldest_version (str): The oldest supported Python version, e.g. '3.8'.
-
     Kwargs:
         oldest_version (str):
             The oldest supported Python version, e.g. '3.8'.
