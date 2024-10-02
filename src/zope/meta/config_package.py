@@ -19,6 +19,8 @@ from functools import cached_property
 
 import jinja2
 import tomlkit
+from packaging.version import InvalidVersion
+from packaging.version import parse as parse_version
 
 from .set_branch_protection_rules import set_branch_protection
 from .shared.call import abort
@@ -105,6 +107,12 @@ def handle_command_line_arguments():
         default=False,
         help='Activate support for a future non-final Python version if not'
         ' already configured in .meta.toml.')
+    parser.add_argument(
+        '--oldest-python',
+        dest='oldest_python',
+        default=OLDEST_PYTHON_VERSION,
+        help='Oldest supported Python version. Defaults to'
+             f'Python {OLDEST_PYTHON_VERSION}')
     parser.add_argument(
         '--with-docs',
         # people (me) use --with-sphinx and accidentally
@@ -195,6 +203,21 @@ class PackageConfiguration:
             raise ValueError(
                 'Configuration type not set. '
                 'Please use `--type` to select it.')
+        return value
+
+    @cached_property
+    def oldest_python(self):
+        value = (self.meta_cfg['python'].get('oldest-python') or
+                 self.args.oldest_python)
+        try:
+            version = parse_version(value)
+        except InvalidVersion:
+            raise ValueError(f'Invalid value {value} for oldest Python.')
+
+        if version > parse_version(NEWEST_PYTHON_VERSION):
+            raise ValueError('Oldest Python version cannot be higher than'
+                             ' newest supported Python')
+
         return value
 
     @cached_property
@@ -348,7 +371,7 @@ class PackageConfiguration:
             "pre-commit-config.yaml.j2",
             self.path / ".pre-commit-config.yaml",
             self.config_type,
-            oldest_python_version=OLDEST_PYTHON_VERSION.replace(".", ""),
+            oldest_python_version=self.oldest_python.replace(".", ""),
             teyit_exclude=teyit_exclude,
         )
 

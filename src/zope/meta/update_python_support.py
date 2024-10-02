@@ -84,14 +84,20 @@ def main():
         with open('.meta.toml', 'rb') as meta_f:
             meta_toml = collections.defaultdict(dict, **tomlkit.load(meta_f))
         config_type = meta_toml['meta']['template']
+        oldest_python_version = meta_toml['python'].get('oldest-python',
+                                                        OLDEST_PYTHON_VERSION)
         branch_name = get_branch_name(args.branch_name, config_type)
         updating = git_branch(branch_name)
 
         current_python_versions = get_tox_ini_python_versions('tox.ini')
-        no_longer_supported = (set(current_python_versions) -
-                               set(supported_python_versions()))
-        not_yet_supported = (set(supported_python_versions()) -
-                             set(current_python_versions))
+        no_longer_supported = (
+            set(current_python_versions) -
+            set(supported_python_versions(oldest_python_version))
+        )
+        not_yet_supported = (
+            set(supported_python_versions(oldest_python_version)) -
+            set(current_python_versions)
+        )
 
         non_interactive_params = []
         python_versions_args = []
@@ -120,8 +126,10 @@ def main():
                     bin_dir / 'addchangelogentry',
                     f'Add support for Python {version}.',
                     *non_interactive_params)
-            python_versions_args = ['--add=' +
-                                    ','.join(supported_python_versions())]
+            python_versions_args = [
+                '--add=' +
+                ','.join(supported_python_versions(oldest_python_version))
+            ]
 
         if no_longer_supported or not_yet_supported:
             call(bin_dir / 'check-python-versions', '--only=setup.py',
@@ -140,7 +148,7 @@ def main():
                 config_package_args.append('--no-commit')
             call(*config_package_args, cwd=cwd_str)
             src = path.resolve() / 'src'
-            py_ver_plus = f'--py{OLDEST_PYTHON_VERSION.replace(".", "")}-plus'
+            py_ver_plus = f'--py{oldest_python_version.replace(".", "")}-plus'
             call('find', src, '-name', '*.py', '-exec', bin_dir / 'pyupgrade',
                  '--py3-plus', py_ver_plus, '{}', ';')
             call(bin_dir / 'pyupgrade',
