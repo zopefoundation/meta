@@ -113,19 +113,19 @@ def main():
             sys.exit(0)
 
         if no_longer_supported:
-            for version in sorted(list(no_longer_supported)):
-                call(bin_dir / 'addchangelogentry',
-                     f'Drop support for Python {version}.',
-                     *non_interactive_params)
+            version_spec = ', '.join(sorted(no_longer_supported))
+            call(bin_dir / 'addchangelogentry',
+                 f'Drop support for Python {version_spec}.',
+                 *non_interactive_params)
             python_versions_args.append(
                 '--drop=' + ','.join(no_longer_supported))
 
         if not_yet_supported:
-            for version in sorted(list(not_yet_supported)):
-                call(
-                    bin_dir / 'addchangelogentry',
-                    f'Add support for Python {version}.',
-                    *non_interactive_params)
+            version_spec = ', '.join(sorted(not_yet_supported))
+            call(
+                bin_dir / 'addchangelogentry',
+                f'Add support for Python {version_spec}.',
+                *non_interactive_params)
             python_versions_args = [
                 '--add=' +
                 ','.join(supported_python_versions(oldest_python_version))
@@ -138,8 +138,7 @@ def main():
             call(os.environ['EDITOR'], '.meta.toml')
 
             config_package_args = [
-                sys.executable,
-                'config-package.py',
+                bin_dir / 'config-package',
                 path,
                 f'--branch={branch_name}',
                 '--no-push',
