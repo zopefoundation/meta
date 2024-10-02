@@ -1,8 +1,32 @@
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/pure-python
+*.dll
+*.egg-info/
+*.profraw
+*.pyc
+*.pyo
+*.so
+.coverage
+.coverage.*
+.eggs/
+.installed.cfg
+.mr.developer.cfg
+.tox/
+.vscode/
 __pycache__/
-config/bin/
-config/lib/
-config/lib64/
-config/pyvenv.cfg
-
-# lib64 is a symlink on Ubuntu, so we need it without the trailing slash
-config/lib64
+bin/
+build/
+coverage.xml
+develop-eggs/
+develop/
+dist/
+docs/_build
+eggs/
+etc/
+lib/
+lib64
+log/
+parts/
+pyvenv.cfg
+testing.log
+var/

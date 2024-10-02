@@ -208,3 +208,5 @@ zope.contentprovider
 z3c.jbot
 fanstatic
 zope.pytestlayer
+zope.meta
+meta

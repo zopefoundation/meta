@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
-from shared.call import abort
-from shared.call import call
-from shared.packages import ALL_REPOS
-from shared.packages import MANYLINUX_AARCH64
-from shared.packages import MANYLINUX_I686
-from shared.packages import MANYLINUX_PYTHON_VERSION
-from shared.packages import MANYLINUX_X86_64
-from shared.packages import NEWEST_PYTHON_VERSION
-from shared.packages import OLDEST_PYTHON_VERSION
-from shared.packages import ORG
-from shared.packages import PYPY_VERSION
 import argparse
 import json
 import os
 import pathlib
-import requests
 import tempfile
-import tomllib
+from typing import Optional
+
+import requests
+import tomlkit
+
+from .shared.call import abort
+from .shared.call import call
+from .shared.packages import ALL_REPOS
+from .shared.packages import MANYLINUX_AARCH64
+from .shared.packages import MANYLINUX_I686
+from .shared.packages import MANYLINUX_PYTHON_VERSION
+from .shared.packages import MANYLINUX_X86_64
+from .shared.packages import NEWEST_PYTHON_VERSION
+from .shared.packages import OLDEST_PYTHON_VERSION
+from .shared.packages import ORG
+from .shared.packages import PYPY_VERSION
 
 
 BASE_URL = f'https://raw.githubusercontent.com/{ORG}'
@@ -39,7 +42,8 @@ def _call_gh(
         allowed_return_codes=allowed_return_codes)
 
 
-def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
+def set_branch_protection(
+        repo: str, meta_path: Optional[pathlib.Path] = None) -> bool:
     result = _call_gh(
         'GET', 'protection/required_pull_request_reviews', repo,
         allowed_return_codes=(0, 1))
@@ -60,10 +64,10 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
     if meta_path is None:
         response = requests.get(
             f'{BASE_URL}/{repo}/{DEFAULT_BRANCH}/.meta.toml', timeout=30)
-        meta_toml = tomllib.loads(response.text)
+        meta_toml = tomlkit.loads(response.text)
     else:
         with open(meta_path) as f:
-            meta_toml = tomllib.loads(f.read())
+            meta_toml = tomlkit.load(f)
     template = meta_toml['meta']['template']
     with_docs = meta_toml['python'].get('with-docs', False)
     with_pypy = meta_toml['python']['with-pypy']
@@ -147,7 +151,7 @@ def set_branch_protection(repo: str, meta_path: pathlib.Path | None) -> bool:
     return True
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(
         description='Set the branch protection rules for all known packages.\n'
                     'Prerequsites: `gh auth login`.')
