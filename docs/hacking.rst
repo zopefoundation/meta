@@ -8,19 +8,19 @@ Getting the Code
 The main repository for :mod:`zope.meta` is in the Zope Foundation
 Github repository:
 
-  https://github.com/zopefoundation/zope.meta
+  https://github.com/zopefoundation/meta
 
 You can get a read-only checkout from there:
 
 .. code-block:: sh
 
-   $ git clone https://github.com/zopefoundation/zope.meta.git
+   $ git clone https://github.com/zopefoundation/meta.git
 
 or fork it and get a writeable checkout of your fork:
 
 .. code-block:: sh
 
-   $ git clone git@github.com/jrandom/zope.meta.git
+   $ git clone git@github.com/jrandom/meta.git
 
 
 Working in a Python virtual environment
@@ -163,7 +163,7 @@ Submitting a Bug Report
 
 :mod:`zope.meta` tracks its bugs on Github:
 
-  https://github.com/zopefoundation/zope.meta/issues
+  https://github.com/zopefoundation/meta/issues
 
 Please submit bug reports and feature requests there.
 
@@ -189,4 +189,4 @@ branch in your fork, and then push them. A private fork makes it harder for
 others and the package maintainers to work with your changes, so it is
 discouraged. Either way, you can then submit a pull request from your branch:
 
-  https://github.com/zopefoundation/zope.meta/pulls
+  https://github.com/zopefoundation/meta/pulls

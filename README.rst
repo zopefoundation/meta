@@ -5,11 +5,11 @@
     :target: https://pypi.python.org/pypi/zope.meta/
     :alt: Latest Version
 
-.. image:: https://github.com/zopefoundation/zope.meta/actions/workflows/tests.yml/badge.svg
-    :target: https://github.com/zopefoundation/zope.meta/actions/workflows/tests.yml
+.. image:: https://github.com/zopefoundation/meta/actions/workflows/tests.yml/badge.svg
+    :target: https://github.com/zopefoundation/meta/actions/workflows/tests.yml
 
-.. image:: https://coveralls.io/repos/github/zopefoundation/zope.meta/badge.svg?branch=master
-    :target: https://coveralls.io/github/zopefoundation/zope.meta?branch=master
+.. image:: https://coveralls.io/repos/github/zopefoundation/meta/badge.svg?branch=master
+    :target: https://coveralls.io/github/zopefoundation/meta?branch=master
         
 .. image:: https://readthedocs.org/projects/zopemeta/badge/?version=latest
     :target: https://zopemeta.readthedocs.io/en/latest/?badge=latest
