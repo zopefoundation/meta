@@ -414,7 +414,7 @@ class PackageConfiguration:
                 with_future_python=self.with_future_python,
                 future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
                 supported_python_versions=supported_python_versions(
-                    short_version=True),
+                    self.oldest_python, short_version=True),
                 stop_at=stop_at,
             )
             (self.path / '.manylinux-install.sh').chmod(0o755)
@@ -500,7 +500,7 @@ class PackageConfiguration:
             setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
             future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
             supported_python_versions=supported_python_versions(
-                short_version=True),
+                self.oldest_python, short_version=True),
         )
 
     def tests_yml(self):
@@ -519,8 +519,10 @@ class PackageConfiguration:
         require_cffi = self.meta_cfg.get(
             'c-code', {}).get('require-cffi', False)
         py_version_matrix = [
-            x for x in zip(supported_python_versions(short_version=False),
-                           supported_python_versions(short_version=True))]
+            x for x in zip(supported_python_versions(self.oldest_python,
+                                                     short_version=False),
+                           supported_python_versions(self.oldest_python,
+                                                     short_version=True))]
         self.copy_with_meta(
             'tests.yml.j2',
             workflows / 'tests.yml',
