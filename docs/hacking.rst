@@ -121,8 +121,8 @@ its ``tox.ini`` file:
 - The ``lint`` environment runs various "code quality" tests on the source,
   and fails on any errors they find.
 
-- The ``py38``, ``py39``, ``py310``, ``py311``, ``py312``, ``py313``, and
-  ``pypy3`` environments each build an environment from the corresponding
+- The ``pyXX`` and ``pypy3`` environments each build an environment from the
+  corresponding
   Python version, install :mod:`zope.meta` and testing dependencies,
   and runs the tests.  It then installs ``Sphinx`` and runs the doctest
   snippets.
