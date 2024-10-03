@@ -145,7 +145,8 @@ def parse_additional_config(cfg):
     return data
 
 
-def supported_python_versions(short_version=False):
+def supported_python_versions(oldest_version=OLDEST_PYTHON_VERSION,
+                              short_version=False):
     """Create a list containing all supported Python versions
 
     Uses the configured oldest and newest Python versions to compute a list
@@ -153,12 +154,14 @@ def supported_python_versions(short_version=False):
     the templates.
 
     Kwargs:
+        oldest_version (str):
+            The oldest supported Python version, e.g. '3.8'.
 
         short_version (bool):
-            Return short versions like "313" instead of "3.13"
+            Return short versions like "313" instead of "3.13". Default False.
     """
     minor_versions = []
-    oldest_python = parse_version(OLDEST_PYTHON_VERSION)
+    oldest_python = parse_version(oldest_version)
     newest_python = parse_version(NEWEST_PYTHON_VERSION)
     for minor in range(oldest_python.minor, newest_python.minor + 1):
         minor_versions.append(minor)

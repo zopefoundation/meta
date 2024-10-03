@@ -23,7 +23,6 @@ from .shared.packages import PYPY_VERSION
 
 
 BASE_URL = f'https://raw.githubusercontent.com/{ORG}'
-OLDEST_PYTHON = f'py{OLDEST_PYTHON_VERSION.replace(".", "")}'
 NEWEST_PYTHON = f'py{NEWEST_PYTHON_VERSION.replace(".", "")}'
 DEFAULT_BRANCH = 'master'
 
@@ -71,6 +70,9 @@ def set_branch_protection(
     template = meta_toml['meta']['template']
     with_docs = meta_toml['python'].get('with-docs', False)
     with_pypy = meta_toml['python']['with-pypy']
+    oldest_python_version = meta_toml['python'].get('oldest-python',
+                                                    OLDEST_PYTHON_VERSION)
+    oldest_python = oldest_python_version.replace('.', '')
     with_windows = meta_toml['python']['with-windows']
     with_macos = meta_toml['python']['with-macos']
     required = ['linting']
@@ -79,9 +81,9 @@ def set_branch_protection(
             f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_AARCH64})',
             f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_I686})',
             f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_X86_64})',
-            f'test ({OLDEST_PYTHON_VERSION}, macos-latest)',
+            f'test ({oldest_python_version}, macos-latest)',
             f'test ({NEWEST_PYTHON_VERSION}, macos-latest)',
-            f'test ({OLDEST_PYTHON_VERSION}, ubuntu-latest)',
+            f'test ({oldest_python_version}, ubuntu-latest)',
             f'test ({NEWEST_PYTHON_VERSION}, ubuntu-latest)',
             'coveralls_finish',
         ])
@@ -93,23 +95,23 @@ def set_branch_protection(
             required.append(f'test (pypy-{PYPY_VERSION}, windows-latest)')
         if with_windows:
             required.extend([
-                f'test ({OLDEST_PYTHON_VERSION}, windows-latest)',
+                f'test ({oldest_python_version}, windows-latest)',
                 f'test ({NEWEST_PYTHON_VERSION}, windows-latest)',
             ])
     elif with_windows or with_macos:
         required.extend([
             'ubuntu-coverage',
-            f'ubuntu-{OLDEST_PYTHON}',
+            f'ubuntu-{oldest_python}',
             f'ubuntu-{NEWEST_PYTHON}',
         ])
         if with_windows:
             required.extend([
-                f'windows-{OLDEST_PYTHON}',
+                f'windows-{oldest_python}',
                 f'windows-{NEWEST_PYTHON}',
             ])
         if with_macos:
             required.extend([
-                f'macos-{OLDEST_PYTHON}',
+                f'macos-{oldest_python}',
                 f'macos-{NEWEST_PYTHON}',
             ])
         if with_pypy:
@@ -120,7 +122,7 @@ def set_branch_protection(
         if with_docs:
             required.append('ubuntu-docs')
     else:  # default for most packages
-        required.extend([OLDEST_PYTHON, NEWEST_PYTHON])
+        required.extend([oldest_python, NEWEST_PYTHON])
         if template != 'toolkit':
             required.append('coverage')
         if with_docs:

@@ -176,6 +176,11 @@ The following options are only needed one time as their values are stored in
   a final release thus it is not yet generally supported by the zopefoundation
   packages.
 
+--oldest-python
+  The oldest version of Python supported by this package. Specified as version
+  number, e.g. ``3.8``. This setting is optional and defaults to the lowest
+  Python version generally supported by zopefoundation packages.
+
 --with-docs
   Enable building the documentation using Sphinx. This will also create a
   configuration file `.readthedocs.yaml` for integration with
