@@ -110,9 +110,8 @@ def handle_command_line_arguments():
     parser.add_argument(
         '--oldest-python',
         dest='oldest_python',
-        default=OLDEST_PYTHON_VERSION,
-        help='Oldest supported Python version. Defaults to'
-             f'Python {OLDEST_PYTHON_VERSION}.')
+        help='Oldest supported Python version. Defaults to:'
+             f' {OLDEST_PYTHON_VERSION}.')
     parser.add_argument(
         '--with-docs',
         # people (me) use --with-sphinx and accidentally
@@ -207,8 +206,9 @@ class PackageConfiguration:
 
     @cached_property
     def oldest_python(self):
-        value = (self.meta_cfg['python'].get('oldest-python') or
-                 self.args.oldest_python)
+        value = (self.args.oldest_python or
+                 self.meta_cfg['python'].get('oldest-python') or
+                 OLDEST_PYTHON_VERSION)
         try:
             version = parse_version(value)
         except InvalidVersion:
