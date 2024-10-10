@@ -11,7 +11,7 @@ wheel_build_env = .pkg
 pip_pre = py%(future_python_shortversion)s: true
 {% endif %}
 deps =
-    setuptools  %(setuptools_version_spec)s
+    setuptools %(setuptools_version_spec)s
   {% for line in testenv_deps %}
     %(line)s
   {% endfor %}

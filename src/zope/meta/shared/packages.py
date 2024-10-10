@@ -24,14 +24,14 @@ OLDEST_PYTHON_VERSION = '3.8'
 NEWEST_PYTHON_VERSION = '3.13'
 FUTURE_PYTHON_VERSION = '3.14'
 PYPY_VERSION = '3.10'
-SETUPTOOLS_VERSION_SPEC = '<74'
+SETUPTOOLS_VERSION_SPEC = '< 74'
 MANYLINUX_PYTHON_VERSION = '3.11'
 MANYLINUX_AARCH64 = 'manylinux2014_aarch64'
 MANYLINUX_I686 = 'manylinux2014_i686'
 MANYLINUX_X86_64 = 'manylinux2014_x86_64'
 PYPROJECT_TOML_DEFAULTS = {
     'build-system': {
-        'requires': [f'setuptools{SETUPTOOLS_VERSION_SPEC}'],
+        'requires': [f'setuptools {SETUPTOOLS_VERSION_SPEC}'],
         'build-backend': 'setuptools.build_meta',
     },
     'tool': {
