@@ -72,7 +72,7 @@ def set_branch_protection(
     with_pypy = meta_toml['python']['with-pypy']
     oldest_python_version = meta_toml['python'].get('oldest-python',
                                                     OLDEST_PYTHON_VERSION)
-    oldest_python = oldest_python_version.replace('.', '')
+    oldest_python = f"py{oldest_python_version.replace('.', '')}"
     with_windows = meta_toml['python']['with-windows']
     with_macos = meta_toml['python']['with-macos']
     required = ['linting']
