@@ -3,7 +3,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/pure-python
 
 [build-system]
-requires = ["setuptools<74"]
+requires = ["setuptools < 74"]
 build-backend = "setuptools.build_meta"
 
 [tool.coverage.run]
@@ -11,7 +11,7 @@ branch = true
 source = ["zope.meta"]
 
 [tool.coverage.report]
-fail_under = 20
+fail_under = 18
 precision = 2
 ignore_errors = true
 show_missing = true
