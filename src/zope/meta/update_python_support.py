@@ -126,10 +126,10 @@ def main():
                 bin_dir / 'addchangelogentry',
                 f'Add support for Python {version_spec}.',
                 *non_interactive_params)
-            python_versions_args = [
+            python_versions_args.append(
                 '--add=' +
                 ','.join(supported_python_versions(oldest_python_version))
-            ]
+            )
 
         if no_longer_supported or not_yet_supported:
             call(bin_dir / 'check-python-versions', '--only=setup.py',
