@@ -51,7 +51,12 @@ def main():
         wfs = call(
             'gh', 'workflow', 'list', '--all', '-R', f'{ORG}/{repo}',
             capture_output=True).stdout
-        test_line = [x for x in wfs.splitlines() if x.startswith('test')][0]
+        try:
+            test_line = [
+                x for x in wfs.splitlines() if x.startswith('test')][0]
+        except IndexError:
+            print('    ❌ no tests.yml workflow')
+            continue
         if 'disabled_inactivity' not in test_line:
             print('    ☑️  already enabled')
             if args.force_run:
