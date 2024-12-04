@@ -209,3 +209,4 @@ z3c.jbot
 fanstatic
 zope.pytestlayer
 meta
+zope.app.security
