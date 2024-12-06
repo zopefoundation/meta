@@ -12,9 +12,6 @@ with-docs = true
 with-sphinx-doctests = false
 with-macos = false
 
-[tox]
-use-flake8 = true
-
 [coverage]
 fail-under = 18
 
