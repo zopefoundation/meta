@@ -20,7 +20,7 @@ from packaging.version import parse as parse_version
 TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
 ORG = 'zopefoundation'
 BASE_PATH = pathlib.Path(__file__).parent.parent
-OLDEST_PYTHON_VERSION = '3.8'
+OLDEST_PYTHON_VERSION = '3.9'
 NEWEST_PYTHON_VERSION = '3.13'
 FUTURE_PYTHON_VERSION = '3.14'
 PYPY_VERSION = '3.10'
@@ -155,7 +155,7 @@ def supported_python_versions(oldest_version=OLDEST_PYTHON_VERSION,
 
     Kwargs:
         oldest_version (str):
-            The oldest supported Python version, e.g. '3.8'.
+            The oldest supported Python version, e.g. '3.9'.
 
         short_version (bool):
             Return short versions like "313" instead of "3.13". Default False.

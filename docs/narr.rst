@@ -178,7 +178,7 @@ The following options are only needed one time as their values are stored in
 
 --oldest-python
   The oldest version of Python supported by this package. Specified as version
-  number, e.g. ``3.8``. This setting is optional and defaults to the lowest
+  number, e.g. ``3.12``. This setting is optional and defaults to the lowest
   Python version generally supported by zopefoundation packages.
 
 --with-docs
@@ -300,7 +300,7 @@ updated. Example:
         "  image: postgres",
         ]
     additional-config = [
-        "- [\"3.8\",   \"py38-slim\"]",
+        "- [\"3.12\",   \"py312-slim\"]",
         ]
     additional-exclude = [
         "- { os: windows, config: [\"pypy-3.10\", \"pypy3\"] }",
