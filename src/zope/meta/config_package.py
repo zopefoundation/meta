@@ -52,7 +52,7 @@ META_HINT_MARKDOWN = """\
 <!--
 Generated from:
 https://github.com/zopefoundation/meta/tree/master/config/{config_type}
---> """
+-->"""
 DEFAULT = object()
 
 
