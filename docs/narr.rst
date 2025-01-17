@@ -217,9 +217,11 @@ updated. Example:
 
     [coverage-run]
     additional-config = [
-        "omit =",
-        "    src/foo/bar.py",
-        ]
+        "data_file = $COVERAGE_HOME.coverage",
+    ]
+    omit = [
+        "src/foo/bar.py",
+    ]
     source = "src"
 
     [tox]
@@ -406,6 +408,10 @@ The corresponding section is named: ``[coverage-run]``.
 additional-config
   Additional options for the ``[run]`` section of the coverage configuration.
   This option has to be a list of strings.
+
+omit
+  Files to be omitted from the coverage report. This option has to
+  be a list of strings. It defaults to an empty list.
 
 source
   This option defines the value of ``source`` in the coverage ``[run]``

@@ -457,8 +457,6 @@ class PackageConfiguration:
         coverage_additional = self.tox_option('coverage-additional')
         testenv_deps = self.tox_option('testenv-deps')
         coverage_setenv = self.tox_option('coverage-setenv')
-        coverage_run_additional_config = self.meta_cfg['coverage-run'].get(
-            'additional-config', [])
         flake8_additional_sources = self.meta_cfg['flake8'].get(
             'additional-sources', '')
         if flake8_additional_sources:
@@ -481,7 +479,6 @@ class PackageConfiguration:
             coverage_basepython=coverage_basepython,
             coverage_command=coverage_command,
             coverage_run_source=self.coverage_run_source,
-            coverage_run_additional_config=coverage_run_additional_config,
             coverage_setenv=coverage_setenv,
             coverage_fail_under=self.coverage_fail_under,
             flake8_additional_sources=flake8_additional_sources,
@@ -615,6 +612,9 @@ class PackageConfiguration:
         add_cfg = self.meta_cfg['coverage-run'].get('additional-config', [])
         for key, value in parse_additional_config(add_cfg).items():
             coverage['run'][key] = value
+        omit = self.meta_cfg['coverage-run'].get('omit', [])
+        if omit:
+            coverage['run']['omit'] = omit
 
         # Remove empty sections
         toml_data = {k: v for k, v in toml_data.items() if v}
