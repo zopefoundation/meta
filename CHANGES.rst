@@ -11,6 +11,9 @@ Change log
 
 - Allow ``setuptools <= 75.6.0``.
 
+- Add ``omit`` option to ``coverage-run`` configuration because when defined in
+  ``pyproject.toml`` it needs to be a list of strings.
+
 1.0 (2024-10-02)
 ----------------
 
