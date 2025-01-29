@@ -14,6 +14,9 @@ Change log
 - Add ``omit`` option to ``coverage-run`` configuration because when defined in
   ``pyproject.toml`` it needs to be a list of strings.
 
+- Update ``setup.py`` of configured packages with small textual changes to
+  match current best practices.
+
 1.0 (2024-10-02)
 ----------------
 

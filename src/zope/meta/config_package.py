@@ -54,6 +54,13 @@ Generated from:
 https://github.com/zopefoundation/meta/tree/master/config/{config_type}
 -->"""
 DEFAULT = object()
+SETUP_PY_REPLACEMENTS = {
+    'ZPL 2.1': 'ZPL-2.1',
+    'zope-dev@zope.org': 'zope-dev@zope.dev',
+    'Zope Corporation': 'Zope Foundation',
+    'Framework :: Zope2': 'Framework :: Zope :: 2',
+    'Framework :: Zope3': 'Framework :: Zope :: 3',
+}
 
 
 def handle_command_line_arguments():
@@ -354,6 +361,14 @@ class PackageConfiguration:
             with_sphinx_doctests=self.with_sphinx_doctests,
             zest_releaser_options=zest_releaser_options,
         )
+
+    def setup_py(self):
+        """Update setup.py to current texts."""
+        setup_py = self.path / 'setup.py'
+        setup_py_content = setup_py.read_text()
+        for src, dest in SETUP_PY_REPLACEMENTS.items():
+            setup_py_content = setup_py_content.replace(src, dest)
+        setup_py.write_text(setup_py_content)
 
     def gitignore(self):
         git_ignore = self.meta_cfg['git'].get('ignore', [])
@@ -656,6 +671,7 @@ class PackageConfiguration:
 
         self.pyproject_toml()
         self.setup_cfg()
+        self.setup_py()
         self.gitignore()
         self.pre_commit_config_yaml()
         self.copy_with_meta(

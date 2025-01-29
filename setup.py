@@ -53,7 +53,7 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
     ],
-    license='ZPL 2.1',
+    license='ZPL-2.1',
     url='https://github.com/zopefoundation/meta',
     project_urls={
         'Documentation': 'https://zopemeta.readthedocs.io',
