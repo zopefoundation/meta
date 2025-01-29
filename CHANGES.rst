@@ -1,7 +1,7 @@
 Change log
 ==========
 
-1.1 (unreleased)
+1.1 (2025-01-29)
 ----------------
 
 - Drop support for Python 3.8.
