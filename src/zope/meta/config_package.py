@@ -58,6 +58,8 @@ SETUP_PY_REPLACEMENTS = {
     'ZPL 2.1': 'ZPL-2.1',
     'zope-dev@zope.org': 'zope-dev@zope.dev',
     'Zope Corporation': 'Zope Foundation',
+    'Framework :: Zope2': 'Framework :: Zope :: 2',
+    'Framework :: Zope3': 'Framework :: Zope :: 3',
 }
 
 
