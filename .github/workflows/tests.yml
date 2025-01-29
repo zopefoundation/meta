@@ -37,6 +37,8 @@ jobs:
     name: ${{ matrix.config[1] }}
     steps:
     - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
