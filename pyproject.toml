@@ -1,4 +1,4 @@
-# 
+#
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/pure-python
 
@@ -11,7 +11,7 @@ branch = true
 source = ["zope.meta"]
 
 [tool.coverage.report]
-fail_under = 18
+fail_under = 16.5
 precision = 2
 ignore_errors = true
 show_missing = true

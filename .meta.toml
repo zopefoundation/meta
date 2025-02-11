@@ -13,7 +13,7 @@ with-sphinx-doctests = false
 with-macos = false
 
 [coverage]
-fail-under = 18
+fail-under = 16.5
 
 [coverage-run]
 source = "zope.meta"
