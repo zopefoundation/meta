@@ -84,24 +84,22 @@ def main():
 
         setup_py = []
         for line in (path / 'setup.py').read_text().splitlines():
-            if 'find_packages' in line:
+            if 'from setuptools import find_packages' in line:
+                setup_py.append(
+                    'from setuptools import find_namespace_packages')
+            elif 'namespace_packages' in line:
                 continue
             elif 'zope.testrunner' in line:
                 setup_py.append(
                     line.replace('zope.testrunner', 'zope.testrunner >= 6.4'))
-            elif 'namespace_packages' in line:
+            elif 'packages=' in line:
                 leading_spaces = len(line) - len(line.lstrip())
-                packages = []
                 for dir in (path / 'src').iterdir():
                     if dir.is_dir() and (dir / '__init__.py').exists():
                         (dir / '__init__.py').unlink()
-                        for sub_dir in dir.iterdir():
-                            if (sub_dir / '__init__.py').exists():
-                                packages.append(
-                                    f'{dir.name}.{sub_dir.name}')
-
                 setup_py.append(
-                    f'{" " * leading_spaces}packages={packages!r},')
+                    f"{' ' * leading_spaces}packages="
+                    "find_namespace_packages('src'),")
             else:
                 setup_py.append(line)
         (path / 'setup.py').write_text('\n'.join(setup_py) + '\n')
