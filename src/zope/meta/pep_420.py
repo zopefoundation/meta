@@ -100,7 +100,8 @@ def main():
                                 packages.append(
                                     f'{dir.name}.{sub_dir.name}')
 
-                setup_py.append(f'{" "*leading_spaces}packages={packages!r},')
+                setup_py.append(
+                    f'{" " * leading_spaces}packages={packages!r},')
             else:
                 setup_py.append(line)
         (path / 'setup.py').write_text('\n'.join(setup_py) + '\n')
