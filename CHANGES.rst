@@ -4,7 +4,8 @@ Change log
 1.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add script ``bin/switch-to-pep420`` to convert a package from the old
+  namespace package layout to the new PEP 420 native layout.
 
 
 1.1 (2025-01-29)
