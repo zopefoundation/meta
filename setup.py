@@ -91,6 +91,7 @@ setup(
                 'zope.meta.set_branch_protection_rules:main'
             ),
             'update-python-support=zope.meta.update_python_support:main',
+            'switch-to-pep420=zope.meta.pep_420:main',
         ],
     },
 )
