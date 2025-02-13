@@ -12,14 +12,10 @@
 #
 ##############################################################################
 import argparse
-import collections
 import pathlib
 import shutil
 
-import tomlkit
-
 from .shared.call import call
-from .shared.git import get_branch_name
 from .shared.git import git_branch
 from .shared.path import change_dir
 
@@ -64,11 +60,7 @@ def main():
     with change_dir(path) as cwd_str:
         cwd = pathlib.Path(cwd_str)
         bin_dir = cwd / 'bin'
-
-        with open('.meta.toml', 'rb') as meta_f:
-            meta_toml = collections.defaultdict(dict, **tomlkit.load(meta_f))
-        config_type = meta_toml['meta']['template']
-        branch_name = get_branch_name(args.branch_name, config_type)
+        branch_name = 'pep-420-native-namespace'
         updating = git_branch(branch_name)
 
         non_interactive_params = []
@@ -79,37 +71,43 @@ def main():
 
         call(bin_dir / 'bumpversion', '--breaking', *non_interactive_params)
         call(bin_dir / 'addchangelogentry',
-             'Drop support for pkg_resources namespace and replace it with'
+             'Drop support for ``pkg_resources`` namespace and replace it with'
              ' PEP 420 native namespace.')
 
         setup_py = []
         for line in (path / 'setup.py').read_text().splitlines():
             if 'from setuptools import find_packages' in line:
-                setup_py.append(
-                    'from setuptools import find_namespace_packages')
+                continue
             elif 'namespace_packages' in line:
+                continue
+            elif 'packages=' in line:
+                continue
+            elif 'package_dir=' in line:
                 continue
             elif 'zope.testrunner' in line:
                 setup_py.append(
                     line.replace('zope.testrunner', 'zope.testrunner >= 6.4'))
-            elif 'packages=' in line:
-                leading_spaces = len(line) - len(line.lstrip())
-                for dir in (path / 'src').iterdir():
-                    if dir.is_dir() and (dir / '__init__.py').exists():
-                        (dir / '__init__.py').unlink()
-                setup_py.append(
-                    f"{' ' * leading_spaces}packages="
-                    "find_namespace_packages('src'),")
             else:
                 setup_py.append(line)
+            for dir in (path / 'src').iterdir():
+                if dir.is_dir() and (dir / '__init__.py').exists():
+                    (dir / '__init__.py').unlink()
+                if dir.name == 'zope':
+                    for subdir in dir.iterdir():
+                        if (subdir.is_dir() and subdir.name == 'app' and
+                                (subdir / '__init__.py').exists()):
+                            (subdir / '__init__.py').unlink()
         (path / 'setup.py').write_text('\n'.join(setup_py) + '\n')
+
+        if args.commit:
+            print('Adding all changes ...')
+            call('git', 'add', '.')
 
         tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
         call(tox_path, '-p', 'auto')
 
         if args.commit:
-            print('Adding, committing and pushing all changes ...')
-            call('git', 'add', '.')
+            print('Committing and pushing all changes ...')
             call('git', 'commit', '-m', 'Switch to PEP 420 native namespace.')
             call('git', 'push', '--set-upstream', 'origin', branch_name)
             if updating:
