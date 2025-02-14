@@ -159,7 +159,8 @@ def main():
             if args.auto_update:
                 # Admin commands are interactive, we do them unconditionally
                 # later here:
-                config_package_args.append('--no-admin')
+                config_package_args.extend(
+                    ['--no-admin', '--started-from-auto-update'])
             if not args.commit:
                 config_package_args.append('--no-commit')
 

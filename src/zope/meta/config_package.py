@@ -163,6 +163,13 @@ def handle_command_line_arguments():
         action='store_false',
         default=True,
         help='Do not try to do steps that require GitHub admin rights.')
+    parser.add_argument(
+        '--started-from-auto-update',
+        dest='started_from_auto_update',
+        action='store_true',
+        default=False,
+        help=argparse.SUPPRESS  # no to be used by humans
+    )
 
     args = parser.parse_args()
     return args
@@ -725,9 +732,10 @@ class PackageConfiguration:
                 meta_f.write('\n')
                 tomlkit.dump(meta_cfg, meta_f)
 
-            tox_path = shutil.which('tox') or (
-                pathlib.Path(cwd) / 'bin' / 'tox')
-            call(tox_path, '-p', 'auto', '--parallel-no-spinner')
+            if not self.args.started_from_auto_update:
+                tox_path = shutil.which('tox') or (
+                    pathlib.Path(cwd) / 'bin' / 'tox')
+                call(tox_path, '-p', 'auto')
 
             updating = git_branch(self.branch_name)
 
