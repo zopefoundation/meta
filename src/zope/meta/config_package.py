@@ -193,7 +193,10 @@ class PackageConfiguration:
 
         self.meta_cfg = self._read_meta_configuration()
         self.meta_cfg['meta']['template'] = self.config_type
-        self.meta_cfg['meta']['commit-id'] = get_commit_id()
+        try:
+            self.meta_cfg['meta']['commit-id'] = get_commit_id()
+        except BaseException:
+            print(f'path: {self.path}, cwd: {pathlib.Path.cwd()}')
 
     def _read_meta_configuration(self):
         """Read and update meta configuration"""
