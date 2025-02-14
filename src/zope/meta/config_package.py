@@ -181,7 +181,7 @@ def prepend_space(text):
 class PackageConfiguration:
     add_manylinux = False
 
-    def __init__(self, args):
+    def __init__(self, args, in_checkout=False):
         self.args = args
         self.path = args.path.absolute()
         self.meta_cfg = {}
@@ -193,10 +193,8 @@ class PackageConfiguration:
 
         self.meta_cfg = self._read_meta_configuration()
         self.meta_cfg['meta']['template'] = self.config_type
-        try:
-            self.meta_cfg['meta']['commit-id'] = get_commit_id()
-        except BaseException:
-            print(f'path: {self.path}, cwd: {pathlib.Path.cwd()}')
+        commit_id = get_commit_id() if in_checkout else 'auto-update'
+        self.meta_cfg['meta']['commit-id'] = commit_id
 
     def _read_meta_configuration(self):
         """Read and update meta configuration"""
@@ -782,6 +780,7 @@ class PackageConfiguration:
 
 def main():
     args = handle_command_line_arguments()
+    in_checkout = (pathlib.Path.cwd() / '.git').exists()
 
-    package = PackageConfiguration(args)
+    package = PackageConfiguration(args, in_checkout)
     package.configure()
