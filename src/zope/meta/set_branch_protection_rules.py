@@ -41,6 +41,13 @@ def _call_gh(
         allowed_return_codes=allowed_return_codes)
 
 
+def get_package_name():
+    remote_url = call(
+        'git', 'config', '--get', 'remote.origin.url',
+        capture_output=True).stdout.strip()
+    return remote_url.rsplit('/')[-1].removesuffix('.git')
+
+
 def set_branch_protection(
         repo: str, meta_path: Optional[pathlib.Path] = None) -> bool:
     result = _call_gh(
