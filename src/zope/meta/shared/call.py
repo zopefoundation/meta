@@ -45,5 +45,6 @@ def call(*args, capture_output=False, cwd=None, allowed_return_codes=(0, ),
                 stdout: {result.stdout}''')
         else:
             abort_text = result.returncode
-        abort(abort_text)
+        print(abort_text)
+        abort(result.returncode)
     return result
