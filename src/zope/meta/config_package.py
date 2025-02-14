@@ -780,7 +780,7 @@ class PackageConfiguration:
 
 def main():
     args = handle_command_line_arguments()
-    in_checkout = (pathlib.Path.cwd() / '.git').exists()
+    in_checkout = (pathlib.Path(__file__).absolute().parent / '.git').exists()
 
     package = PackageConfiguration(args, in_checkout)
     package.configure()
