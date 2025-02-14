@@ -21,8 +21,6 @@ import sys
 
 import tomlkit
 
-from .set_branch_protection_rules import get_package_name
-from .set_branch_protection_rules import set_branch_protection
 from .shared.call import call
 from .shared.call import wait_for_accept
 from .shared.git import get_branch_name
@@ -157,17 +155,19 @@ def main():
                 '--no-push',
             ]
             if args.auto_update:
-                # Admin commands are interactive, we do them unconditionally
-                # later here:
+                # Admin commands require more permissions than a workflow might
+                # be able to get:
                 config_package_args.extend(
                     ['--no-admin', '--started-from-auto-update'])
             if not args.commit:
                 config_package_args.append('--no-commit')
 
             call(*config_package_args, cwd=cwd_str)
-            if args.auto_update:
-                set_branch_protection(
-                    get_package_name(), path / '.meta.toml')
+            # GitHub does not allow this inside the workflow, at least I did
+            # not find a way to do it:
+            # if args.auto_update:
+            #     set_branch_protection(
+            #         get_package_name(), path / '.meta.toml')
 
             src = path.resolve() / 'src'
             py_ver_plus = f'--py{oldest_python_version.replace(".", "")}-plus'
