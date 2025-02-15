@@ -17,8 +17,6 @@ zc.relationship
 bobo
 megrok.strictrequire
 importchecker
-cipher.lazydate
-cipher.longrequest
 grokcore.catalog
 grokcore.chameleon
 grokcore.content
@@ -33,7 +31,6 @@ grokcore.viewlet
 grokcore.xmlrpc
 hurry.workflow
 pyramid_zope_request
-refline.srccheck
 z3c.csvvocabulary
 z3c.evalexception
 zope.sendmail
@@ -97,7 +94,6 @@ z3c.authviewlet
 zope.catalog
 grokcore.rest
 zope.app.tree
-keas.kmi
 zope.globalrequest
 z3c.flashmessage
 z3c.saconfig
@@ -188,7 +184,6 @@ ZopeUndo
 grok
 grokcore.site
 hurry.query
-zope.app.server
 z3c.autoinclude
 z3c.sqlalchemy
 zc.lockfile
