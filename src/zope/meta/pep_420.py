@@ -72,7 +72,10 @@ def main():
         call(bin_dir / 'bumpversion', '--breaking', *non_interactive_params)
         call(bin_dir / 'addchangelogentry',
              'Drop support for ``pkg_resources`` namespace and replace it with'
-             ' PEP 420 native namespace.')
+             ' PEP 420 native namespace.'
+             ' Caution: This change requires to switch all packages in the '
+             ' namespace of the package to versions using a PEP 420 namespace.'
+             )
 
         setup_py = []
         for line in (path / 'setup.py').read_text().splitlines():
