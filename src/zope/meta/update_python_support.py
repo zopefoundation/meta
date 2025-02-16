@@ -68,9 +68,17 @@ def main():
         default=False,
         help='Run interactively: Scripts will prompt for input. Implies '
         '--no-commit, changes will not be committed and pushed automatically.')
+    parser.add_argument(
+        '--auto-update',
+        dest='auto_update',
+        action='store_true',
+        default=False,
+        help='Run without any questions asked. Only to be used by CI.')
 
     args = parser.parse_args()
     path = args.path.absolute()
+    zope_meta_dir = pathlib.Path(sys.argv[0]).absolute().parent.parent
+    bin_dir = zope_meta_dir / 'bin'
 
     if not (path / '.git').exists():
         raise ValueError(
@@ -79,15 +87,11 @@ def main():
         raise ValueError('The repository `path` points to has no .meta.toml!')
 
     with change_dir(path) as cwd_str:
-        cwd = pathlib.Path(cwd_str)
-        bin_dir = cwd / 'bin'
         with open('.meta.toml', 'rb') as meta_f:
             meta_toml = collections.defaultdict(dict, **tomlkit.load(meta_f))
         config_type = meta_toml['meta']['template']
         oldest_python_version = meta_toml['python'].get('oldest-python',
                                                         OLDEST_PYTHON_VERSION)
-        branch_name = get_branch_name(args.branch_name, config_type)
-        updating = git_branch(branch_name)
 
         current_python_versions = get_tox_ini_python_versions('tox.ini')
         no_longer_supported = (
@@ -107,6 +111,8 @@ def main():
             args.commit = False
 
         if no_longer_supported or not_yet_supported:
+            branch_name = get_branch_name(args.branch_name, config_type)
+            updating = git_branch(branch_name)
             call(bin_dir / 'bumpversion', '--feature', *non_interactive_params)
         else:
             print('No changes required.')
@@ -132,10 +138,15 @@ def main():
             )
 
         if no_longer_supported or not_yet_supported:
+            if args.interactive:
+                input = None
+            else:
+                input = 'Y\nY\n'
             call(bin_dir / 'check-python-versions', '--only=setup.py',
-                 *python_versions_args)
-            print('Look through .meta.toml to see if it needs changes.')
-            call(os.environ['EDITOR'], '.meta.toml')
+                 *python_versions_args, input=input)
+            if not args.auto_update:
+                print('Look through .meta.toml to see if it needs changes.')
+                call(os.environ['EDITOR'], '.meta.toml')
 
             config_package_args = [
                 bin_dir / 'config-package',
@@ -143,9 +154,21 @@ def main():
                 f'--branch={branch_name}',
                 '--no-push',
             ]
+            if args.auto_update:
+                # Admin commands require more permissions than a workflow might
+                # be able to get:
+                config_package_args.extend(
+                    ['--no-admin', '--started-from-auto-update'])
             if not args.commit:
                 config_package_args.append('--no-commit')
+
             call(*config_package_args, cwd=cwd_str)
+            # GitHub does not allow this inside the workflow, at least I did
+            # not find a way to do it:
+            # if args.auto_update:
+            #     set_branch_protection(
+            #         get_package_name(), path / '.meta.toml')
+
             src = path.resolve() / 'src'
             py_ver_plus = f'--py{oldest_python_version.replace(".", "")}-plus'
             call('find', src, '-name', '*.py', '-exec', bin_dir / 'pyupgrade',
@@ -156,30 +179,34 @@ def main():
                  'setup.py',
                  allowed_return_codes=(0, 1))
 
-            excludes = (
-                '--exclude-dir',
-                '__pycache__',
-                '--exclude-dir',
-                '*.egg-info',
-                '--exclude',
-                '*.pyc',
-                '--exclude',
-                '*.so')
-            print('Replace any remaining code that might'
-                  ' support legacy Python:')
-            call(
-                'egrep',
-                '-rn',
-                f'{"|".join(no_longer_supported)}|sys.version|PY3|Py3|Python 3'
-                '|__unicode__|ImportError',
-                src,
-                *excludes,
-                allowed_return_codes=(
-                    0,
-                    1))
-            wait_for_accept()
-            tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
-            call(tox_path, '-p', 'auto')
+            if not args.auto_update:
+                excludes = (
+                    '--exclude-dir',
+                    '__pycache__',
+                    '--exclude-dir',
+                    '*.egg-info',
+                    '--exclude',
+                    '*.pyc',
+                    '--exclude',
+                    '*.so')
+                print('Replace any remaining code that might'
+                      ' support legacy Python:')
+                call(
+                    'egrep',
+                    '-rn',
+                    f'{"|".join(no_longer_supported)}|sys.version|PY3|Py3|'
+                    'Python 3|__unicode__|ImportError',
+                    src,
+                    *excludes,
+                    allowed_return_codes=(
+                        0,
+                        1))
+                wait_for_accept()
+
+            if not args.auto_update:
+                tox_path = shutil.which('tox') or (bin_dir / 'tox')
+                call(tox_path, '-p', 'auto')
+
             if args.commit:
                 print('Adding, committing and pushing all changes ...')
                 call('git', 'add', '.')
@@ -188,14 +215,21 @@ def main():
                 if updating:
                     print('Updated the previously created PR.')
                 else:
-                    print(
-                        'Are you logged in via `gh auth login` to'
-                        ' create a PR? (y/N)?', end=' ')
-                    if input().lower() == 'y':
+                    create_pr = False
+                    if args.auto_update:
+                        create_pr = True
+                    else:
+                        print(
+                            'Are you logged in via `gh auth login` to'
+                            ' create a PR? (y/N)?', end=' ')
+                        if input().lower() == 'y':
+                            create_pr = True
+                    if create_pr:
                         call('gh', 'pr', 'create', '--fill', '--title',
                              'Update Python version support.')
                     else:
-                        print('If everything went fine up to here:')
-                        print('Create a PR, using the URL shown above.')
+                        if not args.auto_update:
+                            print('If everything went fine up to here:')
+                            print('Create a PR, using the URL shown above.')
             else:
                 print('Applied all changes. Please check and commit manually.')

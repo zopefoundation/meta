@@ -22,6 +22,7 @@ import tomlkit
 from packaging.version import InvalidVersion
 from packaging.version import parse as parse_version
 
+from .set_branch_protection_rules import get_package_name
 from .set_branch_protection_rules import set_branch_protection
 from .shared.call import abort
 from .shared.call import call
@@ -156,6 +157,19 @@ def handle_command_line_arguments():
         help='Define a git branch name to be used for the changes. '
         'If not given it is constructed automatically and includes '
         'the configuration type')
+    parser.add_argument(
+        '--no-admin',
+        dest='admin',
+        action='store_false',
+        default=True,
+        help='Do not try to do steps that require GitHub admin rights.')
+    parser.add_argument(
+        '--started-from-auto-update',
+        dest='started_from_auto_update',
+        action='store_true',
+        default=False,
+        help=argparse.SUPPRESS  # no to be used by humans
+    )
 
     args = parser.parse_args()
     return args
@@ -174,7 +188,7 @@ def prepend_space(text):
 class PackageConfiguration:
     add_manylinux = False
 
-    def __init__(self, args):
+    def __init__(self, args, in_checkout=False):
         self.args = args
         self.path = args.path.absolute()
         self.meta_cfg = {}
@@ -186,7 +200,8 @@ class PackageConfiguration:
 
         self.meta_cfg = self._read_meta_configuration()
         self.meta_cfg['meta']['template'] = self.config_type
-        self.meta_cfg['meta']['commit-id'] = get_commit_id()
+        commit_id = get_commit_id() if in_checkout else 'auto-update'
+        self.meta_cfg['meta']['commit-id'] = commit_id
 
     def _read_meta_configuration(self):
         """Read and update meta configuration"""
@@ -717,9 +732,10 @@ class PackageConfiguration:
                 meta_f.write('\n')
                 tomlkit.dump(meta_cfg, meta_f)
 
-            tox_path = shutil.which('tox') or (
-                pathlib.Path(cwd) / 'bin' / 'tox')
-            call(tox_path, '-p', 'auto')
+            if not self.args.started_from_auto_update:
+                tox_path = shutil.which('tox') or (
+                    pathlib.Path(cwd) / 'bin' / 'tox')
+                call(tox_path, '-p', 'auto')
 
             updating = git_branch(self.branch_name)
 
@@ -750,20 +766,18 @@ class PackageConfiguration:
                 if self.args.push:
                     call('git', 'push', '--set-upstream',
                          'origin', self.branch_name)
-            print()
-            print('If you are an admin and are logged in via `gh auth login`')
-            print('update branch protection rules? (y/N)?', end=' ')
-            if input().lower() == 'y':
-                remote_url = call(
-                    'git', 'config', '--get', 'remote.origin.url',
-                    capture_output=True).stdout.strip()
-                package_name = remote_url.rsplit('/')[-1].removesuffix('.git')
-                success = set_branch_protection(
-                    package_name, self.path / '.meta.toml')
-                if success:
-                    print('Successfully updated branch protection rules.')
-                else:
-                    abort(-1)
+            if self.args.admin:
+                print()
+                print('If you are an admin and are logged in via `gh auth'
+                      ' login`')
+                print('update branch protection rules? (y/N)?', end=' ')
+                if input().lower() == 'y':
+                    success = set_branch_protection(
+                        get_package_name(), self.path / '.meta.toml')
+                    if success:
+                        print('Successfully updated branch protection rules.')
+                    else:
+                        abort(-1)
             print()
             print('If everything went fine up to here:')
             if updating:
@@ -774,6 +788,7 @@ class PackageConfiguration:
 
 def main():
     args = handle_command_line_arguments()
+    in_checkout = (pathlib.Path(__file__).absolute().parent / '.git').exists()
 
-    package = PackageConfiguration(args)
+    package = PackageConfiguration(args, in_checkout)
     package.configure()
