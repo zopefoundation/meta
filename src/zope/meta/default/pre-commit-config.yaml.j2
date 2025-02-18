@@ -14,6 +14,9 @@ repos:
     hooks:
     - id: pyupgrade
       args: [--py%(oldest_python_version)s-plus]
+{% if pyupgrade_exclude %}
+      exclude: %(pyupgrade_exclude)s
+{% endif %}
   - repo: https://github.com/isidentical/teyit
     rev: 0.4.3
     hooks:
