@@ -25,20 +25,24 @@ from .shared.call import call
 from .shared.call import wait_for_accept
 from .shared.git import get_branch_name
 from .shared.git import git_branch
+from .shared.packages import FUTURE_PYTHON_VERSION
 from .shared.packages import OLDEST_PYTHON_VERSION
 from .shared.packages import supported_python_versions
 from .shared.path import change_dir
 
 
-def get_tox_ini_python_versions(path):
+def get_tox_ini_python_versions(path) -> set:
     config = configparser.ConfigParser()
     config.read(path)
     envs = config['tox']['envlist'].split()
-    versions = [
+    raw_versions = {
         env.replace('py3', '3.') for env in envs
         if env.startswith('py') and env != 'pypy3'
-    ]
-    return versions
+    }
+    # c-code template uses `py313,py313-pure`, get rid of the pure version:
+    versions = {v.partition(',')[0] for v in raw_versions}
+    # some packages use `py38-watch` or similar, get rid of the suffix:
+    return {v.partition('-')[0] for v in versions}
 
 
 def main():
@@ -61,6 +65,12 @@ def main():
         action='store_false',
         default=True,
         help='Don\'t "git commit" changes made by this script.')
+    parser.add_argument(
+        '--with-future-python',
+        dest='with_future_python',
+        action='store_true',
+        default=False,
+        help='Also enable testing the future Python version.')
     parser.add_argument(
         '--interactive',
         dest='interactive',
@@ -91,12 +101,12 @@ def main():
 
         current_python_versions = get_tox_ini_python_versions('tox.ini')
         no_longer_supported = (
-            set(current_python_versions) -
+            current_python_versions -
             set(supported_python_versions(oldest_python_version))
         )
         not_yet_supported = (
             set(supported_python_versions(oldest_python_version)) -
-            set(current_python_versions)
+            current_python_versions
         )
 
         non_interactive_params = []
@@ -130,6 +140,11 @@ def main():
                 '--add=' +
                 ','.join(supported_python_versions(oldest_python_version))
             )
+        if args.with_future_python:
+            call(
+                bin_dir / 'addchangelogentry',
+                f'Add preliminary support for Python {FUTURE_PYTHON_VERSION}.',
+                *non_interactive_params)
 
         if no_longer_supported or not_yet_supported:
             call(bin_dir / 'check-python-versions', '--only=setup.py',
@@ -143,6 +158,8 @@ def main():
                 f'--branch={branch_name}',
                 '--no-push',
             ]
+            if args.with_future_python:
+                config_package_args.append('--with-future-python')
             if not args.commit:
                 config_package_args.append('--no-commit')
             call(*config_package_args, cwd=cwd_str)
