@@ -352,6 +352,8 @@ updated. Example:
 
     [pre-commit]
     teyit-exclude = "App/tests/fixtures/error\.py"
+    pyupgrade-exclude = "^src/zope/proxy/__init__\.py$"
+
 
     [readthedocs]
     build-extra = [
@@ -659,6 +661,10 @@ teyit-exclude
   Regex for files to be hidden from teyit. It fails on files containing syntax
   errors. This option has to be a string and is omitted when not defined.
 
+pyupgrade-exclude
+  Regex for files to be hidden from pyupgrade. It might be a bit overly
+  optimistic with its changes. This option has to be a string and is omitted
+  when not defined.
 
 ReadTheDocs options
 ```````````````````
