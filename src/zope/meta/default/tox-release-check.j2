@@ -9,6 +9,9 @@ deps =
     check-manifest
     check-python-versions >= 0.20.0
     wheel
+{% if require_cffi %}
+    cffi; platform_python_implementation == "CPython"
+{% endif %}
 commands_pre =
 commands =
     check-manifest

@@ -346,6 +346,31 @@ jobs:
   {% endif %}
 {% endif %}
 
+  release-check:
+    needs: build-package
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        python-version: ["%(manylinux_python_version)s"]
+        os: [ubuntu-latest]
+
+    steps:
+{% include 'tests-cache.j2' %}
+{% include 'tests-download.j2' %}
+      - name: Install %(package_name)s
+        run: |
+          pip install -U wheel
+          pip install -U tox
+{% if require_cffi %}
+          pip install -U 'cffi; platform_python_implementation == "CPython"'
+{% endif %}
+          pip install -U  "`ls dist/%(package_name)s-*.whl`[docs]"
+      - name: Run release check
+        env:
+          ZOPE_INTERFACE_STRICT_IRO: 1
+        run: |
+          tox -erelease-check
+
   manylinux:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
