@@ -470,8 +470,6 @@ class PackageConfiguration:
         testenv_commands_pre = self.tox_option('testenv-commands-pre')
         testenv_commands = self.tox_option('testenv-commands')
         testenv_setenv = self.tox_option('testenv-setenv')
-        require_cffi = self.meta_cfg.get(
-            'c-code', {}).get('require-cffi', False)
         coverage_basepython = self.tox_option(
             'coverage-basepython', default='python3')
         coverage_command = self.tox_option('coverage-command')
@@ -512,7 +510,6 @@ class PackageConfiguration:
             testenv_commands_pre=testenv_commands_pre,
             testenv_deps=testenv_deps,
             testenv_setenv=testenv_setenv,
-            require_cffi=require_cffi,
             with_docs=self.with_docs,
             with_future_python=self.with_future_python,
             with_pypy=self.with_pypy,

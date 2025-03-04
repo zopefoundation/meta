@@ -10,7 +10,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import collections
 import configparser
 import itertools
 import pathlib
@@ -110,7 +109,6 @@ def get_pyproject_toml(path: pathlib.Path) -> TOMLDocument:
     else:
         toml_doc = TOMLDocument()
 
-    # return collections.defaultdict(dict, **toml_doc)
     return toml_doc
 
 
