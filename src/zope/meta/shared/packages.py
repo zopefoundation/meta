@@ -110,7 +110,7 @@ def get_pyproject_toml(path: pathlib.Path) -> TOMLDocument:
     else:
         toml_doc = TOMLDocument()
 
-    #return collections.defaultdict(dict, **toml_doc)
+    # return collections.defaultdict(dict, **toml_doc)
     return toml_doc
 
 
