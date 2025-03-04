@@ -4,6 +4,12 @@ Change log
 1.2 (unreleased)
 ----------------
 
+- Fixes for changed wheel name issues with the latest setuptools/pip
+
+- Improve ``pyproject.toml`` generation
+
+- Add the tox ``release-check`` step to the ``c-code`` templates
+
 - Add script ``bin/switch-to-pep420`` to convert a package from the old
   namespace package layout to the new PEP 420 native layout.
 

@@ -258,7 +258,8 @@ jobs:
           # Unzip into src/ so that testrunner can find the .so files
           # when we ask it to load tests from that directory. This
           # might also save some build time?
-          unzip -n dist/%(package_name)s-*whl -d src
+          ls -l dist/
+          unzip -n dist/*.whl -d src
           # Use "--pre" here because dependencies with support for this future
           # Python release may only be available as pre-releases
           pip install --pre -e .[test]
@@ -274,7 +275,8 @@ jobs:
           # Unzip into src/ so that testrunner can find the .so files
           # when we ask it to load tests from that directory. This
           # might also save some build time?
-          unzip -n dist/%(package_name)s-*whl -d src
+          ls -l dist/
+          unzip -n dist/*.whl -d src
           pip install -e .[test]
       - name: Run tests with C extensions
         if: ${{ !startsWith(matrix.python-version, 'pypy') }}
@@ -335,7 +337,7 @@ jobs:
         run: |
           pip install -U wheel
           pip install -U coverage[toml]
-          pip install -U  "`ls dist/%(package_name)s-*.whl`[docs]"
+          pip install -U  "`ls dist/*.whl`[docs]"
       - name: Build docs
         env:
           ZOPE_INTERFACE_STRICT_IRO: 1
@@ -364,12 +366,12 @@ jobs:
 {% if require_cffi %}
           pip install -U 'cffi; platform_python_implementation == "CPython"'
 {% endif %}
-          pip install -U  "`ls dist/%(package_name)s-*.whl`[docs]"
+          pip install -U  "`ls dist/*.whl`[docs]"
       - name: Run release check
         env:
           ZOPE_INTERFACE_STRICT_IRO: 1
         run: |
-          tox -erelease-check
+          tox -e release-check
 
   manylinux:
     runs-on: ubuntu-latest

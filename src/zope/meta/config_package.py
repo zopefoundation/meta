@@ -37,6 +37,7 @@ from .shared.packages import NEWEST_PYTHON_VERSION
 from .shared.packages import OLDEST_PYTHON_VERSION
 from .shared.packages import PYPY_VERSION
 from .shared.packages import SETUPTOOLS_VERSION_SPEC
+from .shared.packages import get_pyproject_toml
 from .shared.packages import get_pyproject_toml_defaults
 from .shared.packages import parse_additional_config
 from .shared.packages import supported_python_versions
@@ -460,6 +461,8 @@ class PackageConfiguration:
         return self.cfg_option('github-actions', name, default)
 
     def tox(self):
+        toml_doc = get_pyproject_toml(self.path / 'pyproject.toml')
+        build_requirements = toml_doc['build-system'].get('requires', [])
         additional_envlist = self.tox_option('additional-envlist')
         testenv_additional = self.tox_option('testenv-additional')
         testenv_additional_extras = self.tox_option(
@@ -519,6 +522,7 @@ class PackageConfiguration:
             future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
             supported_python_versions=supported_python_versions(
                 self.oldest_python, short_version=True),
+            build_requirements=build_requirements,
         )
 
     def tests_yml(self):
@@ -602,21 +606,13 @@ class PackageConfiguration:
     def pyproject_toml(self):
         """Modify pyproject.toml with meta options."""
         toml_path = self.path / 'pyproject.toml'
-
-        if toml_path.exists():
-            with open(toml_path, 'rb') as fp:
-                toml_doc = tomlkit.load(fp)
-        else:
-            toml_doc = tomlkit.document()
-            preamble = f'\n{META_HINT.format(config_type=self.config_type)}'
-            toml_doc.add(tomlkit.comment(preamble))
-        toml_data = collections.defaultdict(dict, **toml_doc)
+        toml_doc = get_pyproject_toml(toml_path)
 
         # Capture some pre-transformation data
-        old_requires = toml_data['build-system'].get('requires', [])
+        old_requires = toml_doc.get('build-system', {}).get('requires', [])
 
         # Apply template-dependent defaults
-        toml_data.update(get_pyproject_toml_defaults(self.config_type))
+        toml_doc.update(get_pyproject_toml_defaults(self.config_type))
 
         # Create or update section "build-system"
         if old_requires:
@@ -624,10 +620,10 @@ class PackageConfiguration:
                 x for x in old_requires if x.startswith('setuptools')]
             for setuptools_req in setuptools_requirement:
                 old_requires.remove(setuptools_req)
-            toml_data['build-system']['requires'].extend(old_requires)
+            toml_doc['build-system']['requires'].extend(old_requires)
 
         # Update coverage-related data
-        coverage = toml_data['tool']['coverage']
+        coverage = toml_doc['tool']['coverage']
         coverage['run']['source'] = self.coverage_run_source.split()
         coverage['report']['fail_under'] = self.coverage_fail_under
         add_cfg = self.meta_cfg['coverage-run'].get('additional-config', [])
@@ -638,10 +634,22 @@ class PackageConfiguration:
             coverage['run']['omit'] = omit
 
         # Remove empty sections
-        toml_data = {k: v for k, v in toml_data.items() if v}
+        for key, value in toml_doc.items():
+            if not value:
+                toml_doc.remove(key)
 
-        # Update and write out the document
-        toml_doc.update(toml_data)
+        # Add preamble if it is not already there
+        preamble = f'\n{META_HINT.format(config_type=self.config_type)}'
+        if preamble not in toml_doc.as_string():
+            toml_doc.add(tomlkit.comment(preamble))
+
+        # Fix formatting for some items, especially long lists, so diffs
+        # become readable.
+        toml_doc['build-system']['requires'].multiline(True)
+        toml_doc['tool']['coverage']['report']['exclude_lines'].multiline(True)
+        if toml_doc['tool']['coverage'].get('paths'):
+            toml_doc['tool']['coverage']['paths']['source'].multiline(True)
+
         with open(toml_path, 'w') as fp:
             tomlkit.dump(toml_doc, fp, sort_keys=True)
 

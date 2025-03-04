@@ -3,15 +3,14 @@ description = ensure that the distribution is ready to release
 basepython = python3
 skip_install = true
 deps =
-    setuptools %(setuptools_version_spec)s
+{% for build_requirement in build_requirements %}
+    %(build_requirement)s
+{% endfor %}
     twine
     build
     check-manifest
     check-python-versions >= 0.20.0
     wheel
-{% if require_cffi %}
-    cffi; platform_python_implementation == "CPython"
-{% endif %}
 commands_pre =
 commands =
     check-manifest
