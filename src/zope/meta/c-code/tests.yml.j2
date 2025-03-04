@@ -110,11 +110,6 @@ jobs:
         run: |
           pip install -U pip
           pip install -U "setuptools %(setuptools_version_spec)s" wheel twine
-{% if gha_additional_build_deps %}
-  {% for line in gha_additional_build_deps %}
-          pip install -U %(line)s
-  {% endfor %}
-{% endif %}
 
 {% for kind in ('macOS x86_64', 'macOS arm64', 'all other versions') %}
       - name: Build %(package_name)s (%(kind)s)

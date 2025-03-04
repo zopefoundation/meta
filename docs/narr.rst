@@ -594,12 +594,6 @@ additional-install
   For the template ``c-code`` this option is currently used to replace how to
   install the package itself and run tests and coverage.
 
-additional-build-dependencies
-  Additional Python packages to install into the virtual environment before
-  building a package with C extensions. This is used for the ``c-code``
-  template to work around issues on macOS where setuptools attempts to retrieve
-  wheels and convert them to eggs multiple times.
-
 test-environment
   Environment variables to be set during the test run. This option has to be a
   list of strings.
