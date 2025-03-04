@@ -14,7 +14,9 @@ import configparser
 import itertools
 import pathlib
 
+import tomlkit
 from packaging.version import parse as parse_version
+from tomlkit.toml_document import TOMLDocument
 
 
 TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
@@ -96,7 +98,21 @@ PYPROJECT_TOML_OVERRIDES = {
 }
 
 
-def get_pyproject_toml_defaults(template_name):
+def get_pyproject_toml(path: pathlib.Path) -> TOMLDocument:
+    """Parse ``pyproject.toml`` and return its values as ``TOMLDocument``.
+
+    ``path`` must point to a pyproject.toml file.
+    """
+    if path.exists():
+        with open(path, 'rb') as fp:
+            toml_doc = tomlkit.load(fp)
+    else:
+        toml_doc = TOMLDocument()
+
+    return toml_doc
+
+
+def get_pyproject_toml_defaults(template_name: str) -> dict:
     """ Get pyproject.toml default data for a given template name"""
     return merge_dicts(PYPROJECT_TOML_DEFAULTS,
                        PYPROJECT_TOML_OVERRIDES.get(template_name, {}))

@@ -101,9 +101,6 @@ jobs:
         if: matrix.python-version == '%(future_python_version)s'
         run: |
           pip install -U pip
-  {% if require_cffi %}
-          pip install -U --pre cffi
-  {% endif %}
           pip install -U "setuptools %(setuptools_version_spec)s" wheel twine
 {% endif %}
       - name: Install Build Dependencies
@@ -113,14 +110,6 @@ jobs:
         run: |
           pip install -U pip
           pip install -U "setuptools %(setuptools_version_spec)s" wheel twine
-  {% if require_cffi %}
-          pip install cffi
-  {% endif %}
-{% if gha_additional_build_deps %}
-  {% for line in gha_additional_build_deps %}
-          pip install -U %(line)s
-  {% endfor %}
-{% endif %}
 
 {% for kind in ('macOS x86_64', 'macOS arm64', 'all other versions') %}
       - name: Build %(package_name)s (%(kind)s)
@@ -248,9 +237,6 @@ jobs:
       - name: Install %(package_name)s ${{ matrix.python-version }}
         if: matrix.python-version == '%(future_python_version)s'
         run: |
-  {% if require_cffi %}
-          pip install -U --pre cffi
-  {%  endif %}
           pip install -U wheel "setuptools %(setuptools_version_spec)s"
           # coverage might have a wheel on PyPI for a future python version which is
           # not ABI compatible with the current one, so build it from sdist:
@@ -258,7 +244,8 @@ jobs:
           # Unzip into src/ so that testrunner can find the .so files
           # when we ask it to load tests from that directory. This
           # might also save some build time?
-          unzip -n dist/%(package_name)s-*whl -d src
+          ls -l dist/
+          unzip -n dist/*.whl -d src
           # Use "--pre" here because dependencies with support for this future
           # Python release may only be available as pre-releases
           pip install --pre -e .[test]
@@ -274,7 +261,8 @@ jobs:
           # Unzip into src/ so that testrunner can find the .so files
           # when we ask it to load tests from that directory. This
           # might also save some build time?
-          unzip -n dist/%(package_name)s-*whl -d src
+          ls -l dist/
+          unzip -n dist/*.whl -d src
           pip install -e .[test]
       - name: Run tests with C extensions
         if: ${{ !startsWith(matrix.python-version, 'pypy') }}
@@ -335,7 +323,7 @@ jobs:
         run: |
           pip install -U wheel
           pip install -U coverage[toml]
-          pip install -U  "`ls dist/%(package_name)s-*.whl`[docs]"
+          pip install -U  "`ls dist/*.whl`[docs]"
       - name: Build docs
         env:
           ZOPE_INTERFACE_STRICT_IRO: 1
@@ -345,6 +333,28 @@ jobs:
           sphinx-build -b doctest -d docs/_build/doctrees docs docs/_build/doctest
   {% endif %}
 {% endif %}
+
+  release-check:
+    needs: build-package
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        python-version: ["%(manylinux_python_version)s"]
+        os: [ubuntu-latest]
+
+    steps:
+{% include 'tests-cache.j2' %}
+{% include 'tests-download.j2' %}
+      - name: Install %(package_name)s
+        run: |
+          pip install -U wheel
+          pip install -U tox
+          pip install -U  "`ls dist/*.whl`[docs]"
+      - name: Run release check
+        env:
+          ZOPE_INTERFACE_STRICT_IRO: 1
+        run: |
+          tox -e release-check
 
   manylinux:
     runs-on: ubuntu-latest

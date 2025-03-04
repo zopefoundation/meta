@@ -5,6 +5,7 @@
 [tox]
 minversion = 4.0
 envlist =
+    release-check
     lint
 {% for py_version in supported_python_versions %}
     py%(py_version)s,py%(py_version)s-pure
