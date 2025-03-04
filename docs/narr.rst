@@ -337,7 +337,6 @@ updated. Example:
         "\"${PYBIN}/tox\" -e py",
         "cd ..",
         ]
-    require-cffi = true
 
     [zest-releaser]
     options = [
@@ -624,11 +623,6 @@ manylinux-aarch64-tests
   Replacement for the tests against the aarch64 architecture. This option has
   to be a list of strings and defaults to testing using ``tox`` against all
   supported Python versions, which could be too slow for some packages.
-
-require-cffi
-  Require to install ``cffi`` via pip before trying to build the package. This
-  is needed for some packages to circumvent build problems on MacOS. This
-  option has to be a boolean (true or false).
 
 
 zest.releaser options

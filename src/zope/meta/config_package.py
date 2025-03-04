@@ -535,8 +535,6 @@ class PackageConfiguration:
             'additional-build-dependencies')
         gha_test_environment = self.gh_option('test-environment')
         gha_test_commands = self.gh_option('test-commands')
-        require_cffi = self.meta_cfg.get(
-            'c-code', {}).get('require-cffi', False)
         py_version_matrix = [
             x for x in zip(supported_python_versions(self.oldest_python,
                                                      short_version=False),
@@ -559,7 +557,6 @@ class PackageConfiguration:
             with_sphinx_doctests=self.with_sphinx_doctests,
             with_future_python=self.with_future_python,
             future_python_version=FUTURE_PYTHON_VERSION,
-            require_cffi=require_cffi,
             with_pypy=self.with_pypy,
             with_macos=self.with_macos,
             with_windows=self.with_windows,

@@ -101,9 +101,6 @@ jobs:
         if: matrix.python-version == '%(future_python_version)s'
         run: |
           pip install -U pip
-  {% if require_cffi %}
-          pip install -U --pre cffi
-  {% endif %}
           pip install -U "setuptools %(setuptools_version_spec)s" wheel twine
 {% endif %}
       - name: Install Build Dependencies
@@ -113,9 +110,6 @@ jobs:
         run: |
           pip install -U pip
           pip install -U "setuptools %(setuptools_version_spec)s" wheel twine
-  {% if require_cffi %}
-          pip install cffi
-  {% endif %}
 {% if gha_additional_build_deps %}
   {% for line in gha_additional_build_deps %}
           pip install -U %(line)s
@@ -248,9 +242,6 @@ jobs:
       - name: Install %(package_name)s ${{ matrix.python-version }}
         if: matrix.python-version == '%(future_python_version)s'
         run: |
-  {% if require_cffi %}
-          pip install -U --pre cffi
-  {%  endif %}
           pip install -U wheel "setuptools %(setuptools_version_spec)s"
           # coverage might have a wheel on PyPI for a future python version which is
           # not ABI compatible with the current one, so build it from sdist:
@@ -363,9 +354,6 @@ jobs:
         run: |
           pip install -U wheel
           pip install -U tox
-{% if require_cffi %}
-          pip install -U 'cffi; platform_python_implementation == "CPython"'
-{% endif %}
           pip install -U  "`ls dist/*.whl`[docs]"
       - name: Run release check
         env:

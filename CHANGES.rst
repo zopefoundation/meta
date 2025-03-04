@@ -4,6 +4,9 @@ Change log
 1.2 (unreleased)
 ----------------
 
+- Retire configuration ``require-cffi``.
+  Build dependencies should go into ``pyproject.toml`` instead.
+
 - Fixes for changed wheel name issues with the latest setuptools/pip
 
 - Improve ``pyproject.toml`` generation
