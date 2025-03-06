@@ -18,7 +18,8 @@ Change log
 
 - Add ``pyupgrade-exclude`` to ``[pre-commit]`` section in ``.meta.toml``.
 
-- Update to ``zc.buildout < 4.1``.
+- Downgrade ``zc.buildout`` version pin to ``<4.1`` due to
+  ongoing setuptools compatibility issues.
 
 1.1 (2025-01-29)
 ----------------
