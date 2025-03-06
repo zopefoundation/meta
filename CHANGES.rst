@@ -18,6 +18,8 @@ Change log
 
 - Add ``pyupgrade-exclude`` to ``[pre-commit]`` section in ``.meta.toml``.
 
+- Update to ``setuptools <= 75.8.2`` and ``zc.buildout >= 4.1.3``.
+
 1.1 (2025-01-29)
 ----------------
 
