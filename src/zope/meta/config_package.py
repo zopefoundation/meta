@@ -89,6 +89,12 @@ def handle_command_line_arguments():
         default=True,
         help='Prevent direct push.')
     parser.add_argument(
+        '--no-tests',
+        dest='run_tests',
+        action='store_false',
+        default=True,
+        help='Skip running unit tests.')
+    parser.add_argument(
         '--with-macos',
         dest='with_macos',
         action='store_true',
@@ -722,9 +728,10 @@ class PackageConfiguration:
                 meta_f.write('\n')
                 tomlkit.dump(meta_cfg, meta_f)
 
-            tox_path = shutil.which('tox') or (
-                pathlib.Path(cwd) / 'bin' / 'tox')
-            call(tox_path, '-p', 'auto')
+            if self.args.run_tests:
+                tox_path = shutil.which('tox') or (
+                    pathlib.Path(cwd) / 'bin' / 'tox')
+                call(tox_path, '-p', 'auto')
 
             updating = git_branch(self.branch_name)
 
