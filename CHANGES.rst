@@ -4,6 +4,9 @@ Change log
 1.2 (unreleased)
 ----------------
 
+- Add argument ``--no-tests`` to configuration script to skip unit tests.
+  Useful for quick iterative configuration or code changes.
+
 - Retire configurations ``require-cffi`` and ``additional-build-requirement``.
   Build dependencies should go into ``pyproject.toml`` instead.
 

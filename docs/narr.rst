@@ -151,6 +151,10 @@ The following arguments are supported.
 --no-push
   Avoid pushing at the end of the configuration run.
 
+--no-tests
+  Don't run the package's unit tests as part of the configuration run. Useful
+  for quickly testing iterative configuration changes.
+
 --branch
   Define a specific git branch name to be created for the changes. By default
   the script creates one which includes the name of the configuration type.
