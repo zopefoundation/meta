@@ -166,6 +166,10 @@ The following options are only needed one time as their values are stored in
   Define the configuration type (see `Configuration types`_ section above) to
   be used for the repository.
 
+--template-overrides
+  Filesystem path to a folder that contains subfolders for configuration type
+  and default templates. Used to override built-in configuration templates.
+
 --with-macos
   Enable running the tests on macOS on GitHub Actions.
 

@@ -163,6 +163,12 @@ def handle_command_line_arguments():
         help='Define a git branch name to be used for the changes. '
         'If not given it is constructed automatically and includes '
         'the configuration type')
+    parser.add_argument(
+        '--template-overrides',
+        dest='template_override_path',
+        default=None,
+        help='Filesystem path to a folder with subfolders for configuration '
+        'types. Used to override built-in configuration templates.')
 
     args = parser.parse_args()
     return args
@@ -209,6 +215,13 @@ class PackageConfiguration:
                 print(f"Autodetecting --with-docs: {self.args.with_docs}")
         return meta_cfg
 
+    def template_exists(self, filename):
+        """Check if a given template exists"""
+        for parent_folder in self.template_folders:
+            if (parent_folder / filename).exists():
+                return True
+        return False
+
     @cached_property
     def config_type(self):
         value = self.meta_cfg['meta'].get('template') or self.args.type
@@ -243,10 +256,21 @@ class PackageConfiguration:
         return pathlib.Path(__file__).parent / 'default'
 
     @cached_property
+    def override_paths(self):
+        if self.args.template_override_path:
+            override_path = pathlib.Path(self.args.template_override_path)
+            return [override_path / self.config_type,
+                    override_path / 'default']
+        return []
+
+    @cached_property
+    def template_folders(self):
+        return self.override_paths + [self.config_type_path, self.default_path]
+
+    @cached_property
     def jinja_env(self):
         return jinja2.Environment(
-            loader=jinja2.FileSystemLoader(
-                [self.config_type_path, self.default_path]),
+            loader=jinja2.FileSystemLoader(self.template_folders),
             variable_start_string='%(',
             variable_end_string=')s',
             keep_trailing_newline=True,
@@ -297,7 +321,15 @@ class PackageConfiguration:
 
     def _add_project_to_config_type_list(self):
         """Add the current project to packages.txt if it is not there"""
-        with open(self.config_type_path / 'packages.txt') as f:
+        if self.override_paths:
+            packages_txt_folder = self.override_paths[0]
+        else:
+            packages_txt_folder = self.config_type_path
+
+        if not (packages_txt_folder / 'packages.txt').exists():
+            (packages_txt_folder / 'packages.txt').touch(mode=0o664)
+
+        with open(packages_txt_folder / 'packages.txt') as f:
             known_packages = f.read().splitlines()
 
         if self.path.name in known_packages:
@@ -306,7 +338,7 @@ class PackageConfiguration:
         else:
             print(f'{self.path.name} is not yet configured '
                   'for this config type, adding.')
-            with open(self.config_type_path / 'packages.txt', 'a') as f:
+            with open(packages_txt_folder / 'packages.txt', 'a') as f:
                 f.write(f'{self.path.name}\n')
 
     def _set_python_config_value(self, name, default=False):
@@ -423,7 +455,7 @@ class PackageConfiguration:
                 'cd ..',
             ])
 
-        if (self.config_type_path / 'manylinux.sh').exists():
+        if self.template_exists('manylinux.sh'):
             self.copy_with_meta(
                 'manylinux.sh', self.path / '.manylinux.sh', self.config_type)
             (self.path / '.manylinux.sh').chmod(0o755)
