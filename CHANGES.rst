@@ -4,6 +4,8 @@ Change log
 1.2 (unreleased)
 ----------------
 
+- Use Jinja templates to generate ``pyproject.toml`` files as well.
+
 - Add argument ``--template-overrides`` to configuration script to specify
   an additional configuration templates folder. This folder is expected to
   contain subfolders for each overridden configuration type or a ``default``

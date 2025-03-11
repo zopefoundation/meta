@@ -31,104 +31,32 @@ MANYLINUX_PYTHON_VERSION = '3.11'
 MANYLINUX_AARCH64 = 'manylinux2014_aarch64'
 MANYLINUX_I686 = 'manylinux2014_i686'
 MANYLINUX_X86_64 = 'manylinux2014_x86_64'
-PYPROJECT_TOML_DEFAULTS = {
-    'build-system': {
-        'requires': [f'setuptools {SETUPTOOLS_VERSION_SPEC}'],
-        'build-backend': 'setuptools.build_meta',
-    },
-    'tool': {
-        'coverage': {
-            'run': {
-                'branch': True,
-                'source': 'src',
-            },
-            'report': {
-                'fail_under': 0,
-                'precision': 2,
-                'ignore_errors': True,
-                'show_missing': True,
-                'exclude_lines': ['pragma: no cover',
-                                  'pragma: nocover',
-                                  'except ImportError:',
-                                  'raise NotImplementedError',
-                                  "if __name__ == '__main__':",
-                                  'self.fail',
-                                  'raise AssertionError',
-                                  'raise unittest.Skip',
-                                  ],
-            },
-            'html': {
-                'directory': 'parts/htmlcov',
-            },
-        },
-    },
-
-}
-PYPROJECT_TOML_OVERRIDES = {
-    'buildout-recipe': {
-        'tool': {
-            'coverage': {
-                'run': {
-                    'parallel': True,
-                },
-                'paths': {
-                    'source': ['src/',
-                               '.tox/*/lib/python*/site-packages/',
-                               '.tox/pypy*/site-packages/',
-                               ],
-                },
-            },
-        },
-    },
-    'c-code': {
-        'tool': {
-            'coverage': {
-                'run': {
-                    'relative_files': True,
-                },
-                'paths': {
-                    'source': ['src/',
-                               '.tox/*/lib/python*/site-packages/',
-                               '.tox/pypy*/site-packages/',
-                               ],
-                },
-            },
-        },
-    },
-}
 
 
-def get_pyproject_toml(path: pathlib.Path) -> TOMLDocument:
+def get_pyproject_toml(path: pathlib.Path, comment='') -> TOMLDocument:
     """Parse ``pyproject.toml`` and return its values as ``TOMLDocument``.
 
-    ``path`` must point to a pyproject.toml file.
+    Args:
+        path (str, pathlib.Path): Filesystem path to a pyproject.toml file.
+
+    Kwargs:
+        comment (str): Optional comment added to the top of the file.
+
+    Returns:
+        A TOMLDocument instance from the pyproject.toml file.
     """
     if path.exists():
-        with open(path, 'rb') as fp:
-            toml_doc = tomlkit.load(fp)
+        with open(path) as fp:
+            toml_contents = fp.read()
     else:
-        toml_doc = TOMLDocument()
+        toml_contents = ''
 
-    return toml_doc
+    if comment and not\
+       (toml_contents.startswith(comment) or
+            toml_contents.startswith(f'# \n{comment}')):
+        toml_contents = f'{comment}\n{toml_contents}'
 
-
-def get_pyproject_toml_defaults(template_name: str) -> dict:
-    """ Get pyproject.toml default data for a given template name"""
-    return merge_dicts(PYPROJECT_TOML_DEFAULTS,
-                       PYPROJECT_TOML_OVERRIDES.get(template_name, {}))
-
-
-def merge_dicts(dict1, dict2):
-    for key, value in dict2.items():
-        if key in dict1 and \
-           isinstance(dict1[key], dict) and \
-           isinstance(value, dict):
-            # Recursively merge nested dictionaries
-            dict1[key] = merge_dicts(dict1[key], value)
-        else:
-            # Merge non-dictionary values
-            dict1[key] = value
-    return dict1
+    return tomlkit.loads(toml_contents)
 
 
 def parse_additional_config(cfg):

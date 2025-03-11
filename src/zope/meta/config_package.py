@@ -38,7 +38,6 @@ from .shared.packages import OLDEST_PYTHON_VERSION
 from .shared.packages import PYPY_VERSION
 from .shared.packages import SETUPTOOLS_VERSION_SPEC
 from .shared.packages import get_pyproject_toml
-from .shared.packages import get_pyproject_toml_defaults
 from .shared.packages import parse_additional_config
 from .shared.packages import supported_python_versions
 from .shared.path import change_dir
@@ -635,26 +634,37 @@ class PackageConfiguration:
     def pyproject_toml(self):
         """Modify pyproject.toml with meta options."""
         toml_path = self.path / 'pyproject.toml'
-        toml_doc = get_pyproject_toml(toml_path)
+        toml_doc = get_pyproject_toml(
+            toml_path,
+            comment=META_HINT.format(config_type=self.config_type))
 
         # Capture some pre-transformation data
         old_requires = toml_doc.get('build-system', {}).get('requires', [])
 
         # Apply template-dependent defaults
-        toml_doc.update(get_pyproject_toml_defaults(self.config_type))
+        toml_defaults = self.render_with_meta(
+            'pyproject_defaults.toml.j2',
+            self.config_type,
+            setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
+            coverage_run_source=self.coverage_run_source,
+            coverage_fail_under=self.coverage_fail_under,
+        )
+        toml_doc.update(tomlkit.loads(toml_defaults))
 
-        # Create or update section "build-system"
+        # Create or update section "build-system", we want to control a few
+        # build requirement specifications like wheel and setuptools.
         if old_requires:
             setuptools_requirement = [
                 x for x in old_requires if x.startswith('setuptools')]
             for setuptools_req in setuptools_requirement:
                 old_requires.remove(setuptools_req)
+            wheel_requirement = [
+                x for x in old_requires if x.startswith('wheel')]
+            [old_requires.remove(x) for x in wheel_requirement]
             toml_doc['build-system']['requires'].extend(old_requires)
 
         # Update coverage-related data
         coverage = toml_doc['tool']['coverage']
-        coverage['run']['source'] = self.coverage_run_source.split()
-        coverage['report']['fail_under'] = self.coverage_fail_under
         add_cfg = self.meta_cfg['coverage-run'].get('additional-config', [])
         for key, value in parse_additional_config(add_cfg).items():
             coverage['run'][key] = value
@@ -667,11 +677,6 @@ class PackageConfiguration:
             if not value:
                 toml_doc.remove(key)
 
-        # Add preamble if it is not already there
-        preamble = f'\n{META_HINT.format(config_type=self.config_type)}'
-        if preamble not in toml_doc.as_string():
-            toml_doc.add(tomlkit.comment(preamble))
-
         # Fix formatting for some items, especially long lists, so diffs
         # become readable.
         toml_doc['build-system']['requires'].multiline(True)
@@ -682,6 +687,11 @@ class PackageConfiguration:
         with open(toml_path, 'w') as fp:
             tomlkit.dump(toml_doc, fp, sort_keys=True)
 
+    def render_with_meta(self, template_name, config_type, **kw):
+        """Read and render a Jinja template source file"""
+        template = self.jinja_env.get_template(template_name)
+        return template.render(config_type=config_type, **kw)
+
     def copy_with_meta(
             self, template_name, destination, config_type,
             meta_hint=META_HINT, **kw):
@@ -689,8 +699,7 @@ class PackageConfiguration:
 
         If kwargs are given they are used as template arguments.
         """
-        template = self.jinja_env.get_template(template_name)
-        rendered = template.render(config_type=config_type, **kw)
+        rendered = self.render_with_meta(template_name, config_type, **kw)
         meta_hint = meta_hint.format(config_type=config_type)
         if rendered.startswith('#!'):
             she_bang, _, body = rendered.partition('\n')
