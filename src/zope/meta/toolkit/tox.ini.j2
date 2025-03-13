@@ -5,8 +5,8 @@
 skip_install = true
 deps =
     setuptools %(setuptools_version_spec)s
-    zc.buildout < 4.1
-    wheel > 0.37
+    zc.buildout
+    wheel
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}
@@ -40,8 +40,8 @@ commands =
 basepython = python3
 deps =
     git+https://github.com/pypa/setuptools.git\#egg=setuptools
-    zc.buildout < 4.1
-    wheel > 0.37
+    zc.buildout
+    wheel
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}

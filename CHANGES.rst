@@ -4,6 +4,11 @@ Change log
 1.2 (unreleased)
 ----------------
 
+- Upgrade setuptools pin to 75.8.2, which is extensively tested with the
+  latest zc.buildout release 4.1.4. **Package maintainers should update
+  all their sandboxes to use ``setuptools==75.8.2`` and ``zc.buildout>=4.1.4``
+  to avoid issues with building and/or loading wheels!**
+
 - Use Jinja templates to generate ``pyproject.toml`` files as well.
 
 - Add argument ``--template-overrides`` to configuration script to specify
@@ -28,9 +33,6 @@ Change log
   namespace package layout to the new PEP 420 native layout.
 
 - Add ``pyupgrade-exclude`` to ``[pre-commit]`` section in ``.meta.toml``.
-
-- Downgrade ``zc.buildout`` version pin to ``<4.1`` due to
-  ongoing setuptools compatibility issues.
 
 1.1 (2025-01-29)
 ----------------
