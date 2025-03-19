@@ -4,6 +4,9 @@ Change log
 1.2 (unreleased)
 ----------------
 
+- Fixed a regression that removed GHA additional installs from the
+  default template for GHA testing.
+
 - Upgrade setuptools pin to 75.8.2, which is extensively tested with the
   latest zc.buildout release 4.1.4. **Package maintainers should update
   all their sandboxes to use ``setuptools==75.8.2`` and ``zc.buildout>=4.1.4``
