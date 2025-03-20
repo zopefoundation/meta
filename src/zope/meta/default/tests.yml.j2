@@ -92,6 +92,13 @@ jobs:
     - uses: actions/checkout@v4
       with:
         persist-credentials: false
+{% if gha_additional_install %}
+    - name: Install additional dependencies
+      run: |
+{% for line in gha_additional_install %}
+        %(line)s
+  {% endfor %}
+{% endif %}
     - name: Install uv + caching
       uses: astral-sh/setup-uv@v5
       with:
