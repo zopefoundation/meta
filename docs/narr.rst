@@ -169,6 +169,9 @@ The following options are only needed one time as their values are stored in
 --template-overrides
   Filesystem path to a folder that contains subfolders for configuration type
   and default templates. Used to override built-in configuration templates.
+  Empty override template files will prevent creating the respective file in
+  the repository you are managing with ``zope.meta``, this way you can
+  purposely omit creating some optional files.
 
 --with-macos
   Enable running the tests on macOS on GitHub Actions.
