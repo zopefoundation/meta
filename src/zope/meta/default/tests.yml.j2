@@ -97,7 +97,7 @@ jobs:
       run: |
 {% for line in gha_additional_install %}
         %(line)s
-  {% endfor %}
+{% endfor %}
 {% endif %}
     - name: Install uv + caching
       uses: astral-sh/setup-uv@v5

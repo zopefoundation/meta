@@ -4,6 +4,8 @@ Change log
 1.2 (unreleased)
 ----------------
 
+- Add ability to omit creating files by providing empty override templates.
+
 - Fixed a regression that removed GHA additional installs from the
   default template for GHA testing.
 

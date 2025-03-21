@@ -1,4 +1,3 @@
-{% set with_coverage = True %}
 {% set raw_testenv_setenv = testenv_setenv %}
 {% set testenv_setenv = ['pure: PURE_PYTHON=1', '!pure-!pypy3: PURE_PYTHON=0'] + testenv_setenv %}
 {% set coverage_setenv = ['PURE_PYTHON=1'] + coverage_setenv %}
@@ -19,9 +18,7 @@ envlist =
 {% if with_docs %}
     docs
 {% endif %}
-{% if with_coverage %}
     coverage
-{% endif %}
 {% for line in additional_envlist %}
     %(line)s
 {% endfor %}
