@@ -10,11 +10,15 @@ include .pre-commit-config.yaml
 
 recursive-include docs *.py
 recursive-include docs *.rst
+{% if have_docs_txt_files %}
 recursive-include docs *.txt
+{% endif %}
 recursive-include docs Makefile
 {% endif %}
 
+{% if have_src_folder %}
 recursive-include src *.py
+{% endif %}
 {% for line in manifest_additional_rules %}
 %(line)s
 {% endfor %}

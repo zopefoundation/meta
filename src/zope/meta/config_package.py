@@ -630,7 +630,9 @@ class PackageConfiguration:
                 'MANIFEST.in.j2', self.path / 'MANIFEST.in', self.config_type,
                 manifest_additional_rules=manifest_additional_rules,
                 with_docs=self.with_docs,
-                have_md_files=list(self.path.glob('*.md')))
+                have_md_files=list(self.path.glob('*.md')),
+                have_docs_txt_files=list(self.path.glob('docs/*.txt')),
+                have_src_folder=(self.path / 'src').exists())
 
     def pyproject_toml(self):
         """Modify pyproject.toml with meta options."""
