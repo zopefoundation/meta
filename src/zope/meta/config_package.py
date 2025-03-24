@@ -629,7 +629,10 @@ class PackageConfiguration:
             self.copy_with_meta(
                 'MANIFEST.in.j2', self.path / 'MANIFEST.in', self.config_type,
                 manifest_additional_rules=manifest_additional_rules,
-                with_docs=self.with_docs)
+                with_docs=self.with_docs,
+                have_md_files=list(self.path.glob('*.md')),
+                have_docs_txt_files=list(self.path.glob('docs/*.txt')),
+                have_src_folder=(self.path / 'src').exists())
 
     def pyproject_toml(self):
         """Modify pyproject.toml with meta options."""
@@ -698,8 +701,18 @@ class PackageConfiguration:
         """Copy the source file to destination and a hint of origin.
 
         If kwargs are given they are used as template arguments.
+
+        If the rendered template output is an empty string, don't write it
+        to disk. This allows package maintainers to prevent adding certain
+        optional files by specifying a custom templates path with the
+        ``--template-overrides`` option and adding an empty template there.
         """
         rendered = self.render_with_meta(template_name, config_type, **kw)
+
+        # If the rendered template is empty, give up and return.
+        if not rendered.strip():
+            return
+
         meta_hint = meta_hint.format(config_type=config_type)
         if rendered.startswith('#!'):
             she_bang, _, body = rendered.partition('\n')
@@ -732,15 +745,16 @@ class PackageConfiguration:
             'CONTRIBUTING.md', self.path / 'CONTRIBUTING.md', self.config_type,
             meta_hint=META_HINT_MARKDOWN)
 
-        with change_dir(self.path):
-            # We have to add it here otherwise the linter complains
-            # that it is not added.
-            early_add = [
-                '.pre-commit-config.yaml',
-                'CONTRIBUTING.md',
-                'pyproject.toml',
-            ]
-            if self.args.commit:
+        if self.args.commit:
+            with change_dir(self.path):
+                # We have to add it here otherwise the linter complains
+                # that it is not added.
+                early_add_candidates = (
+                    '.pre-commit-config.yaml',
+                    'pyproject.toml',
+                    'CONTRIBUTING.md')
+                early_add = [x for x in early_add_candidates
+                             if pathlib.Path(x).exists()]
                 call('git', 'add', *early_add)
 
         self.manylinux_sh()
@@ -758,7 +772,9 @@ class PackageConfiguration:
                 call('git', 'rm', '.coveragerc')
             if pathlib.Path('appveyor.yml').exists():
                 call('git', 'rm', 'appveyor.yml')
-            if self.with_docs and self.args.commit:
+            if self.with_docs and \
+               pathlib.Path('.readthedocs.yaml').exists() and \
+               self.args.commit:
                 call('git', 'add', '.readthedocs.yaml')
             if self.add_manylinux and self.args.commit:
                 call('git', 'add', '.manylinux.sh', '.manylinux-install.sh')
