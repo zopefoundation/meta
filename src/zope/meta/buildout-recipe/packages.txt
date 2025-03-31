@@ -1,10 +1,8 @@
 # Packages configured as buildout recipe are listed here.
 # Do not edit the file by hand but use the script config-package.py as
 # described in README.rst
-z3c.recipe.tag
 zc.recipe.testrunner
 z3c.recipe.mkdir
-z3c.recipe.i18n
 zc.recipe.cmmi
 zdaemon
 zc.recipe.filestorage

@@ -2,7 +2,6 @@
 # Do not edit the file by hand but use the script config-package.py as
 # described in README.rst
 zope.authentication
-z3c.wizard
 zope.browsermenu
 zope.app.publication
 zope.app.broken
@@ -31,15 +30,8 @@ grokcore.viewlet
 grokcore.xmlrpc
 hurry.workflow
 pyramid_zope_request
-z3c.csvvocabulary
-z3c.evalexception
 zope.sendmail
 zope.publisher
-z3c.formwidget.ckeditor
-z3c.layer.ready2go
-z3c.menu.ready2go
-z3c.testing
-z3c.traverser
 zope.testing
 zope.schema
 zc.intid
@@ -67,20 +59,16 @@ zope.app.preference
 zope.app.localpermission
 Missing
 zc.sourcefactory
-z3c.preference
 zope.preference
 z3c.formwidget.query
 zc.form
 MultiMapping
-z3c.etestbrowser
 z3c.breadcrumb
 zope.formlib
-z3c.authenticator
 zope.datetime
 z3c.zcmlhook
 zope.app.applicationcontrol
 z3c.caching
-z3c.formui
 z3c.pagelet
 zope.app.container
 zope.app.locales
@@ -90,17 +78,13 @@ zc.table
 Products.ExternalEditor
 zope.testrunner
 zope.file
-z3c.authviewlet
 zope.catalog
 grokcore.rest
 zope.app.tree
 zope.globalrequest
 z3c.flashmessage
-z3c.saconfig
 grokcore.security
 zope.locking
-z3c.schema
-z3c.baseregistry
 AuthEncoding
 zope.app.session
 zope.app.dependable
@@ -125,7 +109,6 @@ zodbupdate
 zc.zodbdgc
 RestrictedPython
 tempstorage
-z3c.currency
 zope.event
 z3c.form
 zope.i18n
@@ -140,9 +123,7 @@ zc.catalog
 martian
 z3c.password
 zope.ptresource
-z3c.table
 zope.app.apidoc
-z3c.macro
 z3c.ptcompat
 z3c.pt
 zope.componentvocabulary
@@ -184,7 +165,6 @@ ZopeUndo
 grok
 grokcore.site
 hurry.query
-z3c.autoinclude
 z3c.sqlalchemy
 zc.lockfile
 z3c.unconfigure
