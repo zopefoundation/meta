@@ -50,6 +50,13 @@ def main():
         help="Run interactively: Scripts will prompt for input. Implies "
         "--no-commit, changes will not be committed and pushed automatically.",
     )
+    parser.add_argument(
+        '--no-tests',
+        dest='run_tests',
+        action='store_false',
+        default=True,
+        help='Skip running unit tests.',
+    )
 
     args = parser.parse_args()
     path = args.path.absolute()
@@ -63,7 +70,7 @@ def main():
     with change_dir(path) as cwd_str:
         cwd = pathlib.Path(cwd_str)
         bin_dir = cwd / "bin"
-        branch_name = "pep-420-native-namespace"
+        branch_name = args.branch_name or "pep-420-native-namespace"
         updating = git_branch(branch_name)
 
         non_interactive_params = []
@@ -75,10 +82,8 @@ def main():
         call(bin_dir / "bumpversion", "--breaking", *non_interactive_params)
         call(
             bin_dir / "addchangelogentry",
-            "Drop support for ``pkg_resources`` namespace and replace it with"
-            " PEP 420 native namespace."
-            " Caution: This change requires to switch all packages in the "
-            " namespace of the package to versions using a PEP 420 namespace.",
+            "Replace ``pkg_resources`` namespace with PEP 420"
+            " native namespace."
         )
 
         setup_py = []
@@ -97,28 +102,30 @@ def main():
                 )
             else:
                 setup_py.append(line)
-            for src_dir_cont in (path / "src").iterdir():
-                if not src_dir_cont.is_dir():
-                    continue
-                pkg_init = src_dir_cont / "__init__.py"
-                if pkg_init.exists():
-                    pkg_init.unlink()
-                for pkg_dir_cont in src_dir_cont.iterdir():
-                    if not pkg_dir_cont.is_dir():
-                        continue
-                    sub_pkg_init = pkg_dir_cont / "__init__.py"
-                    if sub_pkg_init.exists():
-                        if "pkg_resources" in sub_pkg_init.read_text():
-                            sub_pkg_init.unlink()
 
         (path / "setup.py").write_text("\n".join(setup_py) + "\n")
+
+        for src_dir_cont in (path / "src").iterdir():
+            if not src_dir_cont.is_dir():
+                continue
+            pkg_init = src_dir_cont / "__init__.py"
+            if pkg_init.exists():
+                pkg_init.unlink()
+            for pkg_dir_cont in src_dir_cont.iterdir():
+                if not pkg_dir_cont.is_dir():
+                    continue
+                sub_pkg_init = pkg_dir_cont / "__init__.py"
+                if sub_pkg_init.exists():
+                    if "pkg_resources" in sub_pkg_init.read_text():
+                        sub_pkg_init.unlink()
 
         if args.commit:
             print("Adding all changes ...")
             call("git", "add", ".")
 
-        tox_path = shutil.which("tox") or (cwd / "bin" / "tox")
-        call(tox_path, "-p", "auto")
+        if args.run_tests:
+            tox_path = shutil.which("tox") or (cwd / "bin" / "tox")
+            call(tox_path, "-p", "auto")
 
         if args.commit:
             print("Committing and pushing all changes ...")
