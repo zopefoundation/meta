@@ -78,6 +78,18 @@ def main():
         default=False,
         help='Run interactively: Scripts will prompt for input. Implies '
         '--no-commit, changes will not be committed and pushed automatically.')
+    parser.add_argument(
+        '--no-tests',
+        dest='run_tests',
+        action='store_false',
+        default=True,
+        help='Skip running unit tests.')
+    parser.add_argument(
+        '--template-overrides',
+        dest='template_override_path',
+        default=None,
+        help='Filesystem path to a folder with subfolders for configuration '
+        'types. Used to override built-in configuration templates.')
 
     args = parser.parse_args()
     path = args.path.absolute()
@@ -162,6 +174,11 @@ def main():
                 config_package_args.append('--with-future-python')
             if not args.commit:
                 config_package_args.append('--no-commit')
+            if not args.run_tests:
+                config_package_args.append('--no-tests')
+            if args.template_override_path:
+                config_package_args.append(
+                    f'--template-overrides={args.template_override_path}')
             call(*config_package_args, cwd=cwd_str)
             src = path.resolve() / 'src'
             py_ver_plus = f'--py{oldest_python_version.replace(".", "")}-plus'
@@ -195,8 +212,11 @@ def main():
                     0,
                     1))
             wait_for_accept()
-            tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
-            call(tox_path, '-p', 'auto')
+
+            if args.run_tests:
+                tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
+                call(tox_path, '-p', 'auto')
+
             if args.commit:
                 print('Adding, committing and pushing all changes ...')
                 call('git', 'add', '.')
