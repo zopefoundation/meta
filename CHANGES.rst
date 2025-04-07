@@ -3,6 +3,11 @@ Change log
 
 1.2 (unreleased)
 ----------------
+- Add flag ``--no-tests`` to the scripts for switching to PEP 420
+  namespaces and for updating supported Python versions.
+
+- Add support for the ``--template-overrides`` flag to the Python version
+  update script because it calls ``config-package``.
 
 - Add ability to omit creating files by providing empty override templates.
 
