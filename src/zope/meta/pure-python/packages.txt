@@ -34,7 +34,6 @@ zope.sendmail
 zope.publisher
 zope.testing
 zope.schema
-zc.intid
 zope.apidoc
 zope.app.authentication
 zope.app.basicskin
@@ -49,14 +48,11 @@ zope.app.http
 zope.app.onlinehelp
 zope.app.pagetemplate
 zope.app.principalannotation
-zope.app.renderer
 zope.app.rotterdam
 zope.app.schema
 zope.fanstatic
 zope.schemaevent
 zope.app.debug
-zope.app.preference
-zope.app.localpermission
 Missing
 zc.sourcefactory
 zope.preference
@@ -67,7 +63,6 @@ z3c.breadcrumb
 zope.formlib
 zope.datetime
 z3c.zcmlhook
-zope.app.applicationcontrol
 z3c.caching
 z3c.pagelet
 zope.app.container
@@ -80,7 +75,6 @@ zope.testrunner
 zope.file
 zope.catalog
 grokcore.rest
-zope.app.tree
 zope.globalrequest
 z3c.flashmessage
 grokcore.security
@@ -90,7 +84,6 @@ zope.app.session
 zope.app.dependable
 zope.app.component
 z3c.batching
-zc.set
 zope.app.testing
 transaction
 zope.sequencesort
@@ -114,7 +107,6 @@ z3c.form
 zope.i18n
 zExceptions
 ZODB
-zc.zlibstorage
 zope.vocabularyregistry
 zope.ramcache
 zope.deferredimport
