@@ -17,6 +17,7 @@ setenv =
     COVERAGE_PROCESS_START={toxinidir}/pyproject.toml
 {% endif %}
 deps =
+    setuptools %(setuptools_version_spec)s
     coverage[toml]
 {% for line in testenv_deps %}
     %(line)s
