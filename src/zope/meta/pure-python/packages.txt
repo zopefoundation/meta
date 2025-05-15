@@ -15,7 +15,6 @@ grokcore.component
 zc.relationship
 bobo
 megrok.strictrequire
-importchecker
 grokcore.catalog
 grokcore.chameleon
 grokcore.content
@@ -49,12 +48,9 @@ zope.app.onlinehelp
 zope.app.pagetemplate
 zope.app.principalannotation
 zope.app.rotterdam
-zope.app.schema
 zope.fanstatic
-zope.schemaevent
 zope.app.debug
 Missing
-zc.sourcefactory
 zope.preference
 z3c.formwidget.query
 zc.form
@@ -87,7 +83,6 @@ z3c.batching
 zope.app.testing
 transaction
 zope.sequencesort
-zope.server
 zope.pagetemplate
 zope.configuration
 zope.tal
@@ -115,7 +110,6 @@ zc.catalog
 martian
 z3c.password
 zope.ptresource
-zope.app.apidoc
 z3c.ptcompat
 z3c.pt
 zope.componentvocabulary
@@ -152,7 +146,6 @@ Record
 zope.location
 zope.copy
 zope.deprecation
-zope.app.i18n
 ZopeUndo
 grok
 grokcore.site

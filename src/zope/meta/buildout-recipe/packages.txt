@@ -8,4 +8,3 @@ zdaemon
 zc.recipe.filestorage
 z3c.recipe.compattest
 zc.relation
-zc.zodbrecipes
