@@ -157,7 +157,6 @@ zope.pluggableauth
 zope.securitypolicy
 zope.intid
 zope.mimetype
-zope.app.form
 roman
 z3c.checkversions
 zc.relation
