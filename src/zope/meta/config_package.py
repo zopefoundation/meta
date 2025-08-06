@@ -465,6 +465,7 @@ class PackageConfiguration:
                 'manylinux-install.sh.j2', self.path / '.manylinux-install.sh',
                 self.config_type,
                 package_name=self.path.name,
+                mangled_package_name=self.path.name.replace('.', '_'),
                 manylinux_install_setup=manylinux_install_setup,
                 manylinux_aarch64_tests=manylinux_aarch64_tests,
                 with_future_python=self.with_future_python,
