@@ -73,6 +73,6 @@ for PYBIN in /opt/python/*/bin; do
 done
 
 # Bundle external shared libraries into the wheels
-for whl in wheelhouse/%(package_name)s*.whl; do
+for whl in wheelhouse/%(mangled_package_name)s*.whl; do
     auditwheel repair "$whl" -w /io/wheelhouse/
 done
