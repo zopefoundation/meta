@@ -89,7 +89,7 @@ jobs:
 {% for line in gha_steps_before_checkout %}
     %(line)s
 {% endfor %}
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         persist-credentials: false
 {% if gha_additional_install %}
