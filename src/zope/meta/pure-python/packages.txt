@@ -40,7 +40,6 @@ zope.app.catalog
 zope.app.content
 zope.app.error
 zope.app.exception
-zope.app.file
 zope.app.folder
 zope.app.generations
 zope.app.http
@@ -68,7 +67,6 @@ z3c.objpath
 zc.table
 Products.ExternalEditor
 zope.testrunner
-zope.file
 zope.catalog
 grokcore.rest
 zope.globalrequest
