@@ -50,7 +50,6 @@ zope.app.rotterdam
 zope.fanstatic
 zope.app.debug
 Missing
-zope.preference
 z3c.formwidget.query
 zc.form
 MultiMapping
