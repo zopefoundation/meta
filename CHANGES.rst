@@ -3,6 +3,9 @@ Change log
 
 1.2 (unreleased)
 ----------------
+
+- Update to ``pypy-3.11``.
+
 - Add flag ``--no-tests`` to the scripts for switching to PEP 420
   namespaces and for updating supported Python versions.
 
