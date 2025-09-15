@@ -5,6 +5,6 @@ zc.recipe.testrunner
 z3c.recipe.mkdir
 zc.recipe.cmmi
 zdaemon
-zc.recipe.filestorage
 z3c.recipe.compattest
 zc.relation
+zc.sourcefactory
