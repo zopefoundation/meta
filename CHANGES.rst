@@ -4,6 +4,8 @@ Change log
 2.0 (unreleased)
 ----------------
 
+- Replace ``pkg_resources`` namespace with PEP 420 native namespace.
+
 - Update to ``pypy-3.11``.
 
 - Add flag ``--no-tests`` to the scripts for switching to PEP 420
