@@ -1,7 +1,7 @@
 Change log
 ==========
 
-1.2 (unreleased)
+2.0 (unreleased)
 ----------------
 
 - Update to ``pypy-3.11``.
