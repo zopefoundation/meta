@@ -16,7 +16,6 @@
 
 import os
 
-from setuptools import find_packages
 from setuptools import setup
 
 
@@ -60,9 +59,6 @@ setup(
         'Issue Tracker': 'https://github.com/zopefoundation/meta/issues',
         'Sources': 'https://github.com/zopefoundation/meta',
     },
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
-    namespace_packages=['zope'],
     install_requires=[
         'setuptools',
         'check-python-versions',
@@ -78,7 +74,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     extras_require={
-        'test': ['zope.testrunner'],
+        'test': ['zope.testrunner >= 6.4'],
         'docs': ['Sphinx', 'furo'],
     },
     entry_points={
