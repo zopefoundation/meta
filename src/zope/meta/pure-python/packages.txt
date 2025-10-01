@@ -167,3 +167,4 @@ meta
 zope.app.security
 z3c.saconfig
 z3c.table
+zope.app.form
