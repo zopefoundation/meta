@@ -1,8 +1,10 @@
 Change log
 ==========
 
-1.2 (unreleased)
+2.0 (unreleased)
 ----------------
+
+- Replace ``pkg_resources`` namespace with PEP 420 native namespace.
 
 - Update to ``pypy-3.11``.
 
