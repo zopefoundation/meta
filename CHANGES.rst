@@ -4,7 +4,7 @@ Change log
 2.0 (unreleased)
 ----------------
 
-- Allow `setuptools <= 81`.
+- Allow `setuptools >=80.9.0, <81`.
 
 - Replace ``pkg_resources`` namespace with PEP 420 native namespace.
 
