@@ -4,6 +4,8 @@ Change log
 2.0 (unreleased)
 ----------------
 
+- Allow `setuptools >=78.1.1, <81`.
+
 - Replace ``pkg_resources`` namespace with PEP 420 native namespace.
 
 - Update to ``pypy-3.11``.
