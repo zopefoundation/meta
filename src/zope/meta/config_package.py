@@ -14,6 +14,7 @@
 import argparse
 import collections
 import pathlib
+import re
 import shutil
 from functools import cached_property
 
@@ -461,11 +462,12 @@ class PackageConfiguration:
             stop_at = None
             if not self.with_future_python:
                 stop_at = NEWEST_PYTHON_SHORTVERSION
+            mangled_pkg_name = re.sub(r"[-_.]+", "_", self.path.name).lower()
             self.copy_with_meta(
                 'manylinux-install.sh.j2', self.path / '.manylinux-install.sh',
                 self.config_type,
                 package_name=self.path.name,
-                mangled_package_name=self.path.name.replace('.', '_').lower(),
+                mangled_package_name=mangled_pkg_name,
                 manylinux_install_setup=manylinux_install_setup,
                 manylinux_aarch64_tests=manylinux_aarch64_tests,
                 with_future_python=self.with_future_python,
