@@ -72,7 +72,10 @@ for PYBIN in /opt/python/*/bin; do
     fi
 done
 
+# Show what wheels we have
+echo "Fixing up the following wheels:"
+ls -l wheelhouse/%(package_name_pattern)s*.whl
 # Bundle external shared libraries into the wheels
-for whl in wheelhouse/%(mangled_package_name)s*.whl; do
+for whl in wheelhouse/%(package_name_pattern)s*.whl; do
     auditwheel repair "$whl" -w /io/wheelhouse/
 done

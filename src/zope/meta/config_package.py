@@ -462,12 +462,12 @@ class PackageConfiguration:
             stop_at = None
             if not self.with_future_python:
                 stop_at = NEWEST_PYTHON_SHORTVERSION
-            mangled_pkg_name = re.sub(r"[-_.]+", "_", self.path.name).lower()
+            pkg_name_pattern = re.sub(r"[-_.]+", "?", self.path.name).lower()
             self.copy_with_meta(
                 'manylinux-install.sh.j2', self.path / '.manylinux-install.sh',
                 self.config_type,
                 package_name=self.path.name,
-                mangled_package_name=mangled_pkg_name,
+                package_name_pattern=pkg_name_pattern,
                 manylinux_install_setup=manylinux_install_setup,
                 manylinux_aarch64_tests=manylinux_aarch64_tests,
                 with_future_python=self.with_future_python,
