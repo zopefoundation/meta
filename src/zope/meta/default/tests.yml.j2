@@ -100,7 +100,8 @@ jobs:
 {% endfor %}
 {% endif %}
     - name: Install uv + caching
-      uses: astral-sh/setup-uv@v7
+      # astral/setup-uv@7
+      uses: astral-sh/setup-uv@3259c6206f993105e3a61b142c2d97bf4b9ef83d
       with:
         enable-cache: true
         cache-dependency-glob: |
