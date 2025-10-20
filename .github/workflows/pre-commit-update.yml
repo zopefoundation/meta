@@ -6,6 +6,9 @@ on:
   workflow_dispatch:
 jobs:
   pre-commit-update:
+    permissions:
+      contents: read
+      pull-requests: write
     strategy:
       matrix:
         python-version:
