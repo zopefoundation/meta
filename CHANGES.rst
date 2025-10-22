@@ -4,6 +4,8 @@ Change log
 2.0 (unreleased)
 ----------------
 
+- Drop support for Python 3.9.
+
 - Allow `setuptools >=78.1.1, <81`.
 
 - Replace ``pkg_resources`` namespace with PEP 420 native namespace.
