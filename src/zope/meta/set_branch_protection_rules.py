@@ -4,7 +4,6 @@ import json
 import os
 import pathlib
 import tempfile
-from typing import Optional
 
 import requests
 import tomlkit
@@ -42,7 +41,7 @@ def _call_gh(
 
 
 def set_branch_protection(
-        repo: str, meta_path: Optional[pathlib.Path] = None) -> bool:
+        repo: str, meta_path: pathlib.Path | None = None) -> bool:
     result = _call_gh(
         'GET', 'protection/required_pull_request_reviews', repo,
         allowed_return_codes=(0, 1))

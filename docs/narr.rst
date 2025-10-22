@@ -260,7 +260,7 @@ updated. Example:
         "passenv =",
         "    DISPLAY",
         ]
-    coverage-basepython = "python3.9"
+    coverage-basepython = "python3.13"
     coverage-command = [
         "coverage run {envbindir}/test_with_gs []",
         ]
