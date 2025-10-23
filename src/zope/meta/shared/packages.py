@@ -23,8 +23,8 @@ TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
 ORG = 'zopefoundation'
 BASE_PATH = pathlib.Path(__file__).parent.parent
 OLDEST_PYTHON_VERSION = '3.10'
-NEWEST_PYTHON_VERSION = '3.13'
-FUTURE_PYTHON_VERSION = '3.14'
+NEWEST_PYTHON_VERSION = '3.14'
+FUTURE_PYTHON_VERSION = '3.15'
 PYPY_VERSION = '3.11'  # pypy-3.11
 SETUPTOOLS_VERSION_SPEC = '>= 78.1.1,< 81'
 MANYLINUX_PYTHON_VERSION = '3.11'

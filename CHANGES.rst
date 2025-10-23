@@ -4,6 +4,8 @@ Change log
 2.0 (unreleased)
 ----------------
 
+- Add support for Python 3.14.
+
 - Drop support for Python 3.9.
 
 - Allow `setuptools >=78.1.1, <81`.
