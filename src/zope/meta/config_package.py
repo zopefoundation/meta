@@ -646,6 +646,7 @@ class PackageConfiguration:
 
         # Capture some pre-transformation data
         old_requires = toml_doc.get('build-system', {}).get('requires', [])
+        old_tools = toml_doc.get('tool', {})
 
         # Apply template-dependent defaults
         toml_defaults = self.render_with_meta(
@@ -668,6 +669,12 @@ class PackageConfiguration:
                 x for x in old_requires if x.startswith('wheel')]
             [old_requires.remove(x) for x in wheel_requirement]
             toml_doc['build-system']['requires'].extend(old_requires)
+
+        # Fix up tool sections because the call to ``update`` above will
+        # replace the entire ``tool`` mapping...
+        for k, v in old_tools.items():
+            if k != 'coverage':  # `coverage` settings are handled by template
+                toml_doc['tool'][k] = v
 
         # Update coverage-related data
         coverage = toml_doc['tool']['coverage']
