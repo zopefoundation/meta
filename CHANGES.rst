@@ -4,6 +4,8 @@ Change log
 2.0 (unreleased)
 ----------------
 
+- Also check ``pyproject.toml`` when running ``check-python-versions``.
+
 - Add support for Python 3.14.
 
 - Drop support for Python 3.9.
