@@ -1,7 +1,7 @@
 Change log
 ==========
 
-2.0 (unreleased)
+2.0 (2025-10-28)
 ----------------
 
 - Also check ``pyproject.toml`` when running ``check-python-versions``.
