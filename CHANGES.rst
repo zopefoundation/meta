@@ -4,6 +4,9 @@ Change log
 2.1 (unreleased)
 ----------------
 
+- Run the GHA manylinux wheel build step for arm64 architecture on an actual
+  Linux on arm64 VM instead of emulated on a x86_64 VM to speed things up.
+
 - Fix ``update_python_support`` script for the case when ``with-future-python``
   is enabled.
 

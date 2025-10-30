@@ -353,14 +353,14 @@ jobs:
         run: |
           tox -e release-check
 
-  manylinux:
+  manylinux-x86:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     # We use a regular Python matrix entry to share as much code as possible.
     strategy:
       matrix:
         python-version: ["%(manylinux_python_version)s"]
-        image: [%(manylinux_x86_64)s, %(manylinux_i686)s, %(manylinux_aarch64)s]
+        image: [%(manylinux_x86_64)s, %(manylinux_i686)s]
 
     steps:
 {% set cache_key = "${{ runner.os }}-pip_manylinux-${{ matrix.image }}-${{ matrix.python-version }}" %}
@@ -384,13 +384,48 @@ jobs:
           PRE_CMD: linux32
         run: |
           bash .manylinux.sh
+
+      - name: Upload %(package_name)s wheels
+        uses: actions/upload-artifact@v4
+        with:
+          path: wheelhouse/*whl
+          name: manylinux_${{ matrix.image }}_wheels.zip
+      - name: Restore pip cache permissions
+        run: sudo chown -R $(whoami) ${{ steps.pip-cache-default.outputs.dir }}
+{% if with_future_python %}
+      - name: Prevent publishing wheels for unreleased Python versions
+        run: VER=$(echo '%(future_python_version)s' | tr -d .) && ls -al wheelhouse && sudo rm -f wheelhouse/*-cp${VER}*.whl && ls -al wheelhouse
+{% endif %}
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        if: >
+          github.event_name == 'push'
+          && startsWith(github.ref, 'refs/tags')
+        with:
+          user: __token__
+          password: ${{ secrets.TWINE_PASSWORD }}
+          skip-existing: true
+          packages-dir: wheelhouse/
+
+  manylinux-arm64:
+    runs-on: ubuntu-24.04-arm
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    # We use a regular Python matrix entry to share as much code as possible.
+    strategy:
+      matrix:
+        python-version: ["%(manylinux_python_version)s"]
+        image: [%(manylinux_aarch64)s]
+
+    steps:
+{% set cache_key = "${{ runner.os }}-pip_manylinux-${{ matrix.image }}-${{ matrix.python-version }}" %}
+{% include 'tests-cache.j2' %}
+
+      - name: Update pip
+        run: pip install -U pip
       - name: Build %(package_name)s (aarch64)
-        if: matrix.image == '%(manylinux_aarch64)s'
         env:
           DOCKER_IMAGE: quay.io/pypa/${{ matrix.image }}
         run: |
-          # First we must enable emulation
-          docker run --rm --privileged hypriot/qemu-register
           bash .manylinux.sh
 
       - name: Upload %(package_name)s wheels
