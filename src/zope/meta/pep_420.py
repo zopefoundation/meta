@@ -64,8 +64,6 @@ def main():
     if not (path / ".git").exists():
         raise ValueError(
             "`path` does not point to a git clone of a repository!")
-    if not (path / ".meta.toml").exists():
-        raise ValueError("The repository `path` points to has no .meta.toml!")
 
     with change_dir(path) as cwd_str:
         cwd = pathlib.Path(cwd_str)
