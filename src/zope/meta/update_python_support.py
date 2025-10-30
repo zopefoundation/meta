@@ -26,6 +26,7 @@ from .shared.call import wait_for_accept
 from .shared.git import get_branch_name
 from .shared.git import git_branch
 from .shared.packages import FUTURE_PYTHON_VERSION
+from .shared.packages import NEWEST_PYTHON_VERSION
 from .shared.packages import OLDEST_PYTHON_VERSION
 from .shared.packages import supported_python_versions
 from .shared.path import change_dir
@@ -110,16 +111,22 @@ def main():
                                                         OLDEST_PYTHON_VERSION)
         branch_name = get_branch_name(args.branch_name, config_type)
         updating = git_branch(branch_name)
+        to_be_supported = set(supported_python_versions(oldest_python_version))
 
         current_python_versions = get_tox_ini_python_versions('tox.ini')
         no_longer_supported = (
             current_python_versions -
-            set(supported_python_versions(oldest_python_version))
+            to_be_supported
         )
         not_yet_supported = (
-            set(supported_python_versions(oldest_python_version)) -
+            to_be_supported -
             current_python_versions
         )
+        if (meta_toml['python'].get('with-future-python', True) and
+                NEWEST_PYTHON_VERSION in to_be_supported):
+            # If with-future-python is enabled, the newest python version is
+            # already in `tox.ini` but not yet in `setup.py`:
+            not_yet_supported.add(NEWEST_PYTHON_VERSION)
 
         non_interactive_params = []
         python_versions_args = []
