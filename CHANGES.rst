@@ -4,7 +4,8 @@ Change log
 2.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Fix ``update_python_support`` script for the case when ``with-future-python``
+  is enabled.
 
 
 2.0 (2025-10-28)
