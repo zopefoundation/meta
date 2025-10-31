@@ -77,10 +77,12 @@ def set_branch_protection(
     required = ['linting']
     if template == 'c-code':
         required.extend([
-            f'manylinux-arm64 ({MANYLINUX_PYTHON_VERSION},'
-            f' {MANYLINUX_AARCH64})',
-            f'manylinux-x86 ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_I686})',
-            f'manylinux-x86 ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_X86_64})',
+            f'manylinux (ubuntu-24.04-arm, {MANYLINUX_AARCH64}, '
+            f'{MANYLINUX_PYTHON_VERSION})',
+            f'manylinux (ubuntu-latest, {MANYLINUX_I686}, '
+            f'{MANYLINUX_PYTHON_VERSION})',
+            f'manylinux (ubuntu-latest, {MANYLINUX_X86_64}, '
+            f'{MANYLINUX_PYTHON_VERSION})',
             f'test ({oldest_python_version}, macos-latest)',
             f'test ({NEWEST_PYTHON_VERSION}, macos-latest)',
             f'test ({oldest_python_version}, ubuntu-latest)',
