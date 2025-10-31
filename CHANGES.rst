@@ -4,6 +4,14 @@ Change log
 2.1 (unreleased)
 ----------------
 
+- Fix Python version used for pre-commit at 3.13 so 3.14 is not used.
+  Some linters like teyit are not compatible with Python 3.14.
+
+- Update Python version used for manylinux builds to 3.13
+
+- Run the GHA manylinux wheel build step for arm64 architecture on an actual
+  Linux on arm64 VM instead of emulated on a x86_64 VM to speed things up.
+
 - Fix ``update_python_support`` script for the case when ``with-future-python``
   is enabled.
 
