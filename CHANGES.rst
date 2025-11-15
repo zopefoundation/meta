@@ -4,6 +4,9 @@ Change log
 2.1 (unreleased)
 ----------------
 
+- Fix publishing Linux/arm64 wheels, which did not work after switching the
+  GHA manylinux wheel build step for arm64 to a real arm64 runner.
+
 - Fix Python version used for pre-commit at 3.13 so 3.14 is not used.
   Some linters like teyit are not compatible with Python 3.14.
 

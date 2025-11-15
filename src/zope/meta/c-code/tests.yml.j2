@@ -200,22 +200,6 @@ jobs:
           path: dist/*whl
   {% endif %}
 {% endfor %}
-      - name: Publish package to PyPI (Non-Linux)
-        # We cannot use pypa/gh-action-pypi-publish because that
-        # is a container action, and those don't run on macOS
-        # or Windows GHA runners.
-        if: >
-          github.event_name == 'push'
-          && startsWith(github.ref, 'refs/tags')
-          && !startsWith(runner.os, 'Linux')
-          && !startsWith(matrix.python-version, 'pypy')
-{% if with_future_python %}
-          && !startsWith(matrix.python-version, '%(future_python_version)s')
-{% endif %}
-        env:
-          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-        run: |
-          twine upload --skip-existing dist/*
 
   test:
     needs: build-package
@@ -407,13 +391,46 @@ jobs:
         run: VER=$(echo '%(future_python_version)s' | tr -d .) && ls -al wheelhouse && sudo rm -f wheelhouse/*-cp${VER}*.whl && ls -al wheelhouse
 {% endif %}
 
-      - name: Publish package to PyPI
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    # Only publish on tag pushes
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    # Wait for both build jobs to complete
+    needs: [build-package, manylinux]
+    permissions:
+      contents: read
+
+    steps:
+      - name: Download all wheel artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          pattern: '*'
+          merge-multiple: true
+
+      - name: Display structure of downloaded files
+        run: |
+          ls -lR dist/
+          echo "Total wheel files:"
+          find dist/ -name "*.whl" | wc -l
+
+      - name: Remove undesired wheels (if any were downloaded)
+        run: |
+          # PyPy wheels shouldn't be uploaded, remove them if present
+          find dist/ -name "*pypy*" -type f -delete || true
+          find dist/ -name "*none-any*" -type f -delete || true
+          # Wheels for the no-yet-supported future Python version need to go
+          find dist/ -name "*%(future_python_version)s*" -type f -delete || true
+          find dist/ -name "*cp%(future_python_shortversion)s*" -type f -delete || true
+          # For Linux, we only want the manylinux wheels
+          find dist/ -name "*linux_x86_64*" -type f -delete || true
+
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        if: >
-          github.event_name == 'push'
-          && startsWith(github.ref, 'refs/tags')
         with:
           user: __token__
           password: ${{ secrets.TWINE_PASSWORD }}
           skip-existing: true
-          packages-dir: wheelhouse/
+          packages-dir: dist/
+          verbose: true
