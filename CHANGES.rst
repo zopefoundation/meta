@@ -4,6 +4,9 @@ Change log
 2.1 (unreleased)
 ----------------
 
+- editorconfig: Don't use inline comments.
+  Inline comments are invalid since editorconfig v0.15.0.
+
 - Fix Python version used for pre-commit at 3.13 so 3.14 is not used.
   Some linters like teyit are not compatible with Python 3.14.
 
