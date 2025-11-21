@@ -1,7 +1,7 @@
 Change log
 ==========
 
-2.1 (unreleased)
+2.1 (2025-11-21)
 ----------------
 
 - editorconfig: Don't use inline comments.
