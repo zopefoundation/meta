@@ -93,26 +93,22 @@ def main():
 
         if args.commit:
             print("Committing and pushing all changes ...")
-            call("git", "commit", "-m", "Switch to PEP 420 native namespace.")
-            call("git", "push", "--set-upstream", "origin", branch_name)
-            if updating:
-                print("Updated the previously created PR.")
-            else:
-                print(
-                    "Are you logged in via `gh auth login` to create a PR?"
-                    " (y/N)?", end=" ",
-                )
-                if input().lower() == "y":
-                    call(
-                        "gh",
-                        "pr",
-                        "create",
-                        "--fill",
-                        "--title",
-                        "Switch to PEP 420 native namespace.",
-                    )
+            msg = args.commit_msg or "Switch to PEP 420 native namespace."
+            call("git", "commit", "-m", msg)
+            if args.push:
+                call("git", "push", "--set-upstream", "origin", branch_name)
+                if updating:
+                    print("Updated the previously created PR.")
                 else:
-                    print("If everything went fine up to here:")
-                    print("Create a PR, using the URL shown above.")
+                    print(
+                        "Are you logged in via `gh auth login` to create a PR?"
+                        " (y/N)?", end=" ",
+                    )
+                    if input().lower() == "y":
+                        call( "gh", "pr", "create", "--fill", "--title", msg)
+                    else:
+                        print("If everything went fine up to here:")
+                        print("Create a PR, using the URL shown above.")
+            print("Applied all changes. Please push manually.")
         else:
             print("Applied all changes. Please check and commit manually.")
