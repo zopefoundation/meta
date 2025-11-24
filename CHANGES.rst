@@ -4,7 +4,7 @@ Change log
 2.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Move commonly used script argument processing into shared library file.
 
 
 2.1 (2025-11-21)
