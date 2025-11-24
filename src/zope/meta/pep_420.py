@@ -105,7 +105,7 @@ def main():
                         " (y/N)?", end=" ",
                     )
                     if input().lower() == "y":
-                        call( "gh", "pr", "create", "--fill", "--title", msg)
+                        call("gh", "pr", "create", "--fill", "--title", msg)
                     else:
                         print("If everything went fine up to here:")
                         print("Create a PR, using the URL shown above.")
