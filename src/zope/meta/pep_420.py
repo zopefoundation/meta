@@ -11,53 +11,19 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import argparse
 import pathlib
 import shutil
 
 from .shared.call import call
 from .shared.git import git_branch
 from .shared.path import change_dir
+from .shared.script_args import get_shared_parser
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Update a repository to PEP 420 native namespace."
-    )
-    parser.add_argument(
-        "path", type=pathlib.Path, help="path to the repository to be updated"
-    )
-    parser.add_argument(
-        "--branch",
-        dest="branch_name",
-        default=None,
-        help="Define a git branch name to be used for the changes. If not"
-        " given it is constructed automatically and includes the configuration"
-        " type",
-    )
-    parser.add_argument(
-        "--no-commit",
-        dest="commit",
-        action="store_false",
-        default=True,
-        help='Don\'t "git commit" changes made by this script.',
-    )
-    parser.add_argument(
-        "--interactive",
-        dest="interactive",
-        action="store_true",
-        default=False,
-        help="Run interactively: Scripts will prompt for input. Implies "
-        "--no-commit, changes will not be committed and pushed automatically.",
-    )
-    parser.add_argument(
-        '--no-tests',
-        dest='run_tests',
-        action='store_false',
-        default=True,
-        help='Skip running unit tests.',
-    )
-
+    parser = get_shared_parser(
+        "Update a repository to PEP 420 native namespace.",
+        interactive=True)
     args = parser.parse_args()
     path = args.path.absolute()
 

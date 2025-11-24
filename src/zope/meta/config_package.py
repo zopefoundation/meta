@@ -11,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import argparse
 import collections
 import pathlib
 import re
@@ -42,6 +41,7 @@ from .shared.packages import get_pyproject_toml
 from .shared.packages import parse_additional_config
 from .shared.packages import supported_python_versions
 from .shared.path import change_dir
+from .shared.script_args import get_shared_parser
 
 
 FUTURE_PYTHON_SHORTVERSION = FUTURE_PYTHON_VERSION.replace('.', '')
@@ -66,34 +66,8 @@ SETUP_PY_REPLACEMENTS = {
 
 def handle_command_line_arguments():
     """Parse command line options"""
-    parser = argparse.ArgumentParser(
-        description='Use configuration for a package.')
-    parser.add_argument(
-        'path', type=pathlib.Path,
-        help='path to the repository to be configured')
-    parser.add_argument(
-        '--commit-msg',
-        dest='commit_msg',
-        metavar='MSG',
-        help='Use MSG as commit message instead of an artificial one.')
-    parser.add_argument(
-        '--no-commit',
-        dest='commit',
-        action='store_false',
-        default=True,
-        help='Prevent automatic committing of changes. Implies --no-push.')
-    parser.add_argument(
-        '--no-push',
-        dest='push',
-        action='store_false',
-        default=True,
-        help='Prevent direct push.')
-    parser.add_argument(
-        '--no-tests',
-        dest='run_tests',
-        action='store_false',
-        default=True,
-        help='Skip running unit tests.')
+    parser = get_shared_parser('Use configuration for a package.',
+                               interactive=False)
     parser.add_argument(
         '--with-macos',
         dest='with_macos',
@@ -156,19 +130,6 @@ def handle_command_line_arguments():
         dest='type',
         help='type of the configuration to be used, see README.rst. '
         'Only required when running on a repository for the first time.')
-    parser.add_argument(
-        '--branch',
-        dest='branch_name',
-        default=None,
-        help='Define a git branch name to be used for the changes. '
-        'If not given it is constructed automatically and includes '
-        'the configuration type')
-    parser.add_argument(
-        '--template-overrides',
-        dest='template_override_path',
-        default=None,
-        help='Filesystem path to a folder with subfolders for configuration '
-        'types. Used to override built-in configuration templates.')
 
     args = parser.parse_args()
     return args
