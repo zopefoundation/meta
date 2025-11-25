@@ -25,22 +25,22 @@ import tomlkit
 
 from .shared.call import call
 from .shared.git import git_branch
-from .shared.packages import get_pyproject_toml
 from .shared.packages import META_HINT
+from .shared.packages import get_pyproject_toml
 from .shared.path import change_dir
 from .shared.script_args import get_shared_parser
 
 
 PROJECT_SIMPLE_KEYS = (
     'name', 'version', 'description', 'license',
-    )
+)
 IGNORE_KEYS = (
     'zip_safe', 'long_description_content_type', 'package_dir',
     'packages', 'include_package_data',
-    )
+)
 UNCONVERTIBLE_KEYS = (
     'cmdclass', 'ext_modules', 'headers', 'cffi_modules',
-    )
+)
 
 
 def parse_setup_function(ast_node, assigned_names=None):
@@ -73,23 +73,23 @@ def parse_setup_function(ast_node, assigned_names=None):
                             gathered[key.value] = ast.literal_eval(value)
                         except ValueError:
                             # Probably a variable in the list
-                            l = []
+                            lst = []
                             for member in value.elts:
                                 if isinstance(member,
                                               (ast.Constant,
                                                ast.List,
                                                ast.Tuple)):
-                                    l.append(ast.literal_eval(member.value))
+                                    lst.append(ast.literal_eval(member.value))
                                 elif isinstance(member, ast.BinOp):
                                     unformatted = member.left.value
                                     variable = assigned_names.get(
-                                                    member.right.id, '')
+                                        member.right.id, '')
                                     formatted = unformatted.replace(
-                                                    '%s', variable)
-                                    l.append(formatted)
+                                        '%s', variable)
+                                    lst.append(formatted)
                                 else:
-                                    l.append(ast.literal_eval(member.value))
-                            gathered[key.value] = l
+                                    lst.append(ast.literal_eval(member.value))
+                            gathered[key.value] = lst
                     else:
                         try:
                             gathered[key.value] = ast.literal_eval(value)
@@ -173,7 +173,7 @@ def setup_args_to_toml_dict(setup_kwargs):
             scripts_dict = entry_points.setdefault(ep_type, {})
 
         for ep in ep_list:
-            ep_name, ep_target = [x.strip() for x in ep.split('=')]
+            ep_name, ep_target = (x.strip() for x in ep.split('='))
             scripts_dict[ep_name] = ep_target
     if entry_points:
         p_data['entry-points'] = entry_points
@@ -214,6 +214,7 @@ def setup_args_to_toml_dict(setup_kwargs):
 
     return (setup_kwargs, toml_dict)
 
+
 def parse_setup_py(path):
     """ Parse values out of setup.py """
     setup_kwargs = {}
@@ -232,7 +233,7 @@ def parse_setup_py(path):
     for key in dir(setup_module):
         assigned_names[key] = getattr(setup_module, key)
 
-    with open(path, 'r') as fp:
+    with open(path) as fp:
         file_contents = fp.read()
 
     # Create the ast tree for the setup module to find the setup call
@@ -306,7 +307,7 @@ def rewrite_setup_py(path, leftover_setup_kwargs):
     file.
     """
     new_setup_py = []
-    with open(path, 'r') as fp:
+    with open(path) as fp:
         old_setup_py = fp.readlines()
 
     for line in old_setup_py:
@@ -361,7 +362,7 @@ def main():
         default=False,
         help='Do not make any changes but output contents for the changed'
              ' setup.py and pyproject.toml files.',
-        )
+    )
     args = parser.parse_args()
 
     print(f'Converting package {args.path.name}')
