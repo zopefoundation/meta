@@ -11,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import argparse
 import collections
 import configparser
 import os
@@ -30,6 +29,7 @@ from .shared.packages import NEWEST_PYTHON_VERSION
 from .shared.packages import OLDEST_PYTHON_VERSION
 from .shared.packages import supported_python_versions
 from .shared.path import change_dir
+from .shared.script_args import get_shared_parser
 
 
 def get_tox_ini_python_versions(path) -> set:
@@ -47,51 +47,15 @@ def get_tox_ini_python_versions(path) -> set:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='Update Python versions of a package to currently '
-        'supported ones.')
-    parser.add_argument('path',
-                        type=pathlib.Path,
-                        help='path to the repository to be configured')
-    parser.add_argument(
-        '--branch',
-        dest='branch_name',
-        default=None,
-        help='Define a git branch name to be used for the changes. If not'
-        ' given it is constructed automatically and includes the configuration'
-        ' type')
-    parser.add_argument(
-        '--no-commit',
-        dest='commit',
-        action='store_false',
-        default=True,
-        help='Don\'t "git commit" changes made by this script.')
+    parser = get_shared_parser(
+        'Update Python versions of a package to currently supported ones.',
+        interactive=True)
     parser.add_argument(
         '--with-future-python',
         dest='with_future_python',
         action='store_true',
         default=False,
         help='Also enable testing the future Python version.')
-    parser.add_argument(
-        '--interactive',
-        dest='interactive',
-        action='store_true',
-        default=False,
-        help='Run interactively: Scripts will prompt for input. Implies '
-        '--no-commit, changes will not be committed and pushed automatically.')
-    parser.add_argument(
-        '--no-tests',
-        dest='run_tests',
-        action='store_false',
-        default=True,
-        help='Skip running unit tests.')
-    parser.add_argument(
-        '--template-overrides',
-        dest='template_override_path',
-        default=None,
-        help='Filesystem path to a folder with subfolders for configuration '
-        'types. Used to override built-in configuration templates.')
-
     args = parser.parse_args()
     path = args.path.absolute()
 
