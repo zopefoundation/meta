@@ -32,7 +32,7 @@ from .shared.script_args import get_shared_parser
 
 
 PROJECT_SIMPLE_KEYS = (
-    'name', 'version', 'description', 'license',
+    'name', 'version', 'description',
 )
 IGNORE_KEYS = (
     'zip_safe', 'long_description_content_type', 'package_dir',
@@ -127,11 +127,28 @@ def setup_args_to_toml_dict(setup_kwargs):
         if key in setup_kwargs:
             p_data[key] = setup_kwargs.pop(key)
 
+    license = setup_kwargs.pop('license', 'ZPL-2.1')
+    license.replace('ZPL 2.1', 'ZPL-2.1')
+    p_data['license'] = license
+
     classifiers = setup_kwargs.pop('classifiers', [])
     new_classifiers = []
     for classifier in classifiers:
-        if not classifier.startswith('License'):
+        if classifier.startswith('License'):
+            continue
+        elif classifier == 'Framework :: Zope2':
+            new_classifiers.append('Framework :: Zope :: 2')
+        elif classifier == 'Framework :: Zope3':
+            new_classifiers.append('Framework :: Zope :: 3')
+        elif 'zope-dev@zope.org' in classifier:
+            new_classifiers.append(classifier.replace('zope-dev@zope.org',
+                                                      'zope-dev@zope.dev'))
+        elif 'Zope Corporation' in classifier:
+            new_classifiers.append(classifier.replace('Zope Corporation',
+                                                      'Zope Foundation'))
+        else:
             new_classifiers.append(classifier)
+
     p_data['classifiers'] = new_classifiers
 
     p_data['readme'] = 'README.rst'
