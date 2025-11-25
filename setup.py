@@ -86,6 +86,7 @@ setup(
                 'set-branch-protection-rules='
                 'zope.meta.set_branch_protection_rules:main'
             ),
+            'setup-to-pyproject=zope.meta.setup_to_pyproject:main',
             'update-python-support=zope.meta.update_python_support:main',
             'switch-to-pep420=zope.meta.pep_420:main',
         ],

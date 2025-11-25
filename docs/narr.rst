@@ -709,6 +709,42 @@ that prevents automatic commits but attempts to cut down on interactively
 asking for user input. Some of that still happens due to limitations
 of the ``zest.releaser`` scripts used by ``update-python-support``.
 
+Moving package metadata from setup.py to pyproject.toml
+-------------------------------------------------------
+
+The script ``setup-to-pyproject`` parses package metadata out of the call to
+the ``setup`` function in ``setup.py`` and moves it to ``pyproject.toml``.
+The ``setup`` call in ``setup.py`` is then replaced with an invocation that
+only uses those function arguments that have not been moved, such as arguments
+related to building C code modules. These are currently not fully supported in
+``pyproject.toml``.
+
+.. note::
+
+    The format and code of a ``setup.py`` file can vary widely. This script is
+    a best effort attempt to cover the most common cases. Your mileage may
+    vary. You should always view the conversion results yourself.
+
+Usage
++++++
+
+To convert package metadata from ``setup.py`` and move it to ``pyproject.toml``
+call::
+
+    $ bin/setup-to-pyproject <path-to-package>
+
+The script supports these parameters:
+
+- ``--dry-run``: Do not make any changes but print the contents of ``setup.py``
+  and ``pyproject.toml`` with all changes to the console.
+- ``--commit-msg``: To provide a custom commit message for the git commit.
+- ``--no-commit``: Make changes, but do not commit them with git.
+- ``--no-push``: Make changes and commit them, but do not push the commit.
+- ``--no-tests``: Do not run the packages' ``tox`` tests after making changes.
+- ``--branch``: Use a custom branch name for the change branch.
+- ``--interactive``: Make changes and open the changed ``setup.py``
+  and ``pyproject.toml`` files in the console text editor.
+
 
 Calling a script on multiple repositories
 -----------------------------------------

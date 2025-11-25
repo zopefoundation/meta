@@ -33,6 +33,8 @@ from .shared.packages import MANYLINUX_AARCH64
 from .shared.packages import MANYLINUX_I686
 from .shared.packages import MANYLINUX_PYTHON_VERSION
 from .shared.packages import MANYLINUX_X86_64
+from .shared.packages import META_HINT
+from .shared.packages import META_HINT_MARKDOWN
 from .shared.packages import NEWEST_PYTHON_VERSION
 from .shared.packages import OLDEST_PYTHON_VERSION
 from .shared.packages import PYPY_VERSION
@@ -46,14 +48,6 @@ from .shared.script_args import get_shared_parser
 
 FUTURE_PYTHON_SHORTVERSION = FUTURE_PYTHON_VERSION.replace('.', '')
 NEWEST_PYTHON_SHORTVERSION = NEWEST_PYTHON_VERSION.replace('.', '')
-META_HINT = """\
-# Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/{config_type}"""
-META_HINT_MARKDOWN = """\
-<!--
-Generated from:
-https://github.com/zopefoundation/meta/tree/master/config/{config_type}
--->"""
 DEFAULT = object()
 SETUP_PY_REPLACEMENTS = {
     'ZPL 2.1': 'ZPL-2.1',
