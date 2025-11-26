@@ -147,9 +147,9 @@ def main():
                 config_package_args.append('--no-commit')
             if not args.run_tests:
                 config_package_args.append('--no-tests')
-            if args.template_override_path:
+            if args.overrides_path:
                 config_package_args.append(
-                    f'--template-overrides={args.template_override_path}')
+                    f'--overrides={args.overrides_path}')
             call(*config_package_args, cwd=cwd_str)
             src = path.resolve() / 'src'
             py_ver_plus = f'--py{oldest_python_version.replace(".", "")}-plus'

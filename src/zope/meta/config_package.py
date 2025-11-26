@@ -212,10 +212,10 @@ class PackageConfiguration:
 
     @cached_property
     def override_paths(self):
-        if self.args.template_override_path:
-            override_path = pathlib.Path(self.args.template_override_path)
-            return [override_path / self.config_type,
-                    override_path / 'default']
+        if self.args.overrides_path:
+            overrides_path = pathlib.Path(self.args.overrides_path)
+            return [overrides_path / self.config_type,
+                    overrides_path / 'default']
         return []
 
     @cached_property
@@ -670,7 +670,7 @@ class PackageConfiguration:
         If the rendered template output is an empty string, don't write it
         to disk. This allows package maintainers to prevent adding certain
         optional files by specifying a custom templates path with the
-        ``--template-overrides`` option and adding an empty template there.
+        ``--overrides`` option and adding an empty template there.
         """
         rendered = self.render_with_meta(template_name, config_type, **kw)
 

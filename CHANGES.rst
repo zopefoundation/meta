@@ -4,6 +4,8 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Rename the ``--template-overrides`` option to simply ``--overrides``.
+
 - Add script to move package metadata from ``setup.py`` to ``pyproject.toml``.
 
 - Move commonly used script argument processing into shared library file.

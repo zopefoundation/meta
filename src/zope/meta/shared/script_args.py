@@ -52,8 +52,8 @@ def get_shared_parser(description, interactive=False):
         'If not given it is constructed automatically and includes '
         'the configuration type')
     parser.add_argument(
-        '--template-overrides',
-        dest='template_override_path',
+        '--overrides',
+        dest='overrides_path',
         default=None,
         help='Filesystem path to a folder with subfolders for configuration '
         'types. Used to override built-in configuration templates.')
