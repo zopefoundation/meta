@@ -53,6 +53,7 @@ def get_shared_parser(description, interactive=False):
         'the configuration type')
     parser.add_argument(
         '--overrides',
+        type=pathlib.Path,
         dest='overrides_path',
         default=None,
         help='Filesystem path to a folder with subfolders for configuration '
