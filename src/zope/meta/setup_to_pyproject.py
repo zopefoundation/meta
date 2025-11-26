@@ -26,6 +26,7 @@ import tomlkit
 from .shared.call import call
 from .shared.git import git_branch
 from .shared.packages import META_HINT
+from .shared.packages import OLDEST_PYTHON_VERSION
 from .shared.packages import get_pyproject_toml
 from .shared.path import change_dir
 from .shared.script_args import get_shared_parser
@@ -110,7 +111,7 @@ def parse_setup_function(ast_node, assigned_names=None):
     return setup_kwargs
 
 
-def setup_args_to_toml_dict(setup_kwargs):
+def setup_args_to_toml_dict(setup_py_path, setup_kwargs):
     """ Iterate over setup_kwargs and generate a dictionary of values suitable
     for pyproject.toml and a dictionary with unconverted arguments
     """
@@ -136,29 +137,32 @@ def setup_args_to_toml_dict(setup_kwargs):
     for classifier in classifiers:
         if classifier.startswith('License'):
             continue
-        elif classifier == 'Framework :: Zope2':
-            new_classifiers.append('Framework :: Zope :: 2')
+        elif classifier in ('Framework :: Zope2', 'Framework :: Zope :: 2'):
+            continue
         elif classifier == 'Framework :: Zope3':
             new_classifiers.append('Framework :: Zope :: 3')
-        elif 'zope-dev@zope.org' in classifier:
-            new_classifiers.append(classifier.replace('zope-dev@zope.org',
-                                                      'zope-dev@zope.dev'))
-        elif 'Zope Corporation' in classifier:
-            new_classifiers.append(classifier.replace('Zope Corporation',
-                                                      'Zope Foundation'))
         else:
             new_classifiers.append(classifier)
-
     p_data['classifiers'] = new_classifiers
 
-    p_data['readme'] = 'README.rst'
+    if (setup_py_path.parent / 'README.rst').exists():
+        p_data['readme'] = 'README.rst'
+    elif (setup_py_path.parent / 'README.txt').exists():
+        p_data['readme'] = 'README.txt'
+    else:
+        print('XXX WARNING XXX: This package has no README.rst or README.txt!')
+
     if 'python_requires' in setup_kwargs:
         p_data['requires-python'] = setup_kwargs.pop('python_requires')
 
     if 'author' in setup_kwargs:
-        author_dict = {'name': setup_kwargs.pop('author')}
+        name = setup_kwargs.pop('author').replace('Zope Corporation',
+                                                  'Zope Foundation')
+        author_dict = {'name': name}
         if 'author_email' in setup_kwargs:
-            author_dict['email'] = setup_kwargs.pop('author_email')
+            email = setup_kwargs.pop('author_email').replace('zope.org',
+                                                             'zope.dev')
+            author_dict['email'] = email
         p_data['authors'] = tomlkit.array()
         p_data['authors'].add_line(author_dict)
 
@@ -263,10 +267,12 @@ def parse_setup_py(path):
            isinstance(ast_node.value, ast.Call) and \
            ast_node.value.func.id == 'setup':
             setup_node = ast_node.value
+            break
 
     if setup_node is not None:
         setup_kwargs = parse_setup_function(setup_node, assigned_names)
-    leftover_setup_kwargs, toml_dict = setup_args_to_toml_dict(setup_kwargs)
+    (leftover_setup_kwargs,
+     toml_dict) = setup_args_to_toml_dict(path, setup_kwargs)
 
     return leftover_setup_kwargs, toml_dict
 
@@ -303,11 +309,18 @@ def rewrite_pyproject_toml(path, toml_dict):
         if len(value) > 1:
             p_toml['project']['optional-dependencies'][key].multiline(True)
 
-    # Create a fesh TOMLDocument instance so I can control section sorting
+    # Last sanity check to see if anything is missing
+    if 'requires-python' not in p_toml['project']:
+        print('XXX WARNING XXX: This package did not define the minimum'
+              ' required Python ("python_requires"). Forcing the minimum'
+              f' supported by zope.meta instead ({OLDEST_PYTHON_VERSION}).')
+        p_toml['project']['requires-python'] = f'>={OLDEST_PYTHON_VERSION}'
+
+    # Create a fresh TOMLDocument instance so I can control section sorting
     with open(path.absolute().parent / '.meta.toml', 'rb') as fp:
         meta_cfg = tomlkit.load(fp)
     config_type = meta_cfg['meta'].get('template')
-    new_doc = tomlkit.loads('%s\n' % META_HINT.format(config_type=config_type))
+    new_doc = tomlkit.loads(META_HINT.format(config_type=config_type))
     for key in sorted(p_toml.keys()):
         new_doc[key] = p_toml.get(key)
 
@@ -362,7 +375,7 @@ def package_sanity_check(path):
         sane = False
 
     if not (path / '.meta.toml').exists():
-        print(' - no pyproject.toml found, cannot convert package.')
+        print(' - no .meta.toml found, cannot convert package.')
         sane = False
 
     return sane
@@ -409,18 +422,23 @@ def main():
         print(setup_content)
         sys.exit()
 
-    with open(args.path / 'pyproject.toml', 'w') as fp:
-        fp.write(toml_content)
-    with open(args.path / 'setup.py', 'w') as fp:
-        fp.write(setup_content)
-
-    if args.interactive or args.commit:
-        print('Look through setup.py to see if it needs changes.')
-        call(os.environ['EDITOR'], 'setup.py')
-        print('Look through pyproject.toml to see if it needs changes.')
-        call(os.environ['EDITOR'], 'pyproject.toml')
-
     with change_dir(args.path) as cwd:
+        bin_dir = pathlib.Path(cwd) / "bin"
+
+        call(bin_dir / "addchangelogentry",
+             'Move package metadata from setup.py to pyproject.toml.')
+
+        with open(args.path / 'pyproject.toml', 'w') as fp:
+            fp.write(toml_content)
+        with open(args.path / 'setup.py', 'w') as fp:
+            fp.write(setup_content)
+
+        if args.interactive or args.commit:
+            print('Look through setup.py to see if it needs changes.')
+            call(os.environ['EDITOR'], 'setup.py')
+            print('Look through pyproject.toml to see if it needs changes.')
+            call(os.environ['EDITOR'], 'pyproject.toml')
+
         if args.run_tests:
             tox_path = shutil.which('tox') or (
                 pathlib.Path(cwd) / 'bin' / 'tox')
