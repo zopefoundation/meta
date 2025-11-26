@@ -11,7 +11,9 @@
 #
 ##############################################################################
 import configparser
+import contextlib
 import itertools
+import os
 import pathlib
 import sys
 
@@ -143,12 +145,23 @@ ALL_REPOS = itertools.chain(
 
 
 def load_overrides():
-    arg_parser = get_shared_parser('')
-    args = arg_parser.parse_args()
+    overrides_path = None
     overrides = {}
+    arg_parser = get_shared_parser('')
 
-    if args.overrides_path:
-        path = args.overrides_path / 'overrides.toml'
+    # Prevent blowups when this is called during unit testing
+    try:
+        with open(os.devnull, 'w') as fp:
+            with contextlib.redirect_stderr(fp):
+                args = arg_parser.parse_args()
+        overrides_path = args.overrides_path
+    except SystemExit:
+        # This will happen during unit tests because the parser here collides
+        # with the parser for the test runner.
+        pass
+
+    if overrides_path:
+        path = overrides_path / 'overrides.toml'
         if path.exists:
             with open(path) as fp:
                 overrides = tomlkit.load(fp).unwrap()
