@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add option to show file changes after a failed ``tox`` ``lint`` run or not.
+  For backwards compatibility this is still ``True`` if not set.
+
 - Add script to move package metadata from ``setup.py`` to ``pyproject.toml``.
 
 - Move commonly used script argument processing into shared library file.
