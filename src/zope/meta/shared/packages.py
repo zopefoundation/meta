@@ -13,10 +13,13 @@
 import configparser
 import itertools
 import pathlib
+import sys
 
 import tomlkit
 from packaging.version import parse as parse_version
 from tomlkit.toml_document import TOMLDocument
+
+from .script_args import get_shared_parser
 
 
 TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
@@ -137,3 +140,25 @@ def list_packages(path: pathlib.Path) -> list:
 
 ALL_REPOS = itertools.chain(
     *[list_packages(BASE_PATH / type / 'packages.txt') for type in TYPES])
+
+
+def load_overrides():
+    arg_parser = get_shared_parser('')
+    args = arg_parser.parse_args()
+    overrides = {}
+
+    if args.overrides_path:
+        path = args.overrides_path / 'overrides.toml'
+        if path.exists:
+            with open(path) as fp:
+                overrides = tomlkit.load(fp).unwrap()
+
+    if overrides:
+        this_module = sys.modules[__name__]
+        for key, value in overrides.items():
+            if hasattr(this_module, key):
+                setattr(this_module, key, value)
+
+
+# This call must remain at the bottom of this file.
+load_overrides()

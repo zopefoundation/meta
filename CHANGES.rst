@@ -4,6 +4,10 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Allow overriding configuration values in ``zope.meta.shared.packages``
+  by using the ``--overrides`` option and placing a TOML file named
+  ``overrides.toml`` into the overrides folder.
+
 - Rename the ``--template-overrides`` option to simply ``--overrides``.
 
 - Add script to move package metadata from ``setup.py`` to ``pyproject.toml``.
