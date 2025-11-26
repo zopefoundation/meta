@@ -162,7 +162,7 @@ def load_overrides():
 
     if overrides_path:
         path = overrides_path / 'overrides.toml'
-        if path.exists:
+        if path.exists():
             with open(path) as fp:
                 overrides = tomlkit.load(fp).unwrap()
 
