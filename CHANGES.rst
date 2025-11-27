@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- When moving metadata to ``pyproject.toml``, ignore ``setup py test`` fossils.
+  (`#260 <https://github.com/zopefoundation/meta/issues/260>`_)
+
 - Allow overriding configuration values in ``zope.meta.shared.packages``
   by using the ``--overrides`` option and placing a TOML file named
   ``overrides.toml`` into the overrides folder.
