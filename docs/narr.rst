@@ -284,6 +284,7 @@ updated. Example:
     docs-deps = [
         "urllib3 < 2",
         ]
+    lint-diff-on-failure = true
 
     [flake8]
     additional-config = [
@@ -505,6 +506,15 @@ docs-deps
   ``[testenv:docs]`` in ``tox.ini``. This option has to be a list of strings
   and is empty by default. Caution: The values set for this option override
   the ones set in ``[testenv]``.
+
+lint-diff-on-failure
+  In the past, the ``lint`` step always called ``pre-commit`` with the option
+  ``--show-diff-on-failure``, which meant any linting failures would
+  automatically dump a diff with any outstanding changes in the entire package,
+  even if they are unrelated to linting, to the console. This is not helpful
+  unless there are very few changes and the diff is manageable. Setting this
+  option to ``false`` prevents showing the diff. If not set, the default is
+  ``true`` for backwards compatibility.
 
 
 Flake8 options

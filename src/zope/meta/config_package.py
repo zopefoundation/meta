@@ -473,6 +473,7 @@ class PackageConfiguration:
         coverage_additional = self.tox_option('coverage-additional')
         testenv_deps = self.tox_option('testenv-deps')
         coverage_setenv = self.tox_option('coverage-setenv')
+        lint_diff_on_failure = self.tox_option('lint-diff-on-failure', True)
         flake8_additional_sources = self.meta_cfg['flake8'].get(
             'additional-sources', '')
         if flake8_additional_sources:
@@ -499,6 +500,7 @@ class PackageConfiguration:
             coverage_fail_under=self.coverage_fail_under,
             flake8_additional_sources=flake8_additional_sources,
             isort_additional_sources=isort_additional_sources,
+            lint_diff_on_failure=lint_diff_on_failure,
             testenv_additional=testenv_additional,
             testenv_additional_extras=testenv_additional_extras,
             testenv_commands=testenv_commands,
