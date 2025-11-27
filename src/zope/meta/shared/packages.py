@@ -11,12 +11,17 @@
 #
 ##############################################################################
 import configparser
+import contextlib
 import itertools
+import os
 import pathlib
+import sys
 
 import tomlkit
 from packaging.version import parse as parse_version
 from tomlkit.toml_document import TOMLDocument
+
+from .script_args import get_shared_parser
 
 
 TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
@@ -32,12 +37,13 @@ MANYLINUX_AARCH64 = 'manylinux2014_aarch64'
 MANYLINUX_I686 = 'manylinux2014_i686'
 MANYLINUX_X86_64 = 'manylinux2014_x86_64'
 META_HINT = """\
-# Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/{config_type}"""
+# Generated with zope.meta (https://zopemeta.readthedocs.io/) from:
+# https://github.com/zopefoundation/meta/tree/master/src/zope/meta/{config_type}\
+"""
 META_HINT_MARKDOWN = """\
 <!--
-Generated from:
-https://github.com/zopefoundation/meta/tree/master/config/{config_type}
+Generated with zope.meta (https://zopemeta.readthedocs.io/) from:
+https://github.com/zopefoundation/meta/tree/master/src/zope/meta/{config_type}
 -->"""
 
 
@@ -137,3 +143,36 @@ def list_packages(path: pathlib.Path) -> list:
 
 ALL_REPOS = itertools.chain(
     *[list_packages(BASE_PATH / type / 'packages.txt') for type in TYPES])
+
+
+def load_overrides():
+    overrides_path = None
+    overrides = {}
+    arg_parser = get_shared_parser('')
+
+    # Prevent blowups when this is called during unit testing
+    try:
+        with open(os.devnull, 'w') as fp:
+            with contextlib.redirect_stderr(fp):
+                args = arg_parser.parse_args()
+        overrides_path = args.overrides_path
+    except SystemExit:
+        # This will happen during unit tests because the parser here collides
+        # with the parser for the test runner.
+        pass
+
+    if overrides_path:
+        path = overrides_path / 'overrides.toml'
+        if path.exists():
+            with open(path) as fp:
+                overrides = tomlkit.load(fp).unwrap()
+
+    if overrides:
+        this_module = sys.modules[__name__]
+        for key, value in overrides.items():
+            if hasattr(this_module, key):
+                setattr(this_module, key, value)
+
+
+# This call must remain at the bottom of this file.
+load_overrides()

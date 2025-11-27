@@ -166,12 +166,23 @@ The following options are only needed one time as their values are stored in
   Define the configuration type (see `Configuration types`_ section above) to
   be used for the repository.
 
---template-overrides
-  Filesystem path to a folder that contains subfolders for configuration type
-  and default templates. Used to override built-in configuration templates.
+--overrides
+  Filesystem path to a folder containing customizations for applying
+  ``zope.meta`` scripts.
+  To override configuration templates, create a folder for the configuration
+  type inside the overrides folder and add templates with the same name as the
+  standard templates in ``zope.meta``. Those will then be used instead of the
+  default templates.
   Empty override template files will prevent creating the respective file in
   the repository you are managing with ``zope.meta``, this way you can
   purposely omit creating some optional files.
+  You can also override some configuration variables from the
+  ``zope.meta.shared.packages`` module. Create a TOML file ``overrides.toml``
+  in the root of the overrides folder and add the desired values there. Useful
+  variables to override include e.g. ``ORG`` for the organization name, the
+  Python versions designated as ``OLDEST_PYTHON_VERSION`` and
+  ``NEWEST_PYTHON_VERSION``, or the ``META_HINT`` variables that point to the
+  template sources.
 
 --with-macos
   Enable running the tests on macOS on GitHub Actions.
