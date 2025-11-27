@@ -37,12 +37,13 @@ MANYLINUX_AARCH64 = 'manylinux2014_aarch64'
 MANYLINUX_I686 = 'manylinux2014_i686'
 MANYLINUX_X86_64 = 'manylinux2014_x86_64'
 META_HINT = """\
-# Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/{config_type}"""
+# Generated with zope.meta (https://zopemeta.readthedocs.io/) from:
+# https://github.com/zopefoundation/meta/tree/master/src/zope/meta/{config_type}\
+"""
 META_HINT_MARKDOWN = """\
 <!--
-Generated from:
-https://github.com/zopefoundation/meta/tree/master/config/{config_type}
+Generated with zope.meta (https://zopemeta.readthedocs.io/) from:
+https://github.com/zopefoundation/meta/tree/master/src/zope/meta/{config_type}
 -->"""
 
 
