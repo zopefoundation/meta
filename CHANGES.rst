@@ -4,6 +4,8 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Move package metadata from setup.py to pyproject.toml.
+
 - When moving metadata to ``pyproject.toml``, ignore ``setup py test`` fossils.
   (`#260 <https://github.com/zopefoundation/meta/issues/260>`_)
 
