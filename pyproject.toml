@@ -34,7 +34,6 @@ maintainers = [
     {name = "Plone Foundation and contributors",email = "zope-dev@zope.dev"},
 ]
 dependencies = [
-    "setuptools",
     "check-python-versions",
     "Jinja2",
     "packaging",
