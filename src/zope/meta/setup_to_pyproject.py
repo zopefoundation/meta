@@ -158,6 +158,8 @@ def setup_args_to_toml_dict(setup_py_path, setup_kwargs):
     if 'author' in setup_kwargs:
         name = setup_kwargs.pop('author').replace('Zope Corporation',
                                                   'Zope Foundation')
+        # Fix bad capitalization found in some packages
+        name = name.replace('Contributors', 'contributors')
         author_dict = {'name': name}
         if 'author_email' in setup_kwargs:
             email = setup_kwargs.pop('author_email').replace('zope.org',
