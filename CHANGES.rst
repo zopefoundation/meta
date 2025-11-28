@@ -6,6 +6,7 @@ Change log
 
 - Change ``c-code`` GitHub Actions publishing step to use
   PyPI's "Trusted Publishing".
+  (`#198 <https://github.com/zopefoundation/meta/issues/198>`_)
 
 - Move package metadata from setup.py to pyproject.toml.
 
