@@ -158,6 +158,8 @@ def setup_args_to_toml_dict(setup_py_path, setup_kwargs):
     if 'author' in setup_kwargs:
         name = setup_kwargs.pop('author').replace('Zope Corporation',
                                                   'Zope Foundation')
+        # Fix bad capitalization found in some packages
+        name = name.replace('Contributors', 'contributors')
         author_dict = {'name': name}
         if 'author_email' in setup_kwargs:
             email = setup_kwargs.pop('author_email').replace('zope.org',
@@ -172,6 +174,7 @@ def setup_args_to_toml_dict(setup_py_path, setup_kwargs):
     p_data['maintainers'].add_line(maintainers_table)
 
     entry_points = {}
+    scripts = {}
     ep_data = setup_kwargs.pop('entry_points', {})
 
     if isinstance(ep_data, str):
@@ -187,15 +190,20 @@ def setup_args_to_toml_dict(setup_py_path, setup_kwargs):
                     line = line.replace(' = ', '=').strip()
                     ep_data[key_buffer] = line
                     key_buffer = ''
+
     for ep_type, ep_list in ep_data.items():
         if ep_type == 'console_scripts':
-            scripts_dict = entry_points.setdefault('scripts', {})
+            for ep in ep_list:
+                ep_name, ep_target = (x.strip() for x in ep.split('='))
+                scripts[ep_name] = ep_target
         else:
-            scripts_dict = entry_points.setdefault(ep_type, {})
+            entrypoint_dict = entry_points.setdefault(ep_type, {})
+            for ep in ep_list:
+                ep_name, ep_target = (x.strip() for x in ep.split('='))
+                entrypoint_dict[ep_name] = ep_target
 
-        for ep in ep_list:
-            ep_name, ep_target = (x.strip() for x in ep.split('='))
-            scripts_dict[ep_name] = ep_target
+    if scripts:
+        p_data['scripts'] = scripts
     if entry_points:
         p_data['entry-points'] = entry_points
 
