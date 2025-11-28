@@ -30,7 +30,7 @@ classifiers = [
 readme = "README.rst"
 requires-python = ">=3.10"
 authors = [
-    {name = "Zope Foundation and Contributors",email = "zope-dev@zope.dev"},
+    {name = "Zope Foundation and contributors",email = "zope-dev@zope.dev"},
 ]
 maintainers = [
     {name = "Plone Foundation and contributors",email = "zope-dev@zope.dev"},
@@ -48,7 +48,7 @@ dependencies = [
 ]
 keywords = ["zope", "packaging"]
 
-[project.entry-points.scripts]
+[project.scripts]
 config-package = "zope.meta.config_package:main"
 multi-call = "zope.meta.multi_call:main"
 re-enable-actions = "zope.meta.re_enable_actions:main"
