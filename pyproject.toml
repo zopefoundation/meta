@@ -27,7 +27,6 @@ classifiers = [
     "Natural Language :: English",
     "Operating System :: OS Independent",
 ]
-readme = "README.rst"
 requires-python = ">=3.10"
 authors = [
     {name = "Zope Foundation and contributors",email = "zope-dev@zope.dev"},
@@ -91,3 +90,6 @@ exclude_lines = [
 
 [tool.coverage.html]
 directory = "parts/htmlcov"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst", "CHANGES.rst"]}
