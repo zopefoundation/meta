@@ -164,6 +164,8 @@ def setup_args_to_toml_dict(setup_py_path, setup_kwargs):
         readme_spec.update({'file': [readme, changelog]})
         toml_dict['tool'] = {
             'setuptools': {'dynamic': {'readme': readme_spec}}}
+        dynamic_attributes = p_data.setdefault('dynamic', [])
+        dynamic_attributes.append('readme')
     else:
         print('XXX WARNING XXX: This package has no README.rst or README.txt!')
 
