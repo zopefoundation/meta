@@ -37,7 +37,7 @@ PROJECT_SIMPLE_KEYS = (
 )
 IGNORE_KEYS = (
     'zip_safe', 'long_description_content_type', 'package_dir',
-    'packages', 'include_package_data',
+    'packages', 'include_package_data', 'test_suite', 'tests_require',
 )
 UNCONVERTIBLE_KEYS = (
     'cmdclass', 'ext_modules', 'headers', 'cffi_modules',
