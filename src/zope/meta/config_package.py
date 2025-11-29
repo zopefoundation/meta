@@ -605,6 +605,14 @@ class PackageConfiguration:
         old_requires = toml_doc.get('build-system', {}).get('requires', [])
         old_tools = toml_doc.get('tool', {})
 
+        # Do some sanity checking
+        project_settings = toml_doc.get('project', {})
+        for install_dependency in project_settings.get('dependencies', []):
+            if install_dependency.startswith('setuptools'):
+                print('XXX Found "setuptools" as install time dependency.')
+                print('XXX Please check if it is really needed!')
+                break
+
         # Apply template-dependent defaults
         toml_defaults = self.render_with_meta(
             'pyproject_defaults.toml.j2',
