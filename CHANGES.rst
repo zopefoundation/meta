@@ -4,6 +4,10 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Change ``c-code`` GitHub Actions publishing step to use
+  PyPI's "Trusted Publishing".
+  (`#198 <https://github.com/zopefoundation/meta/issues/198>`_)
+
 - Move package metadata from setup.py to pyproject.toml.
 
 - When moving metadata to ``pyproject.toml``, ignore ``setup py test`` fossils.

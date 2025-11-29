@@ -58,10 +58,6 @@ env:
 
   CFLAGS: -O3 -pipe
   CXXFLAGS: -O3 -pipe
-  # Uploading built wheels for releases.
-  # TWINE_PASSWORD is encrypted and stored directly in the
-  # github repo settings.
-  TWINE_USERNAME: __token__
 
   ###
   # caching
@@ -398,8 +394,12 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     # Wait for both build jobs to complete
     needs: [build-package, manylinux]
+    environment:
+      name: pypi
+      url: https://pypi.org/p/%(package_name)s
     permissions:
       contents: read
+      id-token: write  # Mandatory for trusted publishing
 
     steps:
       - name: Download all wheel artifacts
@@ -429,8 +429,6 @@ jobs:
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
-          password: ${{ secrets.TWINE_PASSWORD }}
           skip-existing: true
           packages-dir: dist/
           verbose: true
