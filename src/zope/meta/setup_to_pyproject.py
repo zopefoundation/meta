@@ -145,10 +145,27 @@ def setup_args_to_toml_dict(setup_py_path, setup_kwargs):
             new_classifiers.append(classifier)
     p_data['classifiers'] = new_classifiers
 
-    if (setup_py_path.parent / 'README.rst').exists():
-        p_data['readme'] = 'README.rst'
-    elif (setup_py_path.parent / 'README.txt').exists():
-        p_data['readme'] = 'README.txt'
+    readme = None
+    for readme_name in ('README.rst', 'README.txt'):
+        if (setup_py_path.parent / readme_name).exists():
+            readme = readme_name
+            break
+
+    changelog = None
+    for changelog_name in ('CHANGES.rst', 'CHANGES.txt'):
+        if (setup_py_path.parent / changelog_name).exists():
+            changelog = changelog_name
+            break
+
+    if readme and not changelog:
+        p_data['readme'] = readme
+    elif readme and changelog:
+        readme_spec = tomlkit.inline_table()
+        readme_spec.update({'file': [readme, changelog]})
+        toml_dict['tool'] = {
+            'setuptools': {'dynamic': {'readme': readme_spec}}}
+        dynamic_attributes = p_data.setdefault('dynamic', [])
+        dynamic_attributes.append('readme')
     else:
         print('XXX WARNING XXX: This package has no README.rst or README.txt!')
 
@@ -298,8 +315,9 @@ def rewrite_pyproject_toml(path, toml_dict):
                 # We will not overwrite existing values!
                 if key not in dict1:
                     dict1[key] = value
+        return dict1
 
-    recursive_merge(p_toml, toml_dict)
+    p_toml = recursive_merge(p_toml, toml_dict)
 
     # Format long lists
     p_toml['project']['classifiers'].multiline(True)
