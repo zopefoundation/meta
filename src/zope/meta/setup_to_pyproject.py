@@ -239,6 +239,11 @@ def setup_args_to_toml_dict(setup_py_path, setup_kwargs):
 
     install_reqs = setup_kwargs.pop('install_requires', [])
     if install_reqs:
+        for dependency in install_reqs:
+            if dependency.startswith('setuptools'):
+                print('XXX Found "setuptools" as install time dependency.')
+                print('XXX Please check if it is really needed!')
+                break
         p_data['dependencies'] = install_reqs
 
     keywords = setup_kwargs.pop('keywords', '')
