@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Print out a warning if a ``setuptools`` install time dependency is found
+  when runing the the ``config-package`` and ``setup-to-pyproject`` scripts.
+
 - Change ``c-code`` GitHub Actions publishing step to use
   PyPI's "Trusted Publishing".
   (`#198 <https://github.com/zopefoundation/meta/issues/198>`_)
