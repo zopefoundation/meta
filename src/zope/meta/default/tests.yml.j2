@@ -110,7 +110,6 @@ jobs:
         python-version: ${{ matrix.config[0] }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Test
-      if: ${{ !startsWith(runner.os, 'Mac') }}
 {% if gha_test_environment %}
       env:
       {% for line in gha_test_environment %}
@@ -125,15 +124,6 @@ jobs:
 {% else %}
       run: uvx --with tox-uv tox -e ${{ matrix.config[1] }}
 {% endif %}
-    - name: Test (macOS)
-      if: ${{ startsWith(runner.os, 'Mac') }}
-{% if gha_test_environment %}
-      env:
-      {% for line in gha_test_environment %}
-        %(line)s
-      {% endfor %}
-{% endif %}
-      run: uvx --with tox-uv tox -e ${{ matrix.config[1] }}-universal2
     - name: Coverage
       if: matrix.config[1] == 'coverage'
       run: |
