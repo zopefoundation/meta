@@ -4,6 +4,8 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Remove special treatment for macOS test runners on GitHub
+
 - Print out a warning if a ``setuptools`` install time dependency is found
   when runing the the ``config-package`` and ``setup-to-pyproject`` scripts.
 
