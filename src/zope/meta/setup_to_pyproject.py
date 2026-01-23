@@ -467,8 +467,10 @@ def main():
         if args.interactive or args.commit:
             print('Look through setup.py to see if it needs changes.')
             call(os.environ['EDITOR'], 'setup.py')
+            call('git', 'add', 'setup.py')
             print('Look through pyproject.toml to see if it needs changes.')
             call(os.environ['EDITOR'], 'pyproject.toml')
+            call('git', 'add', 'pyproject.toml')
 
         if args.run_tests:
             tox_path = shutil.which('tox') or (
