@@ -64,6 +64,13 @@ def parse_setup_function(ast_node, assigned_names=None):
                     if isinstance(value, ast.Name):
                         gathered[key.value] = assigned_names.get(value.id, '')
                     elif isinstance(value, ast.BinOp):
+                        if isinstance(value.left, ast.List):
+                            # e. g. "['Sphinx'] + BROWSER_REQUIRES"
+                            print('XXX Cannot convert list addition XXX')
+                            print('XXX Please fix setup.py manually first XXX')
+                            print('XXX list addition: '
+                                  f'{ast.unparse(value)} XXX')
+                            sys.exit(1)
                         # Interpolated string 'x%sy' % foo
                         unformatted = value.left.value
                         variable = assigned_names.get(value.right.id, '')
