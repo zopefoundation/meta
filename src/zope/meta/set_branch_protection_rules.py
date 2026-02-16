@@ -72,6 +72,8 @@ def set_branch_protection(
     oldest_python_version = meta_toml['python'].get('oldest-python',
                                                     OLDEST_PYTHON_VERSION)
     oldest_python = f"py{oldest_python_version.replace('.', '')}"
+    with_free_threaded_python = meta_toml['python'].get(
+        'with-free-threaded-python', False)
     with_windows = meta_toml['python']['with-windows']
     with_macos = meta_toml['python']['with-macos']
     required = ['linting']
@@ -95,6 +97,9 @@ def set_branch_protection(
         if with_pypy:
             required.append(f'test (pypy-{PYPY_VERSION}, ubuntu-latest)')
             required.append(f'test (pypy-{PYPY_VERSION}, windows-latest)')
+        if with_free_threaded_python:
+            required.append(
+                f'test ({NEWEST_PYTHON_VERSION}t, ubuntu-latest)')
         if with_windows:
             required.extend([
                 f'test ({oldest_python_version}, windows-latest)',
@@ -121,6 +126,8 @@ def set_branch_protection(
                 'ubuntu-pypy3',
                 'windows-pypy3',
             ])
+        if with_free_threaded_python:
+            required.append(f'ubuntu-py{NEWEST_PYTHON}t')
         if with_docs:
             required.append('ubuntu-docs')
     else:  # default for most packages
@@ -131,6 +138,8 @@ def set_branch_protection(
             required.append('docs')
         if with_pypy:
             required.append('pypy3')
+        if with_free_threaded_python:
+            required.append(f'{NEWEST_PYTHON}t')
 
     data = {
         'allow_deletions': False,

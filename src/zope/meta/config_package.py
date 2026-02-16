@@ -48,6 +48,7 @@ from .shared.script_args import get_shared_parser
 
 FUTURE_PYTHON_SHORTVERSION = FUTURE_PYTHON_VERSION.replace('.', '')
 NEWEST_PYTHON_SHORTVERSION = NEWEST_PYTHON_VERSION.replace('.', '')
+NEWEST_PYTHON_SHORTVERSION_T = NEWEST_PYTHON_SHORTVERSION + 't'
 DEFAULT = object()
 SETUP_PY_REPLACEMENTS = {
     'ZPL 2.1': 'ZPL-2.1',
@@ -111,6 +112,13 @@ def handle_command_line_arguments():
         default=False,
         help='Activate running doctests with sphinx '
         'if not already configured in  .meta.toml.')
+    parser.add_argument(
+        '--with-free-threaded-python',
+        dest='with_free_threaded_python',
+        action='store_true',
+        default=False,
+        help='Activate running tests with free-threaded Python (nogil) '
+        'if not already configured in .meta.toml.')
     parser.add_argument(
         '-t', '--type',
         choices=[
@@ -261,6 +269,10 @@ class PackageConfiguration:
     @cached_property
     def with_sphinx_doctests(self):
         return self._set_python_config_value('sphinx-doctests')
+
+    @cached_property
+    def with_free_threaded_python(self):
+        return self._set_python_config_value('free-threaded-python')
 
     @cached_property
     def coverage_run_source(self):
@@ -508,12 +520,14 @@ class PackageConfiguration:
             testenv_deps=testenv_deps,
             testenv_setenv=testenv_setenv,
             with_docs=self.with_docs,
+            with_free_threaded_python=self.with_free_threaded_python,
             with_future_python=self.with_future_python,
             with_pypy=self.with_pypy,
             with_sphinx_doctests=self.with_sphinx_doctests,
             docs_deps=docs_deps,
             setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
             future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
+            newest_python_shortversion_t=NEWEST_PYTHON_SHORTVERSION_T,
             supported_python_versions=supported_python_versions(
                 self.oldest_python, short_version=True),
             build_requirements=build_requirements,
@@ -549,8 +563,11 @@ class PackageConfiguration:
             gha_steps_before_checkout=gha_steps_before_checkout,
             with_docs=self.with_docs,
             with_sphinx_doctests=self.with_sphinx_doctests,
+            with_free_threaded_python=self.with_free_threaded_python,
             with_future_python=self.with_future_python,
             future_python_version=FUTURE_PYTHON_VERSION,
+            newest_python_version=NEWEST_PYTHON_VERSION,
+            newest_python_shortversion_t=NEWEST_PYTHON_SHORTVERSION_T,
             with_pypy=self.with_pypy,
             with_macos=self.with_macos,
             with_windows=self.with_windows,

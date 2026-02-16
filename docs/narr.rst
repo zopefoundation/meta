@@ -198,6 +198,11 @@ The following options are only needed one time as their values are stored in
   a final release thus it is not yet generally supported by the zopefoundation
   packages.
 
+--with-free-threaded-python
+  Enable testing with the free-threaded (nogil) build of the newest supported
+  Python version. Tests run on Linux only. For c-code packages, both the C
+  extension and pure-Python variants are tested.
+
 --oldest-python
   The oldest version of Python supported by this package. Specified as version
   number, e.g. ``3.12``. This setting is optional and defaults to the lowest
@@ -233,6 +238,7 @@ updated. Example:
     with-sphinx-doctests = false
     with-macos = false
     with-windows = false
+    with-free-threaded-python = false
 
     [coverage]
     fail-under = 98
@@ -413,6 +419,10 @@ with-docs
 
 with-sphinx-doctests
   Run the documentation as doctest using Sphinx: true/false
+
+with-free-threaded-python
+  Run the tests also with free-threaded (nogil) Python on Linux: true/false,
+  default: false
 
 
 Coverage options

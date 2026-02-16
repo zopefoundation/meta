@@ -43,7 +43,9 @@ def get_tox_ini_python_versions(path) -> set:
     # c-code template uses `py313,py313-pure`, get rid of the pure version:
     versions = {v.partition(',')[0] for v in raw_versions}
     # some packages use `py38-watch` or similar, get rid of the suffix:
-    return {v.partition('-')[0] for v in versions}
+    versions = {v.partition('-')[0] for v in versions}
+    # free-threaded envs like py314t should map to 3.14:
+    return {v.rstrip('t') for v in versions}
 
 
 def main():
@@ -56,6 +58,12 @@ def main():
         action='store_true',
         default=False,
         help='Also enable testing the future Python version.')
+    parser.add_argument(
+        '--with-free-threaded-python',
+        dest='with_free_threaded_python',
+        action='store_true',
+        default=False,
+        help='Also enable testing with free-threaded Python (nogil).')
     args = parser.parse_args()
     path = args.path.absolute()
 
@@ -143,6 +151,8 @@ def main():
             ]
             if args.with_future_python:
                 config_package_args.append('--with-future-python')
+            if args.with_free_threaded_python:
+                config_package_args.append('--with-free-threaded-python')
             if not args.commit:
                 config_package_args.append('--no-commit')
             if not args.run_tests:
