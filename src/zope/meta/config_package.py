@@ -462,6 +462,8 @@ class PackageConfiguration:
         testenv_additional = self.tox_option('testenv-additional')
         testenv_additional_extras = self.tox_option(
             'testenv-additional-extras')
+        testenv_skip_test_extra = self.tox_option(
+            'testenv-skip-test-extra', False)
         testenv_commands_pre = self.tox_option('testenv-commands-pre')
         testenv_commands = self.tox_option('testenv-commands')
         testenv_setenv = self.tox_option('testenv-setenv')
@@ -503,6 +505,7 @@ class PackageConfiguration:
             lint_diff_on_failure=lint_diff_on_failure,
             testenv_additional=testenv_additional,
             testenv_additional_extras=testenv_additional_extras,
+            testenv_skip_test_extra=testenv_skip_test_extra,
             testenv_commands=testenv_commands,
             testenv_commands_pre=testenv_commands_pre,
             testenv_deps=testenv_deps,

@@ -4,6 +4,10 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add tox option ``testenv-skip-test-extra``.
+  Set this to true if your package does not have a ``test`` extra.
+  Otherwise tests fail with latest ``tox``.
+
 - Remove special treatment for macOS test runners on GitHub
 
 - Print out a warning if a ``setuptools`` install time dependency is found
