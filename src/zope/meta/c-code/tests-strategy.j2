@@ -26,3 +26,8 @@
 {% for line in gha_additional_exclude %}
           %(line)s
 {% endfor %}
+{% if with_free_threaded_python %}
+        include:
+          - python-version: "%(newest_python_version)st"
+            os: ubuntu-latest
+{% endif %}

@@ -4,6 +4,10 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add ``--with-free-threaded-python`` option to enable CI testing with the
+  free-threaded (nogil) build of CPython.
+  (`#388 <https://github.com/zopefoundation/meta/issues/388>`_)
+
 - Add tox option ``testenv-skip-test-extra``.
   Set this to true if your package does not have a ``test`` extra.
   Otherwise tests fail with latest ``tox``.
