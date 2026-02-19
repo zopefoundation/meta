@@ -468,6 +468,10 @@ testenv-additional-extras
   Additional entries for the ``extras`` option in ``[testenv]`` of
   ``tox.ini``.  This option has to be a list of strings without indentation.
 
+testenv-skip-test-extra
+  Don't add the standard ``test`` in the ``extras`` option in ``[testenv]``
+  of ``tox.ini``.  This option has to be true/false.  Default is false.
+
 testenv-commands-pre
   Replacement for the default ``commands_pre`` option in ``[testenv]`` of
   ``tox.ini``. This option has to be a list of strings without indentation.
