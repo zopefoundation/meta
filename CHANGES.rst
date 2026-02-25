@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add folder ``share/`` to ``.gitignore``.
+  The most recent versions of ``tox`` store manual pages there.
+
 - Add ``--with-free-threaded-python`` option to enable CI testing with the
   free-threaded (nogil) build of CPython.
   (`#388 <https://github.com/zopefoundation/meta/issues/388>`_)
