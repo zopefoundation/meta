@@ -275,6 +275,11 @@ class PackageConfiguration:
         return self._set_python_config_value('free-threaded-python')
 
     @cached_property
+    def publish_free_threaded_wheels(self):
+        return self.meta_cfg['python'].get(
+            'publish-free-threaded-wheels', False)
+
+    @cached_property
     def coverage_run_source(self):
         return self.meta_cfg['coverage-run'].get('source', self.path.name)
 
@@ -567,6 +572,7 @@ class PackageConfiguration:
             with_docs=self.with_docs,
             with_sphinx_doctests=self.with_sphinx_doctests,
             with_free_threaded_python=self.with_free_threaded_python,
+            publish_free_threaded_wheels=self.publish_free_threaded_wheels,
             with_future_python=self.with_future_python,
             future_python_version=FUTURE_PYTHON_VERSION,
             newest_python_version=NEWEST_PYTHON_VERSION,
