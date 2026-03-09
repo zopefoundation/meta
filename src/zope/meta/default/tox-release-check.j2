@@ -14,6 +14,10 @@ deps =
 commands_pre =
 commands =
     check-manifest
+{% if with_free_threaded_python %}
+    check-python-versions --only pyproject.toml,setup.py,tox.ini
+{% else %}
     check-python-versions --only pyproject.toml,setup.py,tox.ini,.github/workflows/tests.yml
+{% endif %}
     python -m build --sdist --no-isolation
     twine check dist/*
