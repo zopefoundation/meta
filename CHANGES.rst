@@ -11,6 +11,10 @@ Change log
   free-threaded (nogil) build of CPython.
   (`#388 <https://github.com/zopefoundation/meta/issues/388>`_)
 
+- Exclude ``tests.yml`` from ``check-python-versions`` when
+  ``with-free-threaded-python`` is enabled, as ``3.14t`` causes a mismatch.
+  (`#396 <https://github.com/zopefoundation/meta/issues/396>`_)
+
 - Add tox option ``testenv-skip-test-extra``.
   Set this to true if your package does not have a ``test`` extra.
   Otherwise tests fail with latest ``tox``.
