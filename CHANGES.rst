@@ -15,8 +15,8 @@ Change log
   ``with-free-threaded-python`` is enabled, as ``3.14t`` causes a mismatch.
   (`#396 <https://github.com/zopefoundation/meta/issues/396>`_)
 
-- Add ``publish-free-threaded-wheels`` option to allow publishing free-threaded
-  Python wheels to PyPI.
+- Always publish free-threaded Python wheels to PyPI when
+  ``with-free-threaded-python`` is enabled.
   (`#394 <https://github.com/zopefoundation/meta/issues/394>`_)
 
 - Add tox option ``testenv-skip-test-extra``.

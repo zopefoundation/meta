@@ -239,7 +239,6 @@ updated. Example:
     with-macos = false
     with-windows = false
     with-free-threaded-python = false
-    publish-free-threaded-wheels = false
 
     [coverage]
     fail-under = 98
@@ -424,10 +423,6 @@ with-sphinx-doctests
 with-free-threaded-python
   Run the tests also with free-threaded (nogil) Python on Linux: true/false,
   default: false
-
-publish-free-threaded-wheels
-  Publish free-threaded Python wheels to PyPI. Only effective when
-  ``with-free-threaded-python`` is true. Default: false
 
 
 Coverage options
