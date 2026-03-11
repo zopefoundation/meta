@@ -4,6 +4,11 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Pin "teyit" in `precommitconfig.yaml.j2` to use Python 3.13 
+  (must be available locally, like in path or via pyenv/uv). 
+  teyit does not support Python 3.14 yet.
+  (`#398 <https://github.com/zopefoundation/meta/issues/398>`_)
+
 - Add folder ``share/`` to ``.gitignore``.
   The most recent versions of ``tox`` store manual pages there.
 
