@@ -160,7 +160,7 @@ jobs:
         run: |
           ls -l dist
           twine check dist/*
-{% for kind in ('macOS x86_64', 'macOS arm64', 'all other platforms') %}
+{% for kind in ('macOS x86_64', 'macOS arm64') %}
       - name: Upload %(package_name)s wheel (%(kind)s)
         if: >
   {% if kind == 'macOS x86_64' %}
@@ -168,8 +168,6 @@ jobs:
   {% elif kind == 'macOS arm64' or kind == 'macOS universal2' %}
           startsWith(runner.os, 'Mac')
           && !startsWith(matrix.python-version, 'pypy')
-  {% else %}
-          !startsWith(runner.os, 'Mac')
   {% endif %}
         uses: actions/upload-artifact@v7
         with:
@@ -192,10 +190,21 @@ jobs:
           path: dist/*arm64.whl
   {% elif kind == 'macOS universal2' %}
           path: dist/*universal2.whl
-  {% else %}
-          path: dist/*whl
   {% endif %}
 {% endfor %}
+      - name: Upload %(package_name)s wheel (Windows)
+        if: startsWith(runner.os, 'Windows')
+        uses: actions/upload-artifact@v7
+        with:
+          name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}-${{ runner.arch }}.whl
+          path: dist/*whl
+
+      - name: Upload %(package_name)s wheel (Linux)
+        if: startsWith(runner.os, 'Linux')
+        uses: actions/upload-artifact@v7
+        with:
+          name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}.whl
+          path: dist/*whl
 
   test:
     needs: build-package
@@ -295,7 +304,7 @@ jobs:
 
     steps:
 {% include 'tests-cache.j2' %}
-{% include 'tests-download.j2' %}
+{% include 'tests-download-linux.j2' %}
       - name: Install %(package_name)s
         run: |
           pip install -U wheel
@@ -321,7 +330,7 @@ jobs:
 
     steps:
 {% include 'tests-cache.j2' %}
-{% include 'tests-download.j2' %}
+{% include 'tests-download-linux.j2' %}
       - name: Install %(package_name)s
         run: |
           pip install -U wheel

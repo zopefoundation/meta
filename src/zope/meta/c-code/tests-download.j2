@@ -1,6 +1,13 @@
-
-      - name: Download %(package_name)s wheel
+      - name: Download %(package_name)s wheel (Linux/macOS)
+        if: "!startsWith(runner.os, 'Windows')"
         uses: actions/download-artifact@v8
         with:
           name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}.whl
+          path: dist/
+
+      - name: Download %(package_name)s wheel (Windows)
+        if: startsWith(runner.os, 'Windows')
+        uses: actions/download-artifact@v8
+        with:
+          name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}-${{ runner.arch }}.whl
           path: dist/
