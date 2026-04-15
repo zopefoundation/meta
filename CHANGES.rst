@@ -4,6 +4,10 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Reinstate checking ``tests.yml`` in ``check-python-versions``
+  after the ``check-python-versions`` package was fixed.
+  (See `#396 <https://github.com/zopefoundation/meta/issues/396>`_)
+
 - Pin "teyit" in `precommitconfig.yaml.j2` to use Python 3.13 
   (must be available locally, like in path or via pyenv/uv). 
   teyit does not support Python 3.14 yet.
