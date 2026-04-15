@@ -155,7 +155,6 @@ zope.securitypolicy
 zope.intid
 zope.mimetype
 roman
-z3c.checkversions
 zc.relation
 five.grok
 zope.component
