@@ -138,6 +138,13 @@ jobs:
           python setup.py bdist_wheel
 {% endfor %}
 
+      - name: Create %(package_name)s sdist
+        if: >
+          startsWith(runner.os, 'Linux')
+          && matrix.python-version == '%(newest_python_version)s'
+        run: |
+          python setup.py sdist
+
 {% if with_future_python %}
       - name: Install %(package_name)s and dependencies (%(future_python_version)s)
         if: matrix.python-version == '%(future_python_version)s'
@@ -205,6 +212,15 @@ jobs:
         with:
           name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}.whl
           path: dist/*whl
+
+      - name: Upload %(package_name)s sdist
+        if: >
+          startsWith(runner.os, 'Linux')
+          && matrix.python-version == '%(newest_python_version)s'
+        uses: actions/upload-artifact@v7
+        with:
+          name: %(package_name)s-${{ github.ref_name }}.tar.gz
+          path: dist/*gz
 
   test:
     needs: build-package
