@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Update the ``setuptools`` version pin from ``<81`` to ``<82``.
+  (`#414 <https://github.com/zopefoundation/meta/issues/414>`_)
+
 - Add steps to create a source distribution alongside binary wheels
   for the ``c-code`` template packages and publish it during releases.
   This prevents emailed warnings from PyPI about non-trusted publisher uploads.
