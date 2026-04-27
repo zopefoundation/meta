@@ -4,6 +4,11 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add steps to create a source distribution alongside binary wheels
+  for the ``c-code`` template packages and publish it during releases.
+  This prevents emailed warnings from PyPI about non-trusted publisher uploads.
+  (`#412 <https://github.com/zopefoundation/meta/issues/412>`_)
+
 - Reinstate checking ``tests.yml`` in ``check-python-versions``
   after the ``check-python-versions`` package was fixed.
   (See `#396 <https://github.com/zopefoundation/meta/issues/396>`_)
