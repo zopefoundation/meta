@@ -672,7 +672,8 @@ The corresponding section is named: ``[zest-releaser]`` (with an ``-`` instead
 of the ``.``).
 
 options
-  (Additional) options used to configure ``zest.releaser``. This option has to
+  (Additional) options used to configure ``zest.releaser`` via the
+  ``[tool.zest-releaser]`` section in ``pyproject.toml``. This option has to
   be a list of strings and defaults to an empty list.
 
 
