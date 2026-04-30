@@ -1,11 +1,3 @@
-{% if zest_releaser_options %}
-
-[zest.releaser]
-{% for line in zest_releaser_options %}
-%(line)s
-{% endfor %}
-{% endif %}
-
 [flake8]
 doctests = 1
 {% if config_type == 'buildout-recipe' %}

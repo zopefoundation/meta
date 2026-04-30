@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Move ``zest.releaser`` configuration from ``setup.cfg`` to
+  ``pyproject.toml`` where it is the ``[tool.zest-releaser]`` section.
+
 - Update the ``setuptools`` version pin from ``<81`` to ``<82``.
   (`#414 <https://github.com/zopefoundation/meta/issues/414>`_)
 
