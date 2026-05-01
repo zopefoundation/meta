@@ -31,8 +31,6 @@
         with:
           path: ${{ steps.pip-cache-default.outputs.dir }}
           key: %(cache_key)s
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-pip-
 
       - name: pip cache (Windows)
         uses: actions/cache@v5
@@ -40,5 +38,4 @@
         with:
           path: ${{ steps.pip-cache-windows.outputs.dir }}
           key: %(cache_key)s
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-pip-
+
