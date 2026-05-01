@@ -346,11 +346,6 @@ class PackageConfiguration:
         isort_additional_config = self.cfg_option(
             'isort', 'additional-config')
 
-        zest_releaser_options = self.meta_cfg['zest-releaser'].get(
-            'options', [])
-        if self.config_type == 'c-code':
-            zest_releaser_options.append('create-wheel = no')
-
         self.copy_with_meta(
             'setup.cfg.j2',
             self.path / 'setup.cfg',
@@ -365,7 +360,6 @@ class PackageConfiguration:
             isort_additional_config=isort_additional_config,
             with_docs=self.with_docs,
             with_sphinx_doctests=self.with_sphinx_doctests,
-            zest_releaser_options=zest_releaser_options,
         )
 
     def setup_py(self):
@@ -669,6 +663,18 @@ class PackageConfiguration:
         omit = self.meta_cfg['coverage-run'].get('omit', [])
         if omit:
             coverage['run']['omit'] = omit
+
+        # Update zest.releaser configuration
+        zest_releaser_options = self.meta_cfg['zest-releaser'].get(
+            'options', [])
+        zest_releaser_data = parse_additional_config(zest_releaser_options)
+        if self.config_type == 'c-code':
+            zest_releaser_data['create-wheel'] = False
+            zest_releaser_data['upload-pypi'] = False
+        if zest_releaser_data:
+            toml_doc['tool']['zest-releaser'] = zest_releaser_data
+        elif 'zest-releaser' in toml_doc.get('tool', {}):
+            del toml_doc['tool']['zest-releaser']
 
         # Remove empty sections
         for key, value in toml_doc.items():
