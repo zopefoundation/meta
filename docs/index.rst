@@ -10,6 +10,8 @@ Contents:
    :maxdepth: 2
 
    narr
+   helperscripts
+   othertopics
    api
    hacking
 
