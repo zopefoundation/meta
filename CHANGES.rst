@@ -4,6 +4,8 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add ability to run ``bin/update-python-support`` in CI.
+
 - Move ``zest.releaser`` configuration from ``setup.cfg`` to
   ``pyproject.toml`` where it is the ``[tool.zest-releaser]`` section.
 
