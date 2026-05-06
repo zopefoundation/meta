@@ -367,6 +367,9 @@ updated. Example:
         "cd ..",
         ]
 
+    [pypi]
+    trusted-publishing = true
+
     [zest-releaser]
     options = [
         "prereleaser.before =",
@@ -663,6 +666,22 @@ manylinux-aarch64-tests
   Replacement for the tests against the aarch64 architecture. This option has
   to be a list of strings and defaults to testing using ``tox`` against all
   supported Python versions, which could be too slow for some packages.
+
+PyPI options
+````````````
+
+The corresponding section is named: ``[pypi]`` and its options configure the
+package publishing process to the PyPI Python package repository at
+https://pypi.org/.
+
+trusted-publishing
+  Explicitly enable or disable automated building and publishing of release
+  packages to PyPI using the Trusted Publishing process when a tag is pushed
+  to GitHub. Defaults to ``false``.
+  This option has no meaning for ``c-code`` template projects, those always
+  build and publish release packages using Trusted Publishing.
+  See https://docs.pypi.org/trusted-publishers/ for details on the Trusted
+  Publishing process.
 
 
 zest.releaser options
