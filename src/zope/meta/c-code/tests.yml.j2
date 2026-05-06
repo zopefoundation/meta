@@ -1,4 +1,4 @@
-{% set cache_key = "${{ runner.os }}-pip-${{ matrix.python-version }}" %}
+{% set cache_key = "${{ runner.os }}-${{ runner.arch }}-pip-${{ matrix.python-version }}" %}
 ###
 # Initially copied from
 # https://github.com/actions/starter-workflows/blob/main/ci/python-package.yml
@@ -55,17 +55,9 @@ env:
   ZOPE_INTERFACE_STRICT_IRO: 1
 
   PIP_UPGRADE_STRATEGY: eager
-  # Don't get warnings about Python 2 support being deprecated. We
-  # know. The env var works for pip 20.
-  PIP_NO_PYTHON_VERSION_WARNING: 1
-  PIP_NO_WARN_SCRIPT_LOCATION: 1
 
   CFLAGS: -O3 -pipe
   CXXFLAGS: -O3 -pipe
-  # Uploading built wheels for releases.
-  # TWINE_PASSWORD is encrypted and stored directly in the
-  # github repo settings.
-  TWINE_USERNAME: __token__
 
   ###
   # caching
@@ -101,9 +93,6 @@ jobs:
         if: matrix.python-version == '%(future_python_version)s'
         run: |
           pip install -U pip
-  {% if require_cffi %}
-          pip install -U --pre cffi
-  {% endif %}
           pip install -U "setuptools %(setuptools_version_spec)s" wheel twine
 {% endif %}
       - name: Install Build Dependencies
@@ -113,14 +102,6 @@ jobs:
         run: |
           pip install -U pip
           pip install -U "setuptools %(setuptools_version_spec)s" wheel twine
-  {% if require_cffi %}
-          pip install cffi
-  {% endif %}
-{% if gha_additional_build_deps %}
-  {% for line in gha_additional_build_deps %}
-          pip install -U %(line)s
-  {% endfor %}
-{% endif %}
 
 {% for kind in ('macOS x86_64', 'macOS arm64', 'all other versions') %}
       - name: Build %(package_name)s (%(kind)s)
@@ -157,6 +138,13 @@ jobs:
           python setup.py bdist_wheel
 {% endfor %}
 
+      - name: Create %(package_name)s sdist
+        if: >
+          startsWith(runner.os, 'Linux')
+          && matrix.python-version == '%(newest_python_version)s'
+        run: |
+          python setup.py sdist
+
 {% if with_future_python %}
       - name: Install %(package_name)s and dependencies (%(future_python_version)s)
         if: matrix.python-version == '%(future_python_version)s'
@@ -172,13 +160,14 @@ jobs:
 {% endif %}
         run: |
           # Install to collect dependencies into the (pip) cache.
+          pip install -U pip "setuptools %(setuptools_version_spec)s"
           pip install .[test]
 
       - name: Check %(package_name)s build
         run: |
           ls -l dist
           twine check dist/*
-{% for kind in ('macOS x86_64', 'macOS arm64', 'all other platforms') %}
+{% for kind in ('macOS x86_64', 'macOS arm64') %}
       - name: Upload %(package_name)s wheel (%(kind)s)
         if: >
   {% if kind == 'macOS x86_64' %}
@@ -186,10 +175,8 @@ jobs:
   {% elif kind == 'macOS arm64' or kind == 'macOS universal2' %}
           startsWith(runner.os, 'Mac')
           && !startsWith(matrix.python-version, 'pypy')
-  {% else %}
-          !startsWith(runner.os, 'Mac')
   {% endif %}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
   {% if kind == 'macOS x86_64' %}
           # The x86_64 wheel is uploaded with a different name just so it can be
@@ -210,26 +197,30 @@ jobs:
           path: dist/*arm64.whl
   {% elif kind == 'macOS universal2' %}
           path: dist/*universal2.whl
-  {% else %}
-          path: dist/*whl
   {% endif %}
 {% endfor %}
-      - name: Publish package to PyPI (Non-Linux)
-        # We cannot use pypa/gh-action-pypi-publish because that
-        # is a container action, and those don't run on macOS
-        # or Windows GHA runners.
+      - name: Upload %(package_name)s wheel (Windows)
+        if: startsWith(runner.os, 'Windows')
+        uses: actions/upload-artifact@v7
+        with:
+          name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}-${{ runner.arch }}.whl
+          path: dist/*whl
+
+      - name: Upload %(package_name)s wheel (Linux)
+        if: startsWith(runner.os, 'Linux')
+        uses: actions/upload-artifact@v7
+        with:
+          name: %(package_name)s-${{ runner.os }}-${{ matrix.python-version }}.whl
+          path: dist/*whl
+
+      - name: Upload %(package_name)s sdist
         if: >
-          github.event_name == 'push'
-          && startsWith(github.ref, 'refs/tags')
-          && !startsWith(runner.os, 'Linux')
-          && !startsWith(matrix.python-version, 'pypy')
-{% if with_future_python %}
-          && !startsWith(matrix.python-version, '%(future_python_version)s')
-{% endif %}
-        env:
-          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-        run: |
-          twine upload --skip-existing dist/*
+          startsWith(runner.os, 'Linux')
+          && matrix.python-version == '%(newest_python_version)s'
+        uses: actions/upload-artifact@v7
+        with:
+          name: %(package_name)s.tar.gz
+          path: dist/*gz
 
   test:
     needs: build-package
@@ -248,9 +239,6 @@ jobs:
       - name: Install %(package_name)s ${{ matrix.python-version }}
         if: matrix.python-version == '%(future_python_version)s'
         run: |
-  {% if require_cffi %}
-          pip install -U --pre cffi
-  {%  endif %}
           pip install -U wheel "setuptools %(setuptools_version_spec)s"
           # coverage might have a wheel on PyPI for a future python version which is
           # not ABI compatible with the current one, so build it from sdist:
@@ -258,7 +246,8 @@ jobs:
           # Unzip into src/ so that testrunner can find the .so files
           # when we ask it to load tests from that directory. This
           # might also save some build time?
-          unzip -n dist/%(package_name)s-*whl -d src
+          ls -l dist/
+          unzip -n dist/*.whl -d src
           # Use "--pre" here because dependencies with support for this future
           # Python release may only be available as pre-releases
           pip install --pre -e .[test]
@@ -274,7 +263,8 @@ jobs:
           # Unzip into src/ so that testrunner can find the .so files
           # when we ask it to load tests from that directory. This
           # might also save some build time?
-          unzip -n dist/%(package_name)s-*whl -d src
+          ls -l dist/
+          unzip -n dist/*.whl -d src
           pip install -e .[test]
       - name: Run tests with C extensions
         if: ${{ !startsWith(matrix.python-version, 'pypy') }}
@@ -330,12 +320,12 @@ jobs:
 
     steps:
 {% include 'tests-cache.j2' %}
-{% include 'tests-download.j2' %}
+{% include 'tests-download-linux.j2' %}
       - name: Install %(package_name)s
         run: |
           pip install -U wheel
           pip install -U coverage[toml]
-          pip install -U  "`ls dist/%(package_name)s-*.whl`[docs]"
+          pip install -U  "`ls dist/*.whl`[docs]"
       - name: Build docs
         env:
           ZOPE_INTERFACE_STRICT_IRO: 1
@@ -346,23 +336,53 @@ jobs:
   {% endif %}
 {% endif %}
 
-  manylinux:
-    runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
-    # We use a regular Python matrix entry to share as much code as possible.
+  release-check:
+    needs: build-package
+    runs-on: "ubuntu-latest"
     strategy:
       matrix:
         python-version: ["%(manylinux_python_version)s"]
-        image: [%(manylinux_x86_64)s, %(manylinux_i686)s, %(manylinux_aarch64)s]
+        os: [ubuntu-latest]
 
+    steps:
+{% include 'tests-cache.j2' %}
+{% include 'tests-download-linux.j2' %}
+      - name: Install %(package_name)s
+        run: |
+          pip install -U wheel
+          pip install -U tox
+          pip install -U  "`ls dist/*.whl`[docs]"
+      - name: Run release check
+        env:
+          ZOPE_INTERFACE_STRICT_IRO: 1
+        run: |
+          tox -e release-check
+
+  manylinux:
+    runs-on: ${{ matrix.os }}
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    # We use a matrix to share as much code as possible.
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            image: %(manylinux_x86_64)s
+            python-version: "%(manylinux_python_version)s"
+          - os: ubuntu-latest
+            image: %(manylinux_i686)s
+            python-version: "%(manylinux_python_version)s"
+          - os: ubuntu-24.04-arm
+            image: %(manylinux_aarch64)s
+            python-version: "%(manylinux_python_version)s"
     steps:
 {% set cache_key = "${{ runner.os }}-pip_manylinux-${{ matrix.image }}-${{ matrix.python-version }}" %}
 {% include 'tests-cache.j2' %}
 
       - name: Update pip
         run: pip install -U pip
-      - name: Build %(package_name)s (x86_64)
-        if: matrix.image == '%(manylinux_x86_64)s'
+
+      - name: Build %(package_name)s
+        if: matrix.image != '%(manylinux_i686)s'
         # An alternate way to do this is to run the container directly with a uses:
         # and then the script runs inside it. That may work better with caching.
         # See https://github.com/pyca/bcrypt/blob/f6b5ee2eda76d077c531362ac65e16f045cf1f29/.github/workflows/wheel-builder.yml
@@ -377,33 +397,63 @@ jobs:
           PRE_CMD: linux32
         run: |
           bash .manylinux.sh
-      - name: Build %(package_name)s (aarch64)
-        if: matrix.image == '%(manylinux_aarch64)s'
-        env:
-          DOCKER_IMAGE: quay.io/pypa/${{ matrix.image }}
-        run: |
-          # First we must enable emulation
-          docker run --rm --privileged hypriot/qemu-register
-          bash .manylinux.sh
 
       - name: Upload %(package_name)s wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           path: wheelhouse/*whl
           name: manylinux_${{ matrix.image }}_wheels.zip
+
       - name: Restore pip cache permissions
         run: sudo chown -R $(whoami) ${{ steps.pip-cache-default.outputs.dir }}
 {% if with_future_python %}
+
       - name: Prevent publishing wheels for unreleased Python versions
         run: VER=$(echo '%(future_python_version)s' | tr -d .) && ls -al wheelhouse && sudo rm -f wheelhouse/*-cp${VER}*.whl && ls -al wheelhouse
 {% endif %}
-      - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        if: >
-          github.event_name == 'push'
-          && startsWith(github.ref, 'refs/tags')
+
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    # Only publish on tag pushes
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    # Wait for both build jobs to complete
+    needs: [build-package, manylinux]
+    environment:
+      name: pypi
+      url: https://pypi.org/p/%(package_name)s
+    permissions:
+      contents: read
+      id-token: write  # Mandatory for trusted publishing
+
+    steps:
+      - name: Download all wheel artifacts
+        uses: actions/download-artifact@v8
         with:
-          user: __token__
-          password: ${{ secrets.TWINE_PASSWORD }}
+          path: dist/
+          pattern: '*'
+          merge-multiple: true
+
+      - name: Display structure of downloaded files
+        run: |
+          ls -lR dist/
+          echo "Total wheel files:"
+          find dist/ -name "*.whl" | wc -l
+
+      - name: Remove undesired wheels (if any were downloaded)
+        run: |
+          # PyPy wheels shouldn't be uploaded, remove them if present
+          find dist/ -name "*pypy*" -type f -delete || true
+          find dist/ -name "*none-any*" -type f -delete || true
+          # Wheels for the not-yet-supported future Python version need to go
+          find dist/ -name "*%(future_python_version)s*" -type f -delete || true
+          find dist/ -name "*cp%(future_python_shortversion)s*" -type f -delete || true
+          # For Linux, we only want the manylinux wheels
+          find dist/ -name "*linux_x86_64*" -type f -delete || true
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
           skip-existing: true
-          packages-dir: wheelhouse/
+          packages-dir: dist/
+          verbose: true

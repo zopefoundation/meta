@@ -9,4 +9,5 @@ deps =
     pre-commit
 commands_pre =
 commands =
-    pre-commit run --all-files --show-diff-on-failure
+    pre-commit run --all-files{% if lint_diff_on_failure %} --show-diff-on-failure{% endif %}
+

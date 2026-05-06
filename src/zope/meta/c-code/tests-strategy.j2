@@ -12,17 +12,28 @@
           - "%(future_python_version)s"
 {% endif %}
 {% if with_windows %}
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest, windows-11-arm]
 {% else %}
         os: [ubuntu-latest, macos-latest]
 {% endif %}
-{% if with_pypy or gha_additional_exclude %}
+{% if with_pypy or gha_additional_exclude or with_windows %}
         exclude:
 {% endif %}
 {% if with_pypy %}
           - os: macos-latest
             python-version: "pypy-%(pypy_version)s"
+          - os: windows-11-arm
+            python-version: "pypy-%(pypy_version)s"
+{% endif %}
+{% if with_windows %}
+          - os: windows-11-arm
+            python-version: "3.10"
 {% endif %}
 {% for line in gha_additional_exclude %}
           %(line)s
 {% endfor %}
+{% if with_free_threaded_python %}
+        include:
+          - python-version: "%(newest_python_version)st"
+            os: ubuntu-latest
+{% endif %}

@@ -11,9 +11,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import argparse
 import collections
 import pathlib
+import re
 import shutil
 from functools import cached_property
 
@@ -34,26 +34,22 @@ from .shared.packages import MANYLINUX_AARCH64
 from .shared.packages import MANYLINUX_I686
 from .shared.packages import MANYLINUX_PYTHON_VERSION
 from .shared.packages import MANYLINUX_X86_64
+from .shared.packages import META_HINT
+from .shared.packages import META_HINT_MARKDOWN
 from .shared.packages import NEWEST_PYTHON_VERSION
 from .shared.packages import OLDEST_PYTHON_VERSION
 from .shared.packages import PYPY_VERSION
 from .shared.packages import SETUPTOOLS_VERSION_SPEC
-from .shared.packages import get_pyproject_toml_defaults
+from .shared.packages import get_pyproject_toml
 from .shared.packages import parse_additional_config
 from .shared.packages import supported_python_versions
 from .shared.path import change_dir
+from .shared.script_args import get_shared_parser
 
 
 FUTURE_PYTHON_SHORTVERSION = FUTURE_PYTHON_VERSION.replace('.', '')
 NEWEST_PYTHON_SHORTVERSION = NEWEST_PYTHON_VERSION.replace('.', '')
-META_HINT = """\
-# Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/{config_type}"""
-META_HINT_MARKDOWN = """\
-<!--
-Generated from:
-https://github.com/zopefoundation/meta/tree/master/config/{config_type}
--->"""
+NEWEST_PYTHON_SHORTVERSION_T = NEWEST_PYTHON_SHORTVERSION + 't'
 DEFAULT = object()
 SETUP_PY_REPLACEMENTS = {
     'ZPL 2.1': 'ZPL-2.1',
@@ -66,28 +62,8 @@ SETUP_PY_REPLACEMENTS = {
 
 def handle_command_line_arguments():
     """Parse command line options"""
-    parser = argparse.ArgumentParser(
-        description='Use configuration for a package.')
-    parser.add_argument(
-        'path', type=pathlib.Path,
-        help='path to the repository to be configured')
-    parser.add_argument(
-        '--commit-msg',
-        dest='commit_msg',
-        metavar='MSG',
-        help='Use MSG as commit message instead of an artificial one.')
-    parser.add_argument(
-        '--no-commit',
-        dest='commit',
-        action='store_false',
-        default=True,
-        help='Prevent automatic committing of changes. Implies --no-push.')
-    parser.add_argument(
-        '--no-push',
-        dest='push',
-        action='store_false',
-        default=True,
-        help='Prevent direct push.')
+    parser = get_shared_parser('Use configuration for a package.',
+                               interactive=False)
     parser.add_argument(
         '--with-macos',
         dest='with_macos',
@@ -138,6 +114,13 @@ def handle_command_line_arguments():
         help='Activate running doctests with sphinx '
         'if not already configured in  .meta.toml.')
     parser.add_argument(
+        '--with-free-threaded-python',
+        dest='with_free_threaded_python',
+        action='store_true',
+        default=False,
+        help='Activate running tests with free-threaded Python (nogil) '
+        'if not already configured in .meta.toml.')
+    parser.add_argument(
         '-t', '--type',
         choices=[
             'buildout-recipe',
@@ -150,13 +133,6 @@ def handle_command_line_arguments():
         dest='type',
         help='type of the configuration to be used, see README.rst. '
         'Only required when running on a repository for the first time.')
-    parser.add_argument(
-        '--branch',
-        dest='branch_name',
-        default=None,
-        help='Define a git branch name to be used for the changes. '
-        'If not given it is constructed automatically and includes '
-        'the configuration type')
     parser.add_argument(
         '--no-admin',
         dest='admin',
@@ -172,6 +148,8 @@ def handle_command_line_arguments():
     )
 
     args = parser.parse_args()
+    if args.started_from_auto_update:
+        args.run_tests = False
     return args
 
 
@@ -217,6 +195,13 @@ class PackageConfiguration:
                 print(f"Autodetecting --with-docs: {self.args.with_docs}")
         return meta_cfg
 
+    def template_exists(self, filename):
+        """Check if a given template exists"""
+        for parent_folder in self.template_folders:
+            if (parent_folder / filename).exists():
+                return True
+        return False
+
     @cached_property
     def config_type(self):
         value = self.meta_cfg['meta'].get('template') or self.args.type
@@ -251,10 +236,21 @@ class PackageConfiguration:
         return pathlib.Path(__file__).parent / 'default'
 
     @cached_property
+    def override_paths(self):
+        if self.args.overrides_path:
+            overrides_path = pathlib.Path(self.args.overrides_path)
+            return [overrides_path / self.config_type,
+                    overrides_path / 'default']
+        return []
+
+    @cached_property
+    def template_folders(self):
+        return self.override_paths + [self.config_type_path, self.default_path]
+
+    @cached_property
     def jinja_env(self):
         return jinja2.Environment(
-            loader=jinja2.FileSystemLoader(
-                [self.config_type_path, self.default_path]),
+            loader=jinja2.FileSystemLoader(self.template_folders),
             variable_start_string='%(',
             variable_end_string=')s',
             keep_trailing_newline=True,
@@ -292,6 +288,10 @@ class PackageConfiguration:
         return self._set_python_config_value('sphinx-doctests')
 
     @cached_property
+    def with_free_threaded_python(self):
+        return self._set_python_config_value('free-threaded-python')
+
+    @cached_property
     def coverage_run_source(self):
         return self.meta_cfg['coverage-run'].get('source', self.path.name)
 
@@ -305,7 +305,15 @@ class PackageConfiguration:
 
     def _add_project_to_config_type_list(self):
         """Add the current project to packages.txt if it is not there"""
-        with open(self.config_type_path / 'packages.txt') as f:
+        if self.override_paths:
+            packages_txt_folder = self.override_paths[0]
+        else:
+            packages_txt_folder = self.config_type_path
+
+        if not (packages_txt_folder / 'packages.txt').exists():
+            (packages_txt_folder / 'packages.txt').touch(mode=0o664)
+
+        with open(packages_txt_folder / 'packages.txt') as f:
             known_packages = f.read().splitlines()
 
         if self.path.name in known_packages:
@@ -314,7 +322,7 @@ class PackageConfiguration:
         else:
             print(f'{self.path.name} is not yet configured '
                   'for this config type, adding.')
-            with open(self.config_type_path / 'packages.txt', 'a') as f:
+            with open(packages_txt_folder / 'packages.txt', 'a') as f:
                 f.write(f'{self.path.name}\n')
 
     def _set_python_config_value(self, name, default=False):
@@ -355,11 +363,6 @@ class PackageConfiguration:
         isort_additional_config = self.cfg_option(
             'isort', 'additional-config')
 
-        zest_releaser_options = self.meta_cfg['zest-releaser'].get(
-            'options', [])
-        if self.config_type == 'c-code':
-            zest_releaser_options.append('create-wheel = no')
-
         self.copy_with_meta(
             'setup.cfg.j2',
             self.path / 'setup.cfg',
@@ -374,7 +377,6 @@ class PackageConfiguration:
             isort_additional_config=isort_additional_config,
             with_docs=self.with_docs,
             with_sphinx_doctests=self.with_sphinx_doctests,
-            zest_releaser_options=zest_releaser_options,
         )
 
     def setup_py(self):
@@ -396,6 +398,8 @@ class PackageConfiguration:
 
     def pre_commit_config_yaml(self):
         teyit_exclude = self.meta_cfg["pre-commit"].get("teyit-exclude", "")
+        pyupgrade_exclude = self.meta_cfg["pre-commit"].get(
+            "pyupgrade-exclude", "")
 
         self.copy_with_meta(
             "pre-commit-config.yaml.j2",
@@ -403,6 +407,7 @@ class PackageConfiguration:
             self.config_type,
             oldest_python_version=self.oldest_python.replace(".", ""),
             teyit_exclude=teyit_exclude,
+            pyupgrade_exclude=pyupgrade_exclude,
         )
 
     def readthedocs(self):
@@ -428,17 +433,19 @@ class PackageConfiguration:
                 'cd ..',
             ])
 
-        if (self.config_type_path / 'manylinux.sh').exists():
+        if self.template_exists('manylinux.sh'):
             self.copy_with_meta(
                 'manylinux.sh', self.path / '.manylinux.sh', self.config_type)
             (self.path / '.manylinux.sh').chmod(0o755)
             stop_at = None
             if not self.with_future_python:
                 stop_at = NEWEST_PYTHON_SHORTVERSION
+            pkg_name_pattern = re.sub(r"[-_.]+", "?", self.path.name).lower()
             self.copy_with_meta(
                 'manylinux-install.sh.j2', self.path / '.manylinux-install.sh',
                 self.config_type,
                 package_name=self.path.name,
+                package_name_pattern=pkg_name_pattern,
                 manylinux_install_setup=manylinux_install_setup,
                 manylinux_aarch64_tests=manylinux_aarch64_tests,
                 with_future_python=self.with_future_python,
@@ -472,10 +479,14 @@ class PackageConfiguration:
         return self.cfg_option('github-actions', name, default)
 
     def tox(self):
+        toml_doc = get_pyproject_toml(self.path / 'pyproject.toml')
+        build_requirements = toml_doc['build-system'].get('requires', [])
         additional_envlist = self.tox_option('additional-envlist')
         testenv_additional = self.tox_option('testenv-additional')
         testenv_additional_extras = self.tox_option(
             'testenv-additional-extras')
+        testenv_skip_test_extra = self.tox_option(
+            'testenv-skip-test-extra', False)
         testenv_commands_pre = self.tox_option('testenv-commands-pre')
         testenv_commands = self.tox_option('testenv-commands')
         testenv_setenv = self.tox_option('testenv-setenv')
@@ -487,6 +498,7 @@ class PackageConfiguration:
         coverage_additional = self.tox_option('coverage-additional')
         testenv_deps = self.tox_option('testenv-deps')
         coverage_setenv = self.tox_option('coverage-setenv')
+        lint_diff_on_failure = self.tox_option('lint-diff-on-failure', True)
         flake8_additional_sources = self.meta_cfg['flake8'].get(
             'additional-sources', '')
         if flake8_additional_sources:
@@ -513,21 +525,26 @@ class PackageConfiguration:
             coverage_fail_under=self.coverage_fail_under,
             flake8_additional_sources=flake8_additional_sources,
             isort_additional_sources=isort_additional_sources,
+            lint_diff_on_failure=lint_diff_on_failure,
             testenv_additional=testenv_additional,
             testenv_additional_extras=testenv_additional_extras,
+            testenv_skip_test_extra=testenv_skip_test_extra,
             testenv_commands=testenv_commands,
             testenv_commands_pre=testenv_commands_pre,
             testenv_deps=testenv_deps,
             testenv_setenv=testenv_setenv,
             with_docs=self.with_docs,
+            with_free_threaded_python=self.with_free_threaded_python,
             with_future_python=self.with_future_python,
             with_pypy=self.with_pypy,
             with_sphinx_doctests=self.with_sphinx_doctests,
             docs_deps=docs_deps,
             setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
             future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
+            newest_python_shortversion_t=NEWEST_PYTHON_SHORTVERSION_T,
             supported_python_versions=supported_python_versions(
                 self.oldest_python, short_version=True),
+            build_requirements=build_requirements,
         )
 
     def tests_yml(self):
@@ -539,12 +556,8 @@ class PackageConfiguration:
         gha_additional_exclude = self.gh_option('additional-exclude')
         gha_steps_before_checkout = self.gh_option('steps-before-checkout')
         gha_additional_install = self.gh_option('additional-install')
-        gha_additional_build_deps = self.gh_option(
-            'additional-build-dependencies')
         gha_test_environment = self.gh_option('test-environment')
         gha_test_commands = self.gh_option('test-commands')
-        require_cffi = self.meta_cfg.get(
-            'c-code', {}).get('require-cffi', False)
         py_version_matrix = [
             x for x in zip(supported_python_versions(self.oldest_python,
                                                      short_version=False),
@@ -558,16 +571,17 @@ class PackageConfiguration:
             gha_additional_config=gha_additional_config,
             gha_additional_exclude=gha_additional_exclude,
             gha_additional_install=gha_additional_install,
-            gha_additional_build_deps=gha_additional_build_deps,
             gha_test_environment=gha_test_environment,
             gha_test_commands=gha_test_commands,
             gha_services=gha_services,
             gha_steps_before_checkout=gha_steps_before_checkout,
             with_docs=self.with_docs,
             with_sphinx_doctests=self.with_sphinx_doctests,
+            with_free_threaded_python=self.with_free_threaded_python,
             with_future_python=self.with_future_python,
             future_python_version=FUTURE_PYTHON_VERSION,
-            require_cffi=require_cffi,
+            newest_python_version=NEWEST_PYTHON_VERSION,
+            newest_python_shortversion_t=NEWEST_PYTHON_SHORTVERSION_T,
             with_pypy=self.with_pypy,
             with_macos=self.with_macos,
             with_windows=self.with_windows,
@@ -606,39 +620,60 @@ class PackageConfiguration:
             self.copy_with_meta(
                 'MANIFEST.in.j2', self.path / 'MANIFEST.in', self.config_type,
                 manifest_additional_rules=manifest_additional_rules,
-                with_docs=self.with_docs)
+                with_docs=self.with_docs,
+                have_md_files=list(self.path.glob('*.md')),
+                have_docs_txt_files=list(self.path.glob('docs/*.txt')),
+                have_src_folder=(self.path / 'src').exists())
 
     def pyproject_toml(self):
         """Modify pyproject.toml with meta options."""
         toml_path = self.path / 'pyproject.toml'
-
-        if toml_path.exists():
-            with open(toml_path, 'rb') as fp:
-                toml_doc = tomlkit.load(fp)
-        else:
-            toml_doc = tomlkit.document()
-            preamble = f'\n{META_HINT.format(config_type=self.config_type)}'
-            toml_doc.add(tomlkit.comment(preamble))
-        toml_data = collections.defaultdict(dict, **toml_doc)
+        toml_doc = get_pyproject_toml(
+            toml_path,
+            comment=META_HINT.format(config_type=self.config_type))
 
         # Capture some pre-transformation data
-        old_requires = toml_data['build-system'].get('requires', [])
+        old_requires = toml_doc.get('build-system', {}).get('requires', [])
+        old_tools = toml_doc.get('tool', {})
+
+        # Do some sanity checking
+        project_settings = toml_doc.get('project', {})
+        for install_dependency in project_settings.get('dependencies', []):
+            if install_dependency.startswith('setuptools'):
+                print('XXX Found "setuptools" as install time dependency.')
+                print('XXX Please check if it is really needed!')
+                break
 
         # Apply template-dependent defaults
-        toml_data.update(get_pyproject_toml_defaults(self.config_type))
+        toml_defaults = self.render_with_meta(
+            'pyproject_defaults.toml.j2',
+            self.config_type,
+            setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
+            coverage_run_source=self.coverage_run_source,
+            coverage_fail_under=self.coverage_fail_under,
+        )
+        toml_doc.update(tomlkit.loads(toml_defaults))
 
-        # Create or update section "build-system"
+        # Create or update section "build-system", we want to control a few
+        # build requirement specifications like wheel and setuptools.
         if old_requires:
             setuptools_requirement = [
                 x for x in old_requires if x.startswith('setuptools')]
             for setuptools_req in setuptools_requirement:
                 old_requires.remove(setuptools_req)
-            toml_data['build-system']['requires'].extend(old_requires)
+            wheel_requirement = [
+                x for x in old_requires if x.startswith('wheel')]
+            [old_requires.remove(x) for x in wheel_requirement]
+            toml_doc['build-system']['requires'].extend(old_requires)
+
+        # Fix up tool sections because the call to ``update`` above will
+        # replace the entire ``tool`` mapping...
+        for k, v in old_tools.items():
+            if k != 'coverage':  # `coverage` settings are handled by template
+                toml_doc['tool'][k] = v
 
         # Update coverage-related data
-        coverage = toml_data['tool']['coverage']
-        coverage['run']['source'] = self.coverage_run_source.split()
-        coverage['report']['fail_under'] = self.coverage_fail_under
+        coverage = toml_doc['tool']['coverage']
         add_cfg = self.meta_cfg['coverage-run'].get('additional-config', [])
         for key, value in parse_additional_config(add_cfg).items():
             coverage['run'][key] = value
@@ -646,13 +681,37 @@ class PackageConfiguration:
         if omit:
             coverage['run']['omit'] = omit
 
-        # Remove empty sections
-        toml_data = {k: v for k, v in toml_data.items() if v}
+        # Update zest.releaser configuration
+        zest_releaser_options = self.meta_cfg['zest-releaser'].get(
+            'options', [])
+        zest_releaser_data = parse_additional_config(zest_releaser_options)
+        if self.config_type == 'c-code':
+            zest_releaser_data['create-wheel'] = False
+            zest_releaser_data['upload-pypi'] = False
+        if zest_releaser_data:
+            toml_doc['tool']['zest-releaser'] = zest_releaser_data
+        elif 'zest-releaser' in toml_doc.get('tool', {}):
+            del toml_doc['tool']['zest-releaser']
 
-        # Update and write out the document
-        toml_doc.update(toml_data)
+        # Remove empty sections
+        for key, value in toml_doc.items():
+            if not value:
+                toml_doc.remove(key)
+
+        # Fix formatting for some items, especially long lists, so diffs
+        # become readable.
+        toml_doc['build-system']['requires'].multiline(True)
+        toml_doc['tool']['coverage']['report']['exclude_lines'].multiline(True)
+        if toml_doc['tool']['coverage'].get('paths'):
+            toml_doc['tool']['coverage']['paths']['source'].multiline(True)
+
         with open(toml_path, 'w') as fp:
             tomlkit.dump(toml_doc, fp, sort_keys=True)
+
+    def render_with_meta(self, template_name, config_type, **kw):
+        """Read and render a Jinja template source file"""
+        template = self.jinja_env.get_template(template_name)
+        return template.render(config_type=config_type, **kw)
 
     def copy_with_meta(
             self, template_name, destination, config_type,
@@ -660,9 +719,18 @@ class PackageConfiguration:
         """Copy the source file to destination and a hint of origin.
 
         If kwargs are given they are used as template arguments.
+
+        If the rendered template output is an empty string, don't write it
+        to disk. This allows package maintainers to prevent adding certain
+        optional files by specifying a custom templates path with the
+        ``--overrides`` option and adding an empty template there.
         """
-        template = self.jinja_env.get_template(template_name)
-        rendered = template.render(config_type=config_type, **kw)
+        rendered = self.render_with_meta(template_name, config_type, **kw)
+
+        # If the rendered template is empty, give up and return.
+        if not rendered.strip():
+            return
+
         meta_hint = meta_hint.format(config_type=config_type)
         if rendered.startswith('#!'):
             she_bang, _, body = rendered.partition('\n')
@@ -695,15 +763,16 @@ class PackageConfiguration:
             'CONTRIBUTING.md', self.path / 'CONTRIBUTING.md', self.config_type,
             meta_hint=META_HINT_MARKDOWN)
 
-        with change_dir(self.path):
-            # We have to add it here otherwise the linter complains
-            # that it is not added.
-            early_add = [
-                '.pre-commit-config.yaml',
-                'CONTRIBUTING.md',
-                'pyproject.toml',
-            ]
-            if self.args.commit:
+        if self.args.commit:
+            with change_dir(self.path):
+                # We have to add it here otherwise the linter complains
+                # that it is not added.
+                early_add_candidates = (
+                    '.pre-commit-config.yaml',
+                    'pyproject.toml',
+                    'CONTRIBUTING.md')
+                early_add = [x for x in early_add_candidates
+                             if pathlib.Path(x).exists()]
                 call('git', 'add', *early_add)
 
         self.manylinux_sh()
@@ -721,7 +790,9 @@ class PackageConfiguration:
                 call('git', 'rm', '.coveragerc')
             if pathlib.Path('appveyor.yml').exists():
                 call('git', 'rm', 'appveyor.yml')
-            if self.with_docs and self.args.commit:
+            if self.with_docs and \
+               pathlib.Path('.readthedocs.yaml').exists() and \
+               self.args.commit:
                 call('git', 'add', '.readthedocs.yaml')
             if self.add_manylinux and self.args.commit:
                 call('git', 'add', '.manylinux.sh', '.manylinux-install.sh')
@@ -732,7 +803,7 @@ class PackageConfiguration:
                 meta_f.write('\n')
                 tomlkit.dump(meta_cfg, meta_f)
 
-            if not self.args.started_from_auto_update:
+            if self.args.run_tests:
                 tox_path = shutil.which('tox') or (
                     pathlib.Path(cwd) / 'bin' / 'tox')
                 call(tox_path, '-p', 'auto')

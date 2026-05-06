@@ -109,12 +109,12 @@ Using :mod:`tox`
 Running Tests on Multiple Python Versions
 -----------------------------------------
 
-`tox <http://tox.testrun.org/latest/>`_ is a Python-based test automation
+`tox <https://tox.wiki/>`_ is a Python-based test automation
 tool designed to run tests against multiple Python versions.  It creates
 a virtual environment for each configured version, installs the current
 package and configured dependencies into each environment, and then runs the
 configured commands.
-   
+
 :mod:`zope.meta` configures the following :mod:`tox` environments via
 its ``tox.ini`` file:
 
@@ -182,7 +182,7 @@ Sharing Your Changes
 
 If you have made changes you would like to share, the best route is to create a
 branch in the GitHub repository and push changes there, which requires
-`contributor status 
+`contributor status
 <https://www.zope.dev/developer/becoming-a-committer.html>`_. You can
 also fork the GitHub repository, check out your fork, make your changes on a
 branch in your fork, and then push them. A private fork makes it harder for

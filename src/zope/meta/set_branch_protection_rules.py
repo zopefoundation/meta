@@ -4,7 +4,6 @@ import json
 import os
 import pathlib
 import tempfile
-from typing import Optional
 
 import requests
 import tomlkit
@@ -49,7 +48,7 @@ def get_package_name():
 
 
 def set_branch_protection(
-        repo: str, meta_path: Optional[pathlib.Path] = None) -> bool:
+        repo: str, meta_path: pathlib.Path | None = None) -> bool:
     result = _call_gh(
         'GET', 'protection/required_pull_request_reviews', repo,
         allowed_return_codes=(0, 1))
@@ -80,14 +79,19 @@ def set_branch_protection(
     oldest_python_version = meta_toml['python'].get('oldest-python',
                                                     OLDEST_PYTHON_VERSION)
     oldest_python = f"py{oldest_python_version.replace('.', '')}"
+    with_free_threaded_python = meta_toml['python'].get(
+        'with-free-threaded-python', False)
     with_windows = meta_toml['python']['with-windows']
     with_macos = meta_toml['python']['with-macos']
     required = ['linting']
     if template == 'c-code':
         required.extend([
-            f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_AARCH64})',
-            f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_I686})',
-            f'manylinux ({MANYLINUX_PYTHON_VERSION}, {MANYLINUX_X86_64})',
+            f'manylinux (ubuntu-24.04-arm, {MANYLINUX_AARCH64},'
+            f' {MANYLINUX_PYTHON_VERSION})',
+            f'manylinux (ubuntu-latest, {MANYLINUX_I686},'
+            f' {MANYLINUX_PYTHON_VERSION})',
+            f'manylinux (ubuntu-latest, {MANYLINUX_X86_64},'
+            f' {MANYLINUX_PYTHON_VERSION})',
             f'test ({oldest_python_version}, macos-latest)',
             f'test ({NEWEST_PYTHON_VERSION}, macos-latest)',
             f'test ({oldest_python_version}, ubuntu-latest)',
@@ -100,6 +104,9 @@ def set_branch_protection(
         if with_pypy:
             required.append(f'test (pypy-{PYPY_VERSION}, ubuntu-latest)')
             required.append(f'test (pypy-{PYPY_VERSION}, windows-latest)')
+        if with_free_threaded_python:
+            required.append(
+                f'test ({NEWEST_PYTHON_VERSION}t, ubuntu-latest)')
         if with_windows:
             required.extend([
                 f'test ({oldest_python_version}, windows-latest)',
@@ -126,6 +133,8 @@ def set_branch_protection(
                 'ubuntu-pypy3',
                 'windows-pypy3',
             ])
+        if with_free_threaded_python:
+            required.append(f'ubuntu-py{NEWEST_PYTHON}t')
         if with_docs:
             required.append('ubuntu-docs')
     else:  # default for most packages
@@ -136,6 +145,8 @@ def set_branch_protection(
             required.append('docs')
         if with_pypy:
             required.append('pypy3')
+        if with_free_threaded_python:
+            required.append(f'{NEWEST_PYTHON}t')
 
     data = {
         'allow_deletions': False,

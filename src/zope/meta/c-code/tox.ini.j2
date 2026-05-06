@@ -1,10 +1,10 @@
-{% set with_coverage = True %}
 {% set raw_testenv_setenv = testenv_setenv %}
 {% set testenv_setenv = ['pure: PURE_PYTHON=1', '!pure-!pypy3: PURE_PYTHON=0'] + testenv_setenv %}
 {% set coverage_setenv = ['PURE_PYTHON=1'] + coverage_setenv %}
 [tox]
 minversion = 4.0
 envlist =
+    release-check
     lint
 {% for py_version in supported_python_versions %}
     py%(py_version)s,py%(py_version)s-pure
@@ -12,15 +12,16 @@ envlist =
 {% if with_future_python %}
     py%(future_python_shortversion)s,py%(future_python_shortversion)s-pure
 {% endif %}
+{% if with_free_threaded_python %}
+    py%(newest_python_shortversion_t)s,py%(newest_python_shortversion_t)s-pure
+{% endif %}
 {% if with_pypy %}
     pypy3
 {% endif %}
 {% if with_docs %}
     docs
 {% endif %}
-{% if with_coverage %}
     coverage
-{% endif %}
 {% for line in additional_envlist %}
     %(line)s
 {% endfor %}

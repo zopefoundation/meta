@@ -77,6 +77,11 @@ jobs:
 {% for line in gha_additional_exclude %}
           %(line)s
 {% endfor %}
+{% if with_free_threaded_python %}
+        include:
+          - os: ["ubuntu", "ubuntu-latest"]
+            config: ["%(newest_python_version)st", "py%(newest_python_shortversion_t)s"]
+{% endif %}
 
     runs-on: ${{ matrix.os[1] }}
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
@@ -89,20 +94,27 @@ jobs:
 {% for line in gha_steps_before_checkout %}
     %(line)s
 {% endfor %}
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         persist-credentials: false
+{% if gha_additional_install %}
+    - name: Install additional dependencies
+      run: |
+{% for line in gha_additional_install %}
+        %(line)s
+{% endfor %}
+{% endif %}
     - name: Install uv + caching
-      uses: astral-sh/setup-uv@v5
+      # astral/setup-uv@8.1.0
+      uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
       with:
         enable-cache: true
         cache-dependency-glob: |
           setup.*
           tox.ini
-        python-version: ${{ matrix.matrix.config[0] }}
+        python-version: ${{ matrix.config[0] }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Test
-      if: ${{ !startsWith(runner.os, 'Mac') }}
 {% if gha_test_environment %}
       env:
       {% for line in gha_test_environment %}
@@ -117,15 +129,6 @@ jobs:
 {% else %}
       run: uvx --with tox-uv tox -e ${{ matrix.config[1] }}
 {% endif %}
-    - name: Test (macOS)
-      if: ${{ startsWith(runner.os, 'Mac') }}
-{% if gha_test_environment %}
-      env:
-      {% for line in gha_test_environment %}
-        %(line)s
-      {% endfor %}
-{% endif %}
-      run: uvx --with tox-uv tox -e ${{ matrix.config[1] }}-universal2
     - name: Coverage
       if: matrix.config[1] == 'coverage'
       run: |

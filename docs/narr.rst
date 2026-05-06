@@ -151,6 +151,10 @@ The following arguments are supported.
 --no-push
   Avoid pushing at the end of the configuration run.
 
+--no-tests
+  Don't run the package's unit tests as part of the configuration run. Useful
+  for quickly testing iterative configuration changes.
+
 --branch
   Define a specific git branch name to be created for the changes. By default
   the script creates one which includes the name of the configuration type.
@@ -161,6 +165,24 @@ The following options are only needed one time as their values are stored in
 --type
   Define the configuration type (see `Configuration types`_ section above) to
   be used for the repository.
+
+--overrides
+  Filesystem path to a folder containing customizations for applying
+  ``zope.meta`` scripts.
+  To override configuration templates, create a folder for the configuration
+  type inside the overrides folder and add templates with the same name as the
+  standard templates in ``zope.meta``. Those will then be used instead of the
+  default templates.
+  Empty override template files will prevent creating the respective file in
+  the repository you are managing with ``zope.meta``, this way you can
+  purposely omit creating some optional files.
+  You can also override some configuration variables from the
+  ``zope.meta.shared.packages`` module. Create a TOML file ``overrides.toml``
+  in the root of the overrides folder and add the desired values there. Useful
+  variables to override include e.g. ``ORG`` for the organization name, the
+  Python versions designated as ``OLDEST_PYTHON_VERSION`` and
+  ``NEWEST_PYTHON_VERSION``, or the ``META_HINT`` variables that point to the
+  template sources.
 
 --with-macos
   Enable running the tests on macOS on GitHub Actions.
@@ -175,6 +197,11 @@ The following options are only needed one time as their values are stored in
   The package supports the next upcoming Python version which does not yet have
   a final release thus it is not yet generally supported by the zopefoundation
   packages.
+
+--with-free-threaded-python
+  Enable testing with the free-threaded (nogil) build of the newest supported
+  Python version. Tests run on Linux only. For c-code packages, both the C
+  extension and pure-Python variants are tested.
 
 --oldest-python
   The oldest version of Python supported by this package. Specified as version
@@ -211,6 +238,7 @@ updated. Example:
     with-sphinx-doctests = false
     with-macos = false
     with-windows = false
+    with-free-threaded-python = false
 
     [coverage]
     fail-under = 98
@@ -249,7 +277,7 @@ updated. Example:
         "passenv =",
         "    DISPLAY",
         ]
-    coverage-basepython = "python3.9"
+    coverage-basepython = "python3.13"
     coverage-command = [
         "coverage run {envbindir}/test_with_gs []",
         ]
@@ -262,6 +290,7 @@ updated. Example:
     docs-deps = [
         "urllib3 < 2",
         ]
+    lint-diff-on-failure = true
 
     [flake8]
     additional-config = [
@@ -337,7 +366,6 @@ updated. Example:
         "\"${PYBIN}/tox\" -e py",
         "cd ..",
         ]
-    require-cffi = true
 
     [zest-releaser]
     options = [
@@ -352,6 +380,8 @@ updated. Example:
 
     [pre-commit]
     teyit-exclude = "App/tests/fixtures/error\.py"
+    pyupgrade-exclude = "^src/zope/proxy/__init__\.py$"
+
 
     [readthedocs]
     build-extra = [
@@ -389,6 +419,10 @@ with-docs
 
 with-sphinx-doctests
   Run the documentation as doctest using Sphinx: true/false
+
+with-free-threaded-python
+  Run the tests also with free-threaded (nogil) Python on Linux: true/false,
+  default: false
 
 
 Coverage options
@@ -433,6 +467,10 @@ additional-envlist
 testenv-additional-extras
   Additional entries for the ``extras`` option in ``[testenv]`` of
   ``tox.ini``.  This option has to be a list of strings without indentation.
+
+testenv-skip-test-extra
+  Don't add the standard ``test`` in the ``extras`` option in ``[testenv]``
+  of ``tox.ini``.  This option has to be true/false.  Default is false.
 
 testenv-commands-pre
   Replacement for the default ``commands_pre`` option in ``[testenv]`` of
@@ -482,6 +520,15 @@ docs-deps
   ``[testenv:docs]`` in ``tox.ini``. This option has to be a list of strings
   and is empty by default. Caution: The values set for this option override
   the ones set in ``[testenv]``.
+
+lint-diff-on-failure
+  In the past, the ``lint`` step always called ``pre-commit`` with the option
+  ``--show-diff-on-failure``, which meant any linting failures would
+  automatically dump a diff with any outstanding changes in the entire package,
+  even if they are unrelated to linting, to the console. This is not helpful
+  unless there are very few changes and the diff is manageable. Setting this
+  option to ``false`` prevents showing the diff. If not set, the default is
+  ``true`` for backwards compatibility.
 
 
 Flake8 options
@@ -593,12 +640,6 @@ additional-install
   For the template ``c-code`` this option is currently used to replace how to
   install the package itself and run tests and coverage.
 
-additional-build-dependencies
-  Additional Python packages to install into the virtual environment before
-  building a package with C extensions. This is used for the ``c-code``
-  template to work around issues on macOS where setuptools attempts to retrieve
-  wheels and convert them to eggs multiple times.
-
 test-environment
   Environment variables to be set during the test run. This option has to be a
   list of strings.
@@ -623,11 +664,6 @@ manylinux-aarch64-tests
   to be a list of strings and defaults to testing using ``tox`` against all
   supported Python versions, which could be too slow for some packages.
 
-require-cffi
-  Require to install ``cffi`` via pip before trying to build the package. This
-  is needed for some packages to circumvent build problems on MacOS. This
-  option has to be a boolean (true or false).
-
 
 zest.releaser options
 `````````````````````
@@ -636,7 +672,8 @@ The corresponding section is named: ``[zest-releaser]`` (with an ``-`` instead
 of the ``.``).
 
 options
-  (Additional) options used to configure ``zest.releaser``. This option has to
+  (Additional) options used to configure ``zest.releaser`` via the
+  ``[tool.zest-releaser]`` section in ``pyproject.toml``. This option has to
   be a list of strings and defaults to an empty list.
 
 
@@ -659,6 +696,10 @@ teyit-exclude
   Regex for files to be hidden from teyit. It fails on files containing syntax
   errors. This option has to be a string and is omitted when not defined.
 
+pyupgrade-exclude
+  Regex for files to be hidden from pyupgrade. It might be a bit overly
+  optimistic with its changes. This option has to be a string and is omitted
+  when not defined.
 
 ReadTheDocs options
 ```````````````````
@@ -703,6 +744,42 @@ and not automatically commit them. It also supports a parameter ``--no-commit``
 that prevents automatic commits but attempts to cut down on interactively
 asking for user input. Some of that still happens due to limitations
 of the ``zest.releaser`` scripts used by ``update-python-support``.
+
+Moving package metadata from setup.py to pyproject.toml
+-------------------------------------------------------
+
+The script ``setup-to-pyproject`` parses package metadata out of the call to
+the ``setup`` function in ``setup.py`` and moves it to ``pyproject.toml``.
+The ``setup`` call in ``setup.py`` is then replaced with an invocation that
+only uses those function arguments that have not been moved, such as arguments
+related to building C code modules. These are currently not fully supported in
+``pyproject.toml``.
+
+.. note::
+
+    The format and code of a ``setup.py`` file can vary widely. This script is
+    a best effort attempt to cover the most common cases. Your mileage may
+    vary. You should always view the conversion results yourself.
+
+Usage
++++++
+
+To convert package metadata from ``setup.py`` and move it to ``pyproject.toml``
+call::
+
+    $ bin/setup-to-pyproject <path-to-package>
+
+The script supports these parameters:
+
+- ``--dry-run``: Do not make any changes but print the contents of ``setup.py``
+  and ``pyproject.toml`` with all changes to the console.
+- ``--commit-msg``: To provide a custom commit message for the git commit.
+- ``--no-commit``: Make changes, but do not commit them with git.
+- ``--no-push``: Make changes and commit them, but do not push the commit.
+- ``--no-tests``: Do not run the packages' ``tox`` tests after making changes.
+- ``--branch``: Use a custom branch name for the change branch.
+- ``--interactive``: Make changes and open the changed ``setup.py``
+  and ``pyproject.toml`` files in the console text editor.
 
 
 Calling a script on multiple repositories

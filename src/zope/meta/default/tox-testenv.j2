@@ -42,7 +42,9 @@ commands =
     sphinx-build -b doctest -d {envdir}/.cache/doctrees docs {envdir}/.cache/doctest
 {% endif %}
 extras =
+  {% if not testenv_skip_test_extra %}
     test
+  {% endif %}
   {% if with_sphinx_doctests %}
     docs
   {% endif %}
