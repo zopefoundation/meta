@@ -83,6 +83,8 @@ def main():
         raise ValueError('The repository `path` points to has no .meta.toml!')
 
     with change_dir(path) as cwd_str:
+        cwd = pathlib.Path(cwd_str)
+        bin_dir = cwd / 'bin'
         with open('.meta.toml', 'rb') as meta_f:
             meta_toml = collections.defaultdict(dict, **tomlkit.load(meta_f))
         config_type = meta_toml['meta']['template']
@@ -146,11 +148,11 @@ def main():
 
         if no_longer_supported or not_yet_supported:
             if args.interactive:
-                input = None
+                input_text = None
             else:
-                input = 'Y\nY\n'
+                input_text = 'Y\nY\n'
             call(bin_dir / 'check-python-versions', '--only=setup.py',
-                 *python_versions_args, input=input)
+                 *python_versions_args, input=input_text)
             if not args.auto_update:
                 print('Look through .meta.toml to see if it needs changes.')
                 call(os.environ['EDITOR'], '.meta.toml')
@@ -219,7 +221,7 @@ def main():
                 wait_for_accept()
 
             if args.run_tests:
-                tox_path = shutil.which('tox') or (cwd / 'bin' / 'tox')
+                tox_path = shutil.which('tox') or (bin_dir / 'tox')
                 call(tox_path, '-p', 'auto')
 
             if args.commit:
