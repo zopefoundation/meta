@@ -1,8 +1,8 @@
 Other topics
 ============
 
-Switching a package to trusted publishing
------------------------------------------
+Configuring a package for PyPI Trusted Publishing
+-------------------------------------------------
 
 With the introduction of the ``trusted-publishing`` option you can now use the
 so-called Trusted Publishing mechanism to automatically create release packages

@@ -681,7 +681,8 @@ trusted-publishing
   This option has no meaning for ``c-code`` template projects, those always
   build and publish release packages using Trusted Publishing.
   See https://docs.pypi.org/trusted-publishers/ for details on the Trusted
-  Publishing process.
+  Publishing process and :doc:`othertopics` for how to configure a package for
+  Trusted Publishing.
 
 
 zest.releaser options
