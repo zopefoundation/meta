@@ -674,7 +674,7 @@ class PackageConfiguration:
         zest_releaser_data = parse_additional_config(zest_releaser_options)
 
         # Prevent c-code packages as well as those explicitly configured to use
-        # PyPI Trusted Publishing from ceating or uploading anything to PyPI.
+        # PyPI Trusted Publishing from creating or uploading anything to PyPI.
         if self.config_type == 'c-code' or \
            self.meta_cfg['pypi'].get('trusted-publishing', False):
             zest_releaser_data['create-wheel'] = False
