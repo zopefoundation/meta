@@ -160,7 +160,6 @@ def set_branch_protection(
         'allow_deletions': False,
         'allow_force_pushes': False,
         'allow_fork_syncing': True,
-        'dismiss_stale_reviews': True,
         'lock_branch': False,
         'enforce_admins': None,
         'restrictions': None,
