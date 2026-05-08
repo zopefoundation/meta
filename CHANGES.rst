@@ -4,6 +4,8 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Update the branch protection rules for ``set_branch_protection_rules``
+
 - Add an option to enable releases to be built and published automatically
   using PyPI Trusted Publishing for non-``c-code`` projects.
 

@@ -34,7 +34,7 @@ def _call_gh(
         'gh', 'api',
         '--method', method,
         '-H', 'Accept: application/vnd.github+json',
-        '-H', 'X-GitHub-Api-Version: 2022-11-28',
+        '-H', 'X-GitHub-Api-Version: 2026-03-10',
         f'/repos/{ORG}/{repo}/branches/{DEFAULT_BRANCH}/{path}',
         *args, capture_output=capture_output,
         allowed_return_codes=allowed_return_codes)
@@ -45,7 +45,7 @@ def set_branch_protection(
     result = _call_gh(
         'GET', 'protection/required_pull_request_reviews', repo,
         allowed_return_codes=(0, 1))
-    required_pull_request_reviews = None
+    required_pr_reviews = None
     if result.returncode == 1:
         if json.loads(result.stdout)['message'] != "Branch not protected":
             # If there is no branch protection we create it later on using the
@@ -53,11 +53,26 @@ def set_branch_protection(
             print(result.stdout)
             abort(result.returncode)
     else:
-        required_approving_review_count = json.loads(
-            result.stdout)['required_approving_review_count']
-        required_pull_request_reviews = {
-            'required_approving_review_count': required_approving_review_count
+        pr_rules = json.loads(result.stdout)
+        required_approvals = pr_rules['required_approving_review_count']
+        required_pr_reviews = {
+            'required_approving_review_count': required_approvals,
+            'dismiss_stale_reviews': True,
         }
+
+        # Dig through the bypass_pull_request_allowances mapping so all
+        # elements are preserved if we need to change one
+        bp_rules = pr_rules.get('bypass_pull_request_allowances', {})
+        bp_apps = [x['slug'] for x in bp_rules.get('apps', [])]
+        bp_teams = [x['slug'] for x in bp_rules.get('teams', [])]
+        bp_users = [x['login'] for x in bp_rules.get('users', [])]
+        if 'release-managers' not in bp_teams:
+            bp_teams.append('release-managers')
+            required_pr_reviews['bypass_pull_request_allowances'] = {
+                'apps': bp_apps,
+                'teams': bp_teams,
+                'users': bp_users,
+            }
 
     if meta_path is None:
         response = requests.get(
@@ -145,13 +160,14 @@ def set_branch_protection(
         'allow_deletions': False,
         'allow_force_pushes': False,
         'allow_fork_syncing': True,
+        'dismiss_stale_reviews': True,
         'lock_branch': False,
         'enforce_admins': None,
         'restrictions': None,
         'required_conversation_resolution': True,
         'required_linear_history': False,
-        'required_pull_request_reviews': required_pull_request_reviews,
-        'required_status_checks': {'contexts': required, 'strict': False}
+        'required_pull_request_reviews': required_pr_reviews,
+        'required_status_checks': {'contexts': required, 'strict': True}
     }
     fd, filename = tempfile.mkstemp('config.json', 'meta', text=True)
     try:
