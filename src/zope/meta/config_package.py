@@ -546,6 +546,8 @@ class PackageConfiguration:
                                                      short_version=False),
                            supported_python_versions(self.oldest_python,
                                                      short_version=True))]
+        pypi_tp = self.meta_cfg['pypi'].get('trusted-publishing', False)
+
         self.copy_with_meta(
             'tests.yml.j2',
             workflows / 'tests.yml',
@@ -564,6 +566,7 @@ class PackageConfiguration:
             with_future_python=self.with_future_python,
             future_python_version=FUTURE_PYTHON_VERSION,
             newest_python_version=NEWEST_PYTHON_VERSION,
+            newest_python_shortversion=NEWEST_PYTHON_SHORTVERSION,
             newest_python_shortversion_t=NEWEST_PYTHON_SHORTVERSION_T,
             with_pypy=self.with_pypy,
             with_macos=self.with_macos,
@@ -576,6 +579,7 @@ class PackageConfiguration:
             setuptools_version_spec=SETUPTOOLS_VERSION_SPEC,
             future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
             supported_python_versions=py_version_matrix,
+            use_trusted_publishing=pypi_tp,
         )
 
     def pre_commit_yml(self):
@@ -668,7 +672,11 @@ class PackageConfiguration:
         zest_releaser_options = self.meta_cfg['zest-releaser'].get(
             'options', [])
         zest_releaser_data = parse_additional_config(zest_releaser_options)
-        if self.config_type == 'c-code':
+
+        # Prevent c-code packages as well as those explicitly configured to use
+        # PyPI Trusted Publishing from creating or uploading anything to PyPI.
+        if self.config_type == 'c-code' or \
+           self.meta_cfg['pypi'].get('trusted-publishing', False):
             zest_releaser_data['create-wheel'] = False
             zest_releaser_data['upload-pypi'] = False
         if zest_releaser_data:

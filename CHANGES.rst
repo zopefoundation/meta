@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add an option to enable releases to be built and published automatically
+  using PyPI Trusted Publishing for non-``c-code`` projects.
+
 - Move ``zest.releaser`` configuration from ``setup.cfg`` to
   ``pyproject.toml`` where it is the ``[tool.zest-releaser]`` section.
 
