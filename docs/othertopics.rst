@@ -36,6 +36,9 @@ Log into GitHub and bring up the repository page for your package. Then...
 - select "Allow administrators to bypass" so that repository- and
   organization-level administrators  can approve releases without being in the
   Release Managers group
+- Under `Deployment branches and tags` you should limit the branches from which
+  a release can be made. A good start would be to specify `Protected branches
+  only`, because those usually match the main and older release branches.
 
 PyPI configuration changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
