@@ -93,7 +93,7 @@ jobs:
         if: matrix.python-version == '%(future_python_version)s'
         run: |
           pip install -U pip
-          pip install -U "setuptools %(setuptools_version_spec)s" wheel twine
+          pip install -U "setuptools %(setuptools_version_spec)s" wheel twine cffi pycparser
 {% endif %}
       - name: Install Build Dependencies
 {% if with_future_python %}
@@ -296,7 +296,7 @@ jobs:
       - name: Submit to Coveralls
         # This is a container action, which only runs on Linux.
         if: ${{ startsWith(runner.os, 'Linux') }}
-        uses: AndreMiras/coveralls-python-action@develop
+        uses: coverallsapp/github-action@v2
         with:
           parallel: true
 
@@ -305,7 +305,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Coveralls Finished
-      uses: AndreMiras/coveralls-python-action@develop
+      uses: coverallsapp/github-action@v2
       with:
         parallel-finished: true
 {% if with_docs %}
