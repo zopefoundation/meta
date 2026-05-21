@@ -4,8 +4,10 @@ Change log
 2.2 (unreleased)
 ----------------
 
-- Pre-install ``cffi`` and ``pycparser`` for future Python builds and switch
-  to ``coverallsapp/github-action@v2`` in the ``c-code`` test workflow template.
+- Pre-install ``cffi`` and ``pycparser`` for future Python builds.
+
+- Switch to ``coverallsapp/github-action@v2`` in the ``c-code`` test workflow
+  template.
 
 - Add an option to enable releases to be built and published automatically
   using PyPI Trusted Publishing for non-``c-code`` projects.
