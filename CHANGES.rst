@@ -4,6 +4,11 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Expand free-threaded Python CI testing from Linux-only to all platforms
+  (macOS, Windows) in ``c-code`` templates. Add future Python free-threaded
+  variant (e.g. ``3.15t``) support to the test matrix, manylinux build
+  scripts, and tox configuration.
+
 - Pre-install ``cffi`` and ``pycparser`` for future Python builds.
 
 - Switch to ``coverallsapp/github-action@v2`` in the ``c-code`` test workflow
