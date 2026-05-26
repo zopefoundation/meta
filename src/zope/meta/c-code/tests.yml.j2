@@ -90,14 +90,14 @@ jobs:
 
 {% if with_future_python %}
       - name: Install Build Dependencies (%(future_python_version)s)
-        if: matrix.python-version == '%(future_python_version)s'
+        if: startsWith(matrix.python-version, '%(future_python_version)s')
         run: |
           pip install -U pip
           pip install -U "setuptools %(setuptools_version_spec)s" wheel twine cffi pycparser
 {% endif %}
       - name: Install Build Dependencies
 {% if with_future_python %}
-        if: matrix.python-version != '%(future_python_version)s'
+        if: ${{ !startsWith(matrix.python-version, '%(future_python_version)s') }}
 {% endif %}
         run: |
           pip install -U pip
@@ -147,7 +147,7 @@ jobs:
 
 {% if with_future_python %}
       - name: Install %(package_name)s and dependencies (%(future_python_version)s)
-        if: matrix.python-version == '%(future_python_version)s'
+        if: startsWith(matrix.python-version, '%(future_python_version)s')
         run: |
           # Install to collect dependencies into the (pip) cache.
           # Use "--pre" here because dependencies with support for this future
@@ -156,7 +156,7 @@ jobs:
 {% endif %}
       - name: Install %(package_name)s and dependencies
 {% if with_future_python %}
-        if: matrix.python-version != '%(future_python_version)s'
+        if: ${{ !startsWith(matrix.python-version, '%(future_python_version)s') }}
 {% endif %}
         run: |
           # Install to collect dependencies into the (pip) cache.
@@ -166,7 +166,14 @@ jobs:
       - name: Check %(package_name)s build
         run: |
           ls -l dist
+{% if with_free_threaded_python %}
+      - name: Check %(package_name)s build (twine)
+        if: ${{ !endsWith(matrix.python-version, 't') }}
+        run: |
           twine check dist/*
+{% else %}
+          twine check dist/*
+{% endif %}
 {% for kind in ('macOS x86_64', 'macOS arm64') %}
       - name: Upload %(package_name)s wheel (%(kind)s)
         if: >
@@ -237,7 +244,7 @@ jobs:
 {% else %}
 {% if with_future_python %}
       - name: Install %(package_name)s ${{ matrix.python-version }}
-        if: matrix.python-version == '%(future_python_version)s'
+        if: startsWith(matrix.python-version, '%(future_python_version)s')
         run: |
           pip install -U wheel "setuptools %(setuptools_version_spec)s"
           # coverage might have a wheel on PyPI for a future python version which is
@@ -254,7 +261,7 @@ jobs:
 {% endif %}
       - name: Install %(package_name)s
 {% if with_future_python %}
-        if: matrix.python-version != '%(future_python_version)s'
+        if: ${{ !startsWith(matrix.python-version, '%(future_python_version)s') }}
 {% endif %}
         run: |
           pip install -U wheel "setuptools %(setuptools_version_spec)s"

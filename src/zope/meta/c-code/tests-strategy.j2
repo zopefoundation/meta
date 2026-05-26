@@ -36,4 +36,20 @@
         include:
           - python-version: "%(newest_python_version)st"
             os: ubuntu-latest
+          - python-version: "%(newest_python_version)st"
+            os: macos-latest
+{% if with_windows %}
+          - python-version: "%(newest_python_version)st"
+            os: windows-latest
+{% endif %}
+{% if with_future_python %}
+          - python-version: "%(future_python_version)st"
+            os: ubuntu-latest
+          - python-version: "%(future_python_version)st"
+            os: macos-latest
+{% if with_windows %}
+          - python-version: "%(future_python_version)st"
+            os: windows-latest
+{% endif %}
+{% endif %}
 {% endif %}

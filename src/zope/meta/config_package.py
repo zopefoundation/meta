@@ -421,7 +421,8 @@ class PackageConfiguration:
                 'manylinux.sh', self.path / '.manylinux.sh', self.config_type)
             (self.path / '.manylinux.sh').chmod(0o755)
             stop_at = None
-            if not self.with_future_python:
+            if not self.with_future_python \
+                    and not self.with_free_threaded_python:
                 stop_at = NEWEST_PYTHON_SHORTVERSION
             pkg_name_pattern = re.sub(r"[-_.]+", "?", self.path.name).lower()
             self.copy_with_meta(
@@ -432,7 +433,9 @@ class PackageConfiguration:
                 manylinux_install_setup=manylinux_install_setup,
                 manylinux_aarch64_tests=manylinux_aarch64_tests,
                 with_future_python=self.with_future_python,
+                with_free_threaded_python=self.with_free_threaded_python,
                 future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
+                newest_python_shortversion=NEWEST_PYTHON_SHORTVERSION,
                 supported_python_versions=supported_python_versions(
                     self.oldest_python, short_version=True),
                 stop_at=stop_at,

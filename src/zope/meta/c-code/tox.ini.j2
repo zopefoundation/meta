@@ -15,6 +15,9 @@ envlist =
 {% if with_free_threaded_python %}
     py%(newest_python_shortversion_t)s,py%(newest_python_shortversion_t)s-pure
 {% endif %}
+{% if with_free_threaded_python and with_future_python %}
+    py%(future_python_shortversion)st,py%(future_python_shortversion)st-pure
+{% endif %}
 {% if with_pypy %}
     pypy3
 {% endif %}
