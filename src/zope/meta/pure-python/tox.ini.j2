@@ -13,9 +13,6 @@ deps =
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}
-{% if with_sphinx_doctests and with_future_python %}
-    Sphinx
-{% endif %}
 {% if coverage_setenv %}
 setenv =
 {% for line in coverage_setenv %}
