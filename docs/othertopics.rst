@@ -25,17 +25,24 @@ Commit and push the changes to GitHub.
 GitHub configuration changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+    The following should only be required for new repositories, all active
+    repositories had the "pypi" deployment environment added in May 2026.
+
 Log into GitHub and bring up the repository page for your package. Then...
 
 - go to Settings -> Environments
-- add new environment "pypi"
-- select "Required reviewers" and add teams or individual GitHub user accounts
-  that must approve the package publishing process. GitHub calls this
-  "deployment". For Zope Foundation repositories you should add the team
-  ``zopefoundation/release-managers``.
-- select "Allow administrators to bypass" so that repository- and
-  organization-level administrators  can approve releases without being in the
-  Release Managers group
+- if you see no environment named "pypi", do the following:
+
+  - add new environment "pypi"
+  - select "Required reviewers" and add teams or individual GitHub user accounts
+    that must approve the package publishing process. GitHub calls this
+    "deployment". For Zope Foundation repositories you should add the team
+    ``zopefoundation/release-managers``.
+  - select "Allow administrators to bypass" so that repository- and
+    organization-level administrators  can approve releases without being in the
+    Release Managers group
 
 PyPI configuration changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
