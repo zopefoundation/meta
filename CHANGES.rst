@@ -4,6 +4,10 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Restrict ``readme-renderer`` dependency to versions older than 45 for
+  the internal tests. This restriction can be removed when ``readme-renderer``
+  and its dependencies install cleanly under Python 3.15.
+
 - Expand free-threaded Python CI testing from Linux-only to all platforms
   (macOS, Windows) in ``c-code`` templates. Add future Python free-threaded
   variant (e.g. ``3.15t``) support to the test matrix, manylinux build

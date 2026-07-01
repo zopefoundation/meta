@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/src/zope/meta/pure-python
 [meta]
 template = "pure-python"
-commit-id = "92befcdf"
+commit-id = "966ac0d8"
 
 [python]
 with-windows = false
@@ -32,4 +32,9 @@ additional-rules = [
 [check-manifest]
 additional-ignores = [
     "docs/_build/html/_static/scripts/*",
+    ]
+
+[tox]
+testenv-deps = [
+    "readme-renderer < 45",
     ]
