@@ -681,6 +681,7 @@ class PackageConfiguration:
         if self.config_type == 'c-code' or \
            self.meta_cfg['pypi'].get('trusted-publishing', False):
             zest_releaser_data['create-wheel'] = False
+            zest_releaser_data['extra-message'] = ''
             zest_releaser_data['upload-pypi'] = False
         if zest_releaser_data:
             toml_doc['tool']['zest-releaser'] = zest_releaser_data

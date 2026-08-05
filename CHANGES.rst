@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Configure ``zest.releaser`` to not add an extra message when using
+  trusted publishing.
+
 - Restrict ``readme-renderer`` dependency to versions older than 45 for
   the internal tests. This restriction can be removed when ``readme-renderer``
   and its dependencies install cleanly under Python 3.15.
@@ -36,8 +39,8 @@ Change log
   after the ``check-python-versions`` package was fixed.
   (See `#396 <https://github.com/zopefoundation/meta/issues/396>`_)
 
-- Pin "teyit" in `precommitconfig.yaml.j2` to use Python 3.13 
-  (must be available locally, like in path or via pyenv/uv). 
+- Pin "teyit" in `precommitconfig.yaml.j2` to use Python 3.13
+  (must be available locally, like in path or via pyenv/uv).
   teyit does not support Python 3.14 yet.
   (`#398 <https://github.com/zopefoundation/meta/issues/398>`_)
 
