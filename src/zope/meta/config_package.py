@@ -383,6 +383,10 @@ class PackageConfiguration:
         teyit_exclude = self.meta_cfg["pre-commit"].get("teyit-exclude", "")
         pyupgrade_exclude = self.meta_cfg["pre-commit"].get(
             "pyupgrade-exclude", "")
+        whitespace_exclude = self.meta_cfg["pre-commit"].get(
+            "whitespace-exclude", "")
+        sphinx_lint_exclude = self.meta_cfg["pre-commit"].get(
+            "sphinx-lint-exclude", "")
 
         self.copy_with_meta(
             "pre-commit-config.yaml.j2",
@@ -391,6 +395,8 @@ class PackageConfiguration:
             oldest_python_version=self.oldest_python.replace(".", ""),
             teyit_exclude=teyit_exclude,
             pyupgrade_exclude=pyupgrade_exclude,
+            whitespace_exclude=whitespace_exclude,
+            sphinx_lint_exclude=sphinx_lint_exclude,
         )
 
     def readthedocs(self):

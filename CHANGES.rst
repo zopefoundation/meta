@@ -4,6 +4,20 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add the ``check-case-conflict``, ``check-merge-conflict``, ``check-toml``,
+  ``check-yaml``, ``end-of-file-fixer`` and ``trailing-whitespace`` hooks from
+  ``pre-commit-hooks`` and the ``sphinx-lint`` hook to
+  ``.pre-commit-config.yaml``. Add ``whitespace-exclude`` and
+  ``sphinx-lint-exclude`` to the ``[pre-commit]`` section in ``.meta.toml`` to
+  hide files from them.
+  (`#284 <https://github.com/zopefoundation/meta/issues/284>`_)
+
+- Stop rendering a blank line at the end of ``tests.yml`` for packages which do
+  not use trusted publishing.
+
+- Fix the ``[pre-commit]`` example in the documentation: a backslash in a TOML
+  basic string has to be escaped, so ``"error\.py"`` is not valid TOML.
+
 - Configure ``zest.releaser`` to not add an extra message when using
   trusted publishing.
 

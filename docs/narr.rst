@@ -382,8 +382,10 @@ updated. Example:
         ]
 
     [pre-commit]
-    teyit-exclude = "App/tests/fixtures/error\.py"
-    pyupgrade-exclude = "^src/zope/proxy/__init__\.py$"
+    teyit-exclude = "App/tests/fixtures/error\\.py"
+    pyupgrade-exclude = "^src/zope/proxy/__init__\\.py$"
+    whitespace-exclude = "^src/zope/i18n/locales/data/.*\\.xml$"
+    sphinx-lint-exclude = "^docs/articles/old-guide/.*\\.rst$"
 
 
     [readthedocs]
@@ -720,6 +722,21 @@ pyupgrade-exclude
   Regex for files to be hidden from pyupgrade. It might be a bit overly
   optimistic with its changes. This option has to be a string and is omitted
   when not defined.
+
+whitespace-exclude
+  Regex for files to be hidden from both ``trailing-whitespace`` and
+  ``end-of-file-fixer``. Use it for files whose exact bytes matter, such as
+  vendored data files, reference output compared by tests, and doctests whose
+  expected output contains trailing whitespace. This option has to be a string
+  and is omitted when not defined.
+
+sphinx-lint-exclude
+  Regex for files to be hidden from sphinx-lint. This option has to be a string
+  and is omitted when not defined.
+
+  A ``.rst`` file listed in ``whitespace-exclude`` usually has to be listed here
+  as well: sphinx-lint reports the very trailing whitespace that
+  ``trailing-whitespace`` is no longer allowed to remove.
 
 ReadTheDocs options
 ```````````````````
