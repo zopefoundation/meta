@@ -13,29 +13,14 @@
       # to save the cache. So it must come before the thing we want to use
       # the cache.
       ###
-      - name: Get pip cache dir (default)
-        id: pip-cache-default
-        if: ${{ !startsWith(runner.os, 'Windows') }}
+      - name: Get pip cache dir
+        id: pip-cache
         run: |
           echo "dir=$(pip cache dir)" >>$GITHUB_OUTPUT
 
-      - name: Get pip cache dir (Windows)
-        id: pip-cache-windows
-        if: ${{ startsWith(runner.os, 'Windows') }}
-        run: |
-          echo "dir=$(pip cache dir)" >> $Env:GITHUB_OUTPUT
-
-      - name: pip cache (default)
+      - name: pip cache
         uses: actions/cache@v5
-        if: ${{ !startsWith(runner.os, 'Windows') }}
         with:
-          path: ${{ steps.pip-cache-default.outputs.dir }}
-          key: %(cache_key)s
-
-      - name: pip cache (Windows)
-        uses: actions/cache@v5
-        if: ${{ startsWith(runner.os, 'Windows') }}
-        with:
-          path: ${{ steps.pip-cache-windows.outputs.dir }}
+          path: ${{ steps.pip-cache.outputs.dir }}
           key: %(cache_key)s
 

@@ -4,6 +4,13 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Upgrade ``pip`` via ``python -m pip`` in the ``c-code`` test workflow
+  template, as the ``pip.exe`` shim on Windows refuses to replace itself.
+  Run all workflow steps under ``bash`` so that a failing command in a
+  multi-command block is no longer swallowed on Windows, and collapse the
+  now-redundant OS-split pip cache steps.
+  (`#436 <https://github.com/zopefoundation/meta/issues/436>`_)
+
 - Configure ``zest.releaser`` to not add an extra message when using
   trusted publishing.
 
