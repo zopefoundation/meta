@@ -4,6 +4,11 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add ``[coverage] combine`` option to measure coverage across all supported
+  Python versions instead of a single one. It turns the ``coverage`` tox
+  environment into one which combines the data written by the test
+  environments, and makes the ``coverage`` job in ``tests.yml`` run them.
+
 - Configure ``zest.releaser`` to not add an extra message when using
   trusted publishing.
 
