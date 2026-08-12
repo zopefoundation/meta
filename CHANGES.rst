@@ -4,6 +4,10 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Also set ``pip_pre`` for the free-threaded variant of a future Python
+  version in ``tox.ini``, as its dependencies are only available as
+  pre-releases just like those of the non-free-threaded variant.
+
 - Upgrade ``pip`` via ``python -m pip`` in the ``c-code`` test workflow
   template, as the ``pip.exe`` shim on Windows refuses to replace itself.
   Run all workflow steps under ``bash`` so that a failing command in a
