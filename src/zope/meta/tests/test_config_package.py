@@ -14,14 +14,20 @@
 import pathlib
 import unittest
 
+from zope.meta.config_package import FUTURE_PYTHON_SHORTVERSION
+from zope.meta.config_package import NEWEST_PYTHON_SHORTVERSION_T
+from zope.meta.config_package import combined_coverage_envs
+from zope.meta.config_package import make_jinja_env
+from zope.meta.config_package import prepend_coverage_file
+from zope.meta.config_package import prepend_space
+from zope.meta.config_package import skip_env_regex
+
 
 TEMPLATES = pathlib.Path(__file__).parent.parent
 
 
 def render(template_name, **context):
     """Render one of the shipped templates the way `config-package` does."""
-    from zope.meta.config_package import make_jinja_env
-
     env = make_jinja_env([TEMPLATES / context['config_type'],
                           TEMPLATES / 'default'])
     return env.get_template(template_name).render(**context)
@@ -101,8 +107,8 @@ COMBINE_TEST_COMMAND = """\
 
 class ConfigPackageTests(unittest.TestCase):
 
-    def test_prepend_space(self):
-        from zope.meta.config_package import prepend_space
+    def test_config_package__prepend_space__1(self):
+        """It prepends a space to a non-empty text."""
 
         self.assertIsNone(prepend_space(None))
         self.assertEqual('', prepend_space(''))
@@ -112,16 +118,14 @@ class ConfigPackageTests(unittest.TestCase):
 class CombinedCoverageTests(unittest.TestCase):
     """Tests for the ``[coverage] combine`` option."""
 
-    def test_combined_coverage_envs(self):
-        from zope.meta.config_package import combined_coverage_envs
+    def test_config_package__combined_coverage_envs__1(self):
+        """It returns one environment per supported Python version."""
 
         self.assertEqual(['py310', 'py311'],
                          combined_coverage_envs(['310', '311']))
 
-    def test_combined_coverage_envs__all_variants(self):
-        from zope.meta.config_package import FUTURE_PYTHON_SHORTVERSION
-        from zope.meta.config_package import NEWEST_PYTHON_SHORTVERSION_T
-        from zope.meta.config_package import combined_coverage_envs
+    def test_config_package__combined_coverage_envs__2(self):
+        """It appends future, free-threaded, PyPy and additional envs."""
 
         self.assertEqual(
             ['py310',
@@ -136,28 +140,30 @@ class CombinedCoverageTests(unittest.TestCase):
                 with_free_threaded_python=True,
                 with_pypy=True))
 
-    def test_prepend_coverage_file(self):
-        from zope.meta.config_package import prepend_coverage_file
+    def test_config_package__prepend_coverage_file__1(self):
+        """It prepends the ``COVERAGE_FILE`` entry."""
 
         self.assertEqual(['COVERAGE_FILE=.coverage'],
                          prepend_coverage_file([], '.coverage'))
         self.assertEqual(['COVERAGE_FILE=.coverage', 'FOO=bar'],
                          prepend_coverage_file(['FOO=bar'], '.coverage'))
 
-    def test_prepend_coverage_file__keeps_configured_value(self):
-        from zope.meta.config_package import prepend_coverage_file
+    def test_config_package__prepend_coverage_file__2(self):
+        """It keeps a ``COVERAGE_FILE`` the package configured itself."""
 
         self.assertEqual(
             ['COVERAGE_FILE=elsewhere'],
             prepend_coverage_file(['COVERAGE_FILE=elsewhere'], '.coverage'))
 
-    def test_skip_env_regex(self):
-        from zope.meta.config_package import skip_env_regex
+    def test_config_package__skip_env_regex__1(self):
+        """It matches the environments contributing no coverage data."""
 
         self.assertEqual('(docs|lint|release-check)', skip_env_regex())
         self.assertEqual('(lint|release-check)', skip_env_regex(False))
 
-    def test_tox_ini__coverage_env_combines(self):
+    def test_config_package__tox_ini__1(self):
+        """It renders a coverage environment combining the data files."""
+
         tox_ini = render('tox.ini.j2', **dict(
             TOX_CONTEXT,
             coverage_additional=['depends = py310,py311'],
@@ -174,7 +180,9 @@ class CombinedCoverageTests(unittest.TestCase):
                       coverage_env)
         self.assertIn('\ndepends = py310,py311\n', coverage_env)
 
-    def test_tox_ini__coverage_env_measures_by_default(self):
+    def test_config_package__tox_ini__2(self):
+        """It renders a coverage environment measuring by default."""
+
         tox_ini = render('tox.ini.j2', **TOX_CONTEXT)
         coverage_env = tox_ini.split('[testenv:coverage]')[1]
 
@@ -185,20 +193,26 @@ class CombinedCoverageTests(unittest.TestCase):
         self.assertNotIn('coverage combine', coverage_env)
         self.assertNotIn('depends', coverage_env)
 
-    def test_tests_yml__coverage_job_runs_the_test_envs(self):
+    def test_config_package__tests_yml__1(self):
+        """It runs the test environments in the coverage job."""
+
         tests_yml = render('tests.yml.j2',
                            **dict(TESTS_YML_CONTEXT, coverage_combine=True))
 
         self.assertIn(COMBINE_TEST_COMMAND, tests_yml)
         self.assertNotIn(DEFAULT_TEST_COMMAND, tests_yml)
 
-    def test_tests_yml__test_command_unchanged_by_default(self):
+    def test_config_package__tests_yml__2(self):
+        """It leaves the test command unchanged if combining is off."""
+
         tests_yml = render('tests.yml.j2', **TESTS_YML_CONTEXT)
 
         self.assertIn(DEFAULT_TEST_COMMAND, tests_yml)
         self.assertNotIn('--skip-env', tests_yml)
 
-    def test_tests_yml__explicit_test_commands_win(self):
+    def test_config_package__tests_yml__3(self):
+        """It prefers the test commands configured by the package."""
+
         tests_yml = render('tests.yml.j2', **dict(
             TESTS_YML_CONTEXT,
             coverage_combine=True,
