@@ -1,4 +1,4 @@
-{% set cache_key = "${{ runner.os }}-${{ runner.arch }}-pip-${{ matrix.python-version }}" %}
+{% set cache_key = "${{ runner.os }}-${{ runner.arch }}-pip-${{ matrix.python-version }}-${{ steps.pip-cache-epoch.outputs.week }}" %}
 ###
 # Initially copied from
 # https://github.com/actions/starter-workflows/blob/main/ci/python-package.yml
@@ -389,7 +389,7 @@ jobs:
             image: %(manylinux_aarch64)s
             python-version: "%(manylinux_python_version)s"
     steps:
-{% set cache_key = "${{ runner.os }}-pip_manylinux-${{ matrix.image }}-${{ matrix.python-version }}" %}
+{% set cache_key = "${{ runner.os }}-pip_manylinux-${{ matrix.image }}-${{ matrix.python-version }}-${{ steps.pip-cache-epoch.outputs.week }}" %}
 {% include 'tests-cache.j2' %}
 
       - name: Update pip

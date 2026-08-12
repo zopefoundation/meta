@@ -13,6 +13,15 @@
       # to save the cache. So it must come before the thing we want to use
       # the cache.
       ###
+      - name: Get pip cache epoch
+        id: pip-cache-epoch
+        # ``actions/cache`` never replaces an entry: "if the provided key
+        # matches an existing cache, a new cache is not created". A corrupt
+        # entry would therefore break every run that restores it until GitHub
+        # evicts it. Rotating the key weekly abandons such an entry instead.
+        run: |
+          echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+
       - name: Get pip cache dir
         id: pip-cache
         run: |
