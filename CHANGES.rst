@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Fix disappearing top comment in ``pyproject.toml`` with newer ``tomlkit``.
+  (`#440 <https://github.com/zopefoundation/meta/issues/440>`_)
+
 - Add ``[coverage] combine`` option to measure coverage across all supported
   Python versions instead of a single one. It turns the ``coverage`` tox
   environment into one which combines the data written by the test

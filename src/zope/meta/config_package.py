@@ -690,9 +690,7 @@ class PackageConfiguration:
     def pyproject_toml(self):
         """Modify pyproject.toml with meta options."""
         toml_path = self.path / 'pyproject.toml'
-        toml_doc = get_pyproject_toml(
-            toml_path,
-            comment=META_HINT.format(config_type=self.config_type))
+        toml_doc = get_pyproject_toml(toml_path)
 
         # Capture some pre-transformation data
         old_requires = toml_doc.get('build-system', {}).get('requires', [])
@@ -776,8 +774,13 @@ class PackageConfiguration:
         if toml_doc['tool']['coverage'].get('paths'):
             toml_doc['tool']['coverage']['paths']['source'].multiline(True)
 
+        preamble = META_HINT.format(config_type=self.config_type)
+        toml_contents = tomlkit.dumps(toml_doc, sort_keys=True)
+        if not toml_contents.startswith(preamble):
+            toml_contents = f'{preamble}\n{toml_contents}'
+
         with open(toml_path, 'w') as fp:
-            tomlkit.dump(toml_doc, fp, sort_keys=True)
+            fp.write(toml_contents)
 
     def render_with_meta(self, template_name, config_type, **kw):
         """Read and render a Jinja template source file"""
