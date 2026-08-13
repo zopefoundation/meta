@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Use pinned commit hash for GH Action pypa/gh-action-pypi-publish.
+  (`#441 <https://github.com/zopefoundation/meta/issues/441>`_)
+
 - Add ``[coverage] combine`` option to measure coverage across all supported
   Python versions instead of a single one. It turns the ``coverage`` tox
   environment into one which combines the data written by the test
