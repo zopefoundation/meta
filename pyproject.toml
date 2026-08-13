@@ -71,7 +71,7 @@ branch = true
 source = ["zope.meta"]
 
 [tool.coverage.report]
-fail_under = 10
+fail_under = 18
 precision = 2
 ignore_errors = true
 show_missing = true

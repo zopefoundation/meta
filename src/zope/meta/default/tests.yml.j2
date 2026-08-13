@@ -126,6 +126,12 @@ jobs:
       {% for line in gha_test_commands %}
         %(line)s
       {% endfor %}
+{% elif coverage_combine %}
+      # The `coverage` environment combines the data written by the test
+      # environments, so it has to run them: each job gets its own machine
+      # and there would be nothing to combine otherwise.
+      run: |
+        uvx --with tox-uv tox ${{ matrix.config[1] == 'coverage' && '--skip-env "%(gha_skip_env_regex)s"' || format('-e {0}', matrix.config[1]) }}
 {% else %}
       run: uvx --with tox-uv tox -e ${{ matrix.config[1] }}
 {% endif %}

@@ -147,6 +147,58 @@ def prepend_space(text):
     return text
 
 
+def make_jinja_env(template_folders):
+    """Create the Jinja environment used to render the templates."""
+    return jinja2.Environment(
+        loader=jinja2.FileSystemLoader(template_folders),
+        variable_start_string='%(',
+        variable_end_string=')s',
+        keep_trailing_newline=True,
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+
+
+def combined_coverage_envs(supported_versions, additional_envlist=(),
+                           with_future_python=False,
+                           with_free_threaded_python=False,
+                           with_pypy=False):
+    """Names of the tox environments which contribute coverage data.
+
+    This is the `envlist` in `tox.ini` without the environments running no
+    tests, so it can be used as the `depends` of the `coverage` environment.
+    """
+    envs = [f'py{version}' for version in supported_versions]
+    if with_future_python:
+        envs.append(f'py{FUTURE_PYTHON_SHORTVERSION}')
+    if with_free_threaded_python:
+        envs.append(f'py{NEWEST_PYTHON_SHORTVERSION_T}')
+    if with_pypy:
+        envs.append('pypy3')
+    envs.extend(additional_envlist)
+    return envs
+
+
+def prepend_coverage_file(setenv, value):
+    """Prepend a `COVERAGE_FILE` entry to the tox option `setenv`.
+
+    A `COVERAGE_FILE` the package configured itself wins, so it keeps the
+    final say over where its coverage data is written.
+    """
+    if any(line.strip().startswith('COVERAGE_FILE') for line in setenv):
+        return list(setenv)
+    return [f'COVERAGE_FILE={value}', *setenv]
+
+
+def skip_env_regex(with_docs=True):
+    """Regex matching the tox environments which contribute no coverage data.
+    """
+    envs = ['lint', 'release-check']
+    if with_docs:
+        envs.append('docs')
+    return f'({"|".join(sorted(envs))})'
+
+
 class PackageConfiguration:
     add_manylinux = False
 
@@ -232,14 +284,7 @@ class PackageConfiguration:
 
     @cached_property
     def jinja_env(self):
-        return jinja2.Environment(
-            loader=jinja2.FileSystemLoader(self.template_folders),
-            variable_start_string='%(',
-            variable_end_string=')s',
-            keep_trailing_newline=True,
-            trim_blocks=True,
-            lstrip_blocks=True,
-        )
+        return make_jinja_env(self.template_folders)
 
     @cached_property
     def with_macos(self):
@@ -281,6 +326,10 @@ class PackageConfiguration:
     @cached_property
     def coverage_fail_under(self):
         return self.meta_cfg['coverage'].setdefault('fail-under', 0)
+
+    @cached_property
+    def coverage_combine(self):
+        return self.meta_cfg['coverage'].get('combine', False)
 
     @cached_property
     def branch_name(self):
@@ -485,6 +534,27 @@ class PackageConfiguration:
         testenv_deps = self.tox_option('testenv-deps')
         coverage_setenv = self.tox_option('coverage-setenv')
         lint_diff_on_failure = self.tox_option('lint-diff-on-failure', True)
+        if self.coverage_combine:
+            # Each test environment writes its own coverage data file, the
+            # `coverage` environment combines them instead of running the
+            # tests itself.
+            testenv_setenv = prepend_coverage_file(
+                testenv_setenv, '.coverage.{envname}')
+            coverage_setenv = prepend_coverage_file(
+                coverage_setenv, '.coverage')
+            if not coverage_command:
+                coverage_command = ['coverage erase', 'coverage combine']
+            if not any(line.startswith('depends')
+                       for line in coverage_additional):
+                depends = combined_coverage_envs(
+                    supported_python_versions(self.oldest_python,
+                                              short_version=True),
+                    additional_envlist,
+                    with_future_python=self.with_future_python,
+                    with_free_threaded_python=self.with_free_threaded_python,
+                    with_pypy=self.with_pypy)
+                coverage_additional = [
+                    f'depends = {",".join(depends)}', *coverage_additional]
         flake8_additional_sources = self.meta_cfg['flake8'].get(
             'additional-sources', '')
         if flake8_additional_sources:
@@ -561,7 +631,9 @@ class PackageConfiguration:
             gha_additional_install=gha_additional_install,
             gha_test_environment=gha_test_environment,
             gha_test_commands=gha_test_commands,
+            gha_skip_env_regex=skip_env_regex(self.with_docs),
             gha_services=gha_services,
+            coverage_combine=self.coverage_combine,
             gha_steps_before_checkout=gha_steps_before_checkout,
             with_docs=self.with_docs,
             with_sphinx_doctests=self.with_sphinx_doctests,
@@ -664,6 +736,10 @@ class PackageConfiguration:
 
         # Update coverage-related data
         coverage = toml_doc['tool']['coverage']
+        if self.coverage_combine:
+            # Combining data files written on different machines only works
+            # if the recorded file names are relative to the project root.
+            coverage['run']['relative_files'] = True
         add_cfg = self.meta_cfg['coverage-run'].get('additional-config', [])
         for key, value in parse_additional_config(add_cfg).items():
             coverage['run'][key] = value

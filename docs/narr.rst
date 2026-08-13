@@ -242,6 +242,7 @@ updated. Example:
 
     [coverage]
     fail-under = 98
+    combine = true
 
     [coverage-run]
     additional-config = [
@@ -435,6 +436,33 @@ The corresponding section is named: ``[coverage]``.
 
 fail-under
   A minimal value of code coverage below which a test failure is issued.
+
+combine
+  Measure coverage across all supported Python versions instead of a single
+  one: true/false, default: false. Use it when no single version reaches
+  ``fail-under`` on its own. Switching it on
+
+  * lets each test environment write its own data file
+    (``COVERAGE_FILE=.coverage.{envname}``),
+  * turns ``[testenv:coverage]`` into an environment which only runs
+    ``coverage erase`` and ``coverage combine``, with a ``depends`` on all
+    environments contributing data,
+  * sets ``relative_files = true`` in ``[tool.coverage.run]``, so data files
+    written on different machines can be combined,
+  * and makes the ``coverage`` job in ``tests.yml`` run the test environments,
+    because each job gets its own machine and there would be nothing to
+    combine otherwise.
+
+  Anything the package configures itself — ``coverage-command``,
+  ``coverage-setenv``, ``testenv-setenv``, a ``depends`` line in
+  ``coverage-additional``, ``[github-actions] test-commands`` — keeps
+  precedence. Not supported for the ``c-code`` template, which has its own
+  ``tests.yml``.
+
+  Note that the tests then run twice in CI: once in their own job and once in
+  the ``coverage`` job. The ``fail-under`` check should be disabled in
+  ``testenv-commands`` so a single version failing to reach it does not fail
+  its own job.
 
 
 Coverage:run options
