@@ -4,6 +4,23 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Rotate the pip cache key weekly in the ``c-code`` test workflow template.
+  ``actions/cache`` never replaces an existing key, so a corrupt cache entry
+  used to break every run restoring it until GitHub evicted the entry. A
+  rotating key abandons such an entry within a week instead.
+  (`#436 <https://github.com/zopefoundation/meta/issues/436>`_)
+
+- Also set ``pip_pre`` for the free-threaded variant of a future Python
+  version in ``tox.ini``, as its dependencies are only available as
+  pre-releases just like those of the non-free-threaded variant.
+
+- Upgrade ``pip`` via ``python -m pip`` in the ``c-code`` test workflow
+  template, as the ``pip.exe`` shim on Windows refuses to replace itself.
+  Run all workflow steps under ``bash`` so that a failing command in a
+  multi-command block is no longer swallowed on Windows, and collapse the
+  now-redundant OS-split pip cache steps.
+  (`#436 <https://github.com/zopefoundation/meta/issues/436>`_)
+
 - Configure ``zest.releaser`` to not add an extra message when using
   trusted publishing.
 
