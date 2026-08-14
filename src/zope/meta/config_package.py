@@ -25,6 +25,7 @@ from packaging.version import parse as parse_version
 from .set_branch_protection_rules import set_branch_protection
 from .shared.call import abort
 from .shared.call import call
+from .shared.git import create_pull_request
 from .shared.git import get_branch_name
 from .shared.git import get_commit_id
 from .shared.git import git_branch
@@ -334,6 +335,10 @@ class PackageConfiguration:
     @cached_property
     def branch_name(self):
         return get_branch_name(self.args.branch_name, self.config_type)
+
+    @cached_property
+    def commit_message(self):
+        return self.args.commit_msg or f'Configuring for {self.config_type}'
 
     def _add_project_to_config_type_list(self):
         """Add the current project to packages.txt if it is not there"""
@@ -901,16 +906,14 @@ class PackageConfiguration:
             ]
             if self.config_type != 'toolkit':
                 to_add.append('MANIFEST.in')
+            pushed = False
             if self.args.commit:
                 call('git', 'add', *to_add)
-                if self.args.commit_msg:
-                    commit_msg = self.args.commit_msg
-                else:
-                    commit_msg = f'Configuring for {self.config_type}'
-                call('git', 'commit', '-m', commit_msg)
+                call('git', 'commit', '-m', self.commit_message)
                 if self.args.push:
                     call('git', 'push', '--set-upstream',
                          'origin', self.branch_name)
+                    pushed = True
             print()
             print('If you are an admin and are logged in via `gh auth login`')
             print('update branch protection rules? (y/N)?', end=' ')
@@ -926,10 +929,12 @@ class PackageConfiguration:
                 else:
                     abort(-1)
             print()
-            print('If everything went fine up to here:')
             if updating:
                 print('Updated the previously created PR.')
+            elif pushed:
+                create_pull_request(self.commit_message)
             else:
+                print('If everything went fine up to here:')
                 print('Create a PR, using the URL shown above.')
 
 
