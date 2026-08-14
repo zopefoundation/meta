@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Use pinned commit hash for GH Action pypa/gh-action-pypi-publish.
+  (`#441 <https://github.com/zopefoundation/meta/issues/441>`_)
+  
 - Fix disappearing top comment in ``pyproject.toml`` with newer ``tomlkit``.
   (`#440 <https://github.com/zopefoundation/meta/issues/440>`_)
 
