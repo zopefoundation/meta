@@ -39,7 +39,7 @@ dependencies = [
     "packaging",
     "pyupgrade",
     "requests",
-    "tomlkit",
+    "tomlkit>0.15",
     "tox",
     "zest.releaser",
 ]
