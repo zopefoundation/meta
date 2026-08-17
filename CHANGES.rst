@@ -4,6 +4,10 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add ``[pre-commit] additional-config`` option to append additional
+  repositories and hooks (e. g. ``mypy``) to ``.pre-commit-config.yaml``.
+  (`#439 <https://github.com/zopefoundation/meta/issues/439>`_)
+
 - Offer to create a pull request via ``gh`` at the end of a ``config-package``
   run, like ``update-python-support`` already does.
 

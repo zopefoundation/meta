@@ -96,6 +96,16 @@ TESTS_YML_CONTEXT = {
     'with_windows': False,
 }
 
+#: The values `PackageConfiguration.pre_commit_config_yaml()` passes to
+#: `pre-commit-config.yaml.j2`.
+PRE_COMMIT_CONTEXT = {
+    'config_type': 'pure-python',
+    'oldest_python_version': '310',
+    'pre_commit_additional_config': [],
+    'pyupgrade_exclude': '',
+    'teyit_exclude': '',
+}
+
 DEFAULT_TEST_COMMAND = (
     '      run: uvx --with tox-uv tox -e ${{ matrix.config[1] }}\n')
 COMBINE_TEST_COMMAND = """\
@@ -113,6 +123,39 @@ class ConfigPackageTests(unittest.TestCase):
         self.assertIsNone(prepend_space(None))
         self.assertEqual('', prepend_space(''))
         self.assertEqual(' foobar', prepend_space('foobar'))
+
+
+class PreCommitAdditionalConfigTests(unittest.TestCase):
+    """Tests for the ``[pre-commit] additional-config`` option."""
+
+    def test_config_package__pre_commit_config_yaml__1(self):
+        """It appends the configured repositories to the ``repos`` list."""
+
+        config = render('pre-commit-config.yaml.j2', **dict(
+            PRE_COMMIT_CONTEXT,
+            pre_commit_additional_config=[
+                '- repo: https://github.com/pre-commit/mirrors-mypy',
+                '  rev: v2.1.0',
+                '  hooks:',
+                '    - id: mypy',
+                '      pass_filenames: false',
+            ],
+        ))
+
+        self.assertTrue(config.endswith(
+            '  - repo: https://github.com/pre-commit/mirrors-mypy\n'
+            '    rev: v2.1.0\n'
+            '    hooks:\n'
+            '      - id: mypy\n'
+            '        pass_filenames: false\n'))
+
+    def test_config_package__pre_commit_config_yaml__2(self):
+        """It renders no additional lines by default."""
+
+        config = render('pre-commit-config.yaml.j2', **PRE_COMMIT_CONTEXT)
+
+        self.assertTrue(config.endswith(
+            '        - flake8-debugger == 4.1.2\n'))
 
 
 class CombinedCoverageTests(unittest.TestCase):
