@@ -49,3 +49,18 @@ def git_branch(branch_name) -> bool:
         call('git', 'checkout', '-b', branch_name)
         updating = False
     return updating
+
+
+def create_pull_request(title):
+    """Offer to create a pull request for the current branch.
+
+    Requires the user to be logged in via `gh auth login`.
+    """
+    print(
+        'Are you logged in via `gh auth login` to'
+        ' create a PR? (y/N)?', end=' ')
+    if input().lower() == 'y':
+        call('gh', 'pr', 'create', '--fill', '--title', title)
+    else:
+        print('If everything went fine up to here:')
+        print('Create a PR, using the URL shown above.')

@@ -125,7 +125,9 @@ The script does the following steps:
    ``$PATH`` or in the ``bin`` subfolder of the current working directory.
 #. Create a branch and a pull request. (Prevent an automatic commit of all
    changes with the command line switch ``--no-commit``, or an automatic push
-   to GitHub using the command line switch ``--no-push``.)
+   to GitHub using the command line switch ``--no-push``.) Creating the pull
+   request requires being logged in via ``gh auth login``, the script asks
+   before doing so.
 
 After running the script you should manually do the following steps:
 

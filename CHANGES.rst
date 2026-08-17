@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Offer to create a pull request via ``gh`` at the end of a ``config-package``
+  run, like ``update-python-support`` already does.
+
 - Use pinned commit hash for GH Action pypa/gh-action-pypi-publish.
   (`#441 <https://github.com/zopefoundation/meta/issues/441>`_)
   
