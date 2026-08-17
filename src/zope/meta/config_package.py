@@ -437,6 +437,7 @@ class PackageConfiguration:
         teyit_exclude = self.meta_cfg["pre-commit"].get("teyit-exclude", "")
         pyupgrade_exclude = self.meta_cfg["pre-commit"].get(
             "pyupgrade-exclude", "")
+        additional_config = self.cfg_option("pre-commit", "additional-config")
 
         self.copy_with_meta(
             "pre-commit-config.yaml.j2",
@@ -445,6 +446,7 @@ class PackageConfiguration:
             oldest_python_version=self.oldest_python.replace(".", ""),
             teyit_exclude=teyit_exclude,
             pyupgrade_exclude=pyupgrade_exclude,
+            pre_commit_additional_config=additional_config,
         )
 
     def readthedocs(self):

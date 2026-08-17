@@ -742,6 +742,24 @@ pre-commit options
 
 The corresponding section is named: ``[pre-commit]``.
 
+additional-config
+  Additional repositories and hooks to be added at the end of the ``repos``
+  list in ``.pre-commit-config.yaml``, e. g. a ``mypy`` hook. This option has
+  to be a list of strings without leading whitespace, the first line of each
+  repository entry has to start with a hyphen; relative indentation of the
+  following lines is preserved. It defaults to an empty list. Example:
+
+  .. code-block:: toml
+
+    [pre-commit]
+    additional-config = [
+        "- repo: https://github.com/pre-commit/mirrors-mypy",
+        "  rev: v2.1.0",
+        "  hooks:",
+        "    - id: mypy",
+        "      pass_filenames: false",
+        ]
+
 teyit-exclude
   Regex for files to be hidden from teyit. It fails on files containing syntax
   errors. This option has to be a string and is omitted when not defined.
