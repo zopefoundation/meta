@@ -53,3 +53,6 @@ repos:
 {% if sphinx_lint_exclude %}
       exclude: %(sphinx_lint_exclude)s
 {% endif %}
+{% for line in pre_commit_additional_config %}
+  %(line)s
+{% endfor %}

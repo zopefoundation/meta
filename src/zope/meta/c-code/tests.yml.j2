@@ -1,4 +1,4 @@
-{% set cache_key = "${{ runner.os }}-${{ runner.arch }}-pip-${{ matrix.python-version }}" %}
+{% set cache_key = "${{ runner.os }}-${{ runner.arch }}-pip-${{ matrix.python-version }}-${{ steps.pip-cache-epoch.outputs.week }}" %}
 ###
 # Initially copied from
 # https://github.com/actions/starter-workflows/blob/main/ci/python-package.yml
@@ -44,6 +44,13 @@ on:
     - cron: '0 12 * * 0'  # run once a week on Sunday
   # Allow to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+defaults:
+  run:
+    # ``pwsh`` propagates only the exit code of the *last* command of a
+    # multi-command block, so failures on Windows go unnoticed. ``bash``
+    # runs with ``-eo pipefail`` and aborts the step on the first failure.
+    shell: bash
 
 env:
   # Weirdly, this has to be a top-level key, not ``defaults.env``
@@ -92,7 +99,7 @@ jobs:
       - name: Install Build Dependencies (%(future_python_version)s)
         if: startsWith(matrix.python-version, '%(future_python_version)s')
         run: |
-          pip install -U pip
+          python -m pip install -U pip
           pip install -U "setuptools %(setuptools_version_spec)s" wheel twine cffi pycparser
 {% endif %}
       - name: Install Build Dependencies
@@ -100,7 +107,7 @@ jobs:
         if: ${{ !startsWith(matrix.python-version, '%(future_python_version)s') }}
 {% endif %}
         run: |
-          pip install -U pip
+          python -m pip install -U pip
           pip install -U "setuptools %(setuptools_version_spec)s" wheel twine
 
 {% for kind in ('macOS x86_64', 'macOS arm64', 'all other versions') %}
@@ -160,7 +167,7 @@ jobs:
 {% endif %}
         run: |
           # Install to collect dependencies into the (pip) cache.
-          pip install -U pip "setuptools %(setuptools_version_spec)s"
+          python -m pip install -U pip "setuptools %(setuptools_version_spec)s"
           pip install .[test]
 
       - name: Check %(package_name)s build
@@ -382,11 +389,11 @@ jobs:
             image: %(manylinux_aarch64)s
             python-version: "%(manylinux_python_version)s"
     steps:
-{% set cache_key = "${{ runner.os }}-pip_manylinux-${{ matrix.image }}-${{ matrix.python-version }}" %}
+{% set cache_key = "${{ runner.os }}-pip_manylinux-${{ matrix.image }}-${{ matrix.python-version }}-${{ steps.pip-cache-epoch.outputs.week }}" %}
 {% include 'tests-cache.j2' %}
 
       - name: Update pip
-        run: pip install -U pip
+        run: python -m pip install -U pip
 
       - name: Build %(package_name)s
         if: matrix.image != '%(manylinux_i686)s'
@@ -412,7 +419,7 @@ jobs:
           name: manylinux_${{ matrix.image }}_wheels.zip
 
       - name: Restore pip cache permissions
-        run: sudo chown -R $(whoami) ${{ steps.pip-cache-default.outputs.dir }}
+        run: sudo chown -R $(whoami) ${{ steps.pip-cache.outputs.dir }}
 {% if with_future_python %}
 
       - name: Prevent publishing wheels for unreleased Python versions
@@ -459,7 +466,7 @@ jobs:
           find dist/ -name "*linux_x86_64*" -type f -delete || true
 
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
         with:
           skip-existing: true
           packages-dir: dist/

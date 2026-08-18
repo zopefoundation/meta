@@ -25,6 +25,7 @@ from packaging.version import parse as parse_version
 from .set_branch_protection_rules import set_branch_protection
 from .shared.call import abort
 from .shared.call import call
+from .shared.git import create_pull_request
 from .shared.git import get_branch_name
 from .shared.git import get_commit_id
 from .shared.git import git_branch
@@ -147,6 +148,58 @@ def prepend_space(text):
     return text
 
 
+def make_jinja_env(template_folders):
+    """Create the Jinja environment used to render the templates."""
+    return jinja2.Environment(
+        loader=jinja2.FileSystemLoader(template_folders),
+        variable_start_string='%(',
+        variable_end_string=')s',
+        keep_trailing_newline=True,
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+
+
+def combined_coverage_envs(supported_versions, additional_envlist=(),
+                           with_future_python=False,
+                           with_free_threaded_python=False,
+                           with_pypy=False):
+    """Names of the tox environments which contribute coverage data.
+
+    This is the `envlist` in `tox.ini` without the environments running no
+    tests, so it can be used as the `depends` of the `coverage` environment.
+    """
+    envs = [f'py{version}' for version in supported_versions]
+    if with_future_python:
+        envs.append(f'py{FUTURE_PYTHON_SHORTVERSION}')
+    if with_free_threaded_python:
+        envs.append(f'py{NEWEST_PYTHON_SHORTVERSION_T}')
+    if with_pypy:
+        envs.append('pypy3')
+    envs.extend(additional_envlist)
+    return envs
+
+
+def prepend_coverage_file(setenv, value):
+    """Prepend a `COVERAGE_FILE` entry to the tox option `setenv`.
+
+    A `COVERAGE_FILE` the package configured itself wins, so it keeps the
+    final say over where its coverage data is written.
+    """
+    if any(line.strip().startswith('COVERAGE_FILE') for line in setenv):
+        return list(setenv)
+    return [f'COVERAGE_FILE={value}', *setenv]
+
+
+def skip_env_regex(with_docs=True):
+    """Regex matching the tox environments which contribute no coverage data.
+    """
+    envs = ['lint', 'release-check']
+    if with_docs:
+        envs.append('docs')
+    return f'({"|".join(sorted(envs))})'
+
+
 class PackageConfiguration:
     add_manylinux = False
 
@@ -232,14 +285,7 @@ class PackageConfiguration:
 
     @cached_property
     def jinja_env(self):
-        return jinja2.Environment(
-            loader=jinja2.FileSystemLoader(self.template_folders),
-            variable_start_string='%(',
-            variable_end_string=')s',
-            keep_trailing_newline=True,
-            trim_blocks=True,
-            lstrip_blocks=True,
-        )
+        return make_jinja_env(self.template_folders)
 
     @cached_property
     def with_macos(self):
@@ -283,8 +329,16 @@ class PackageConfiguration:
         return self.meta_cfg['coverage'].setdefault('fail-under', 0)
 
     @cached_property
+    def coverage_combine(self):
+        return self.meta_cfg['coverage'].get('combine', False)
+
+    @cached_property
     def branch_name(self):
         return get_branch_name(self.args.branch_name, self.config_type)
+
+    @cached_property
+    def commit_message(self):
+        return self.args.commit_msg or f'Configuring for {self.config_type}'
 
     def _add_project_to_config_type_list(self):
         """Add the current project to packages.txt if it is not there"""
@@ -387,6 +441,7 @@ class PackageConfiguration:
             "whitespace-exclude", "")
         sphinx_lint_exclude = self.meta_cfg["pre-commit"].get(
             "sphinx-lint-exclude", "")
+        additional_config = self.cfg_option("pre-commit", "additional-config")
 
         self.copy_with_meta(
             "pre-commit-config.yaml.j2",
@@ -397,6 +452,7 @@ class PackageConfiguration:
             pyupgrade_exclude=pyupgrade_exclude,
             whitespace_exclude=whitespace_exclude,
             sphinx_lint_exclude=sphinx_lint_exclude,
+            pre_commit_additional_config=additional_config,
         )
 
     def readthedocs(self):
@@ -491,6 +547,27 @@ class PackageConfiguration:
         testenv_deps = self.tox_option('testenv-deps')
         coverage_setenv = self.tox_option('coverage-setenv')
         lint_diff_on_failure = self.tox_option('lint-diff-on-failure', True)
+        if self.coverage_combine:
+            # Each test environment writes its own coverage data file, the
+            # `coverage` environment combines them instead of running the
+            # tests itself.
+            testenv_setenv = prepend_coverage_file(
+                testenv_setenv, '.coverage.{envname}')
+            coverage_setenv = prepend_coverage_file(
+                coverage_setenv, '.coverage')
+            if not coverage_command:
+                coverage_command = ['coverage erase', 'coverage combine']
+            if not any(line.startswith('depends')
+                       for line in coverage_additional):
+                depends = combined_coverage_envs(
+                    supported_python_versions(self.oldest_python,
+                                              short_version=True),
+                    additional_envlist,
+                    with_future_python=self.with_future_python,
+                    with_free_threaded_python=self.with_free_threaded_python,
+                    with_pypy=self.with_pypy)
+                coverage_additional = [
+                    f'depends = {",".join(depends)}', *coverage_additional]
         flake8_additional_sources = self.meta_cfg['flake8'].get(
             'additional-sources', '')
         if flake8_additional_sources:
@@ -567,7 +644,9 @@ class PackageConfiguration:
             gha_additional_install=gha_additional_install,
             gha_test_environment=gha_test_environment,
             gha_test_commands=gha_test_commands,
+            gha_skip_env_regex=skip_env_regex(self.with_docs),
             gha_services=gha_services,
+            coverage_combine=self.coverage_combine,
             gha_steps_before_checkout=gha_steps_before_checkout,
             with_docs=self.with_docs,
             with_sphinx_doctests=self.with_sphinx_doctests,
@@ -624,9 +703,7 @@ class PackageConfiguration:
     def pyproject_toml(self):
         """Modify pyproject.toml with meta options."""
         toml_path = self.path / 'pyproject.toml'
-        toml_doc = get_pyproject_toml(
-            toml_path,
-            comment=META_HINT.format(config_type=self.config_type))
+        toml_doc = get_pyproject_toml(toml_path)
 
         # Capture some pre-transformation data
         old_requires = toml_doc.get('build-system', {}).get('requires', [])
@@ -670,6 +747,10 @@ class PackageConfiguration:
 
         # Update coverage-related data
         coverage = toml_doc['tool']['coverage']
+        if self.coverage_combine:
+            # Combining data files written on different machines only works
+            # if the recorded file names are relative to the project root.
+            coverage['run']['relative_files'] = True
         add_cfg = self.meta_cfg['coverage-run'].get('additional-config', [])
         for key, value in parse_additional_config(add_cfg).items():
             coverage['run'][key] = value
@@ -706,8 +787,13 @@ class PackageConfiguration:
         if toml_doc['tool']['coverage'].get('paths'):
             toml_doc['tool']['coverage']['paths']['source'].multiline(True)
 
+        preamble = META_HINT.format(config_type=self.config_type)
+        toml_contents = tomlkit.dumps(toml_doc, sort_keys=True)
+        if not toml_contents.startswith(preamble):
+            toml_contents = f'{preamble}\n{toml_contents}'
+
         with open(toml_path, 'w') as fp:
-            tomlkit.dump(toml_doc, fp, sort_keys=True)
+            fp.write(toml_contents)
 
     def render_with_meta(self, template_name, config_type, **kw):
         """Read and render a Jinja template source file"""
@@ -828,16 +914,14 @@ class PackageConfiguration:
             ]
             if self.config_type != 'toolkit':
                 to_add.append('MANIFEST.in')
+            pushed = False
             if self.args.commit:
                 call('git', 'add', *to_add)
-                if self.args.commit_msg:
-                    commit_msg = self.args.commit_msg
-                else:
-                    commit_msg = f'Configuring for {self.config_type}'
-                call('git', 'commit', '-m', commit_msg)
+                call('git', 'commit', '-m', self.commit_message)
                 if self.args.push:
                     call('git', 'push', '--set-upstream',
                          'origin', self.branch_name)
+                    pushed = True
             print()
             print('If you are an admin and are logged in via `gh auth login`')
             print('update branch protection rules? (y/N)?', end=' ')
@@ -853,10 +937,12 @@ class PackageConfiguration:
                 else:
                     abort(-1)
             print()
-            print('If everything went fine up to here:')
             if updating:
                 print('Updated the previously created PR.')
+            elif pushed:
+                create_pull_request(self.commit_message)
             else:
+                print('If everything went fine up to here:')
                 print('Create a PR, using the URL shown above.')
 
 

@@ -125,7 +125,9 @@ The script does the following steps:
    ``$PATH`` or in the ``bin`` subfolder of the current working directory.
 #. Create a branch and a pull request. (Prevent an automatic commit of all
    changes with the command line switch ``--no-commit``, or an automatic push
-   to GitHub using the command line switch ``--no-push``.)
+   to GitHub using the command line switch ``--no-push``.) Creating the pull
+   request requires being logged in via ``gh auth login``, the script asks
+   before doing so.
 
 After running the script you should manually do the following steps:
 
@@ -242,6 +244,7 @@ updated. Example:
 
     [coverage]
     fail-under = 98
+    combine = true
 
     [coverage-run]
     additional-config = [
@@ -437,6 +440,33 @@ The corresponding section is named: ``[coverage]``.
 
 fail-under
   A minimal value of code coverage below which a test failure is issued.
+
+combine
+  Measure coverage across all supported Python versions instead of a single
+  one: true/false, default: false. Use it when no single version reaches
+  ``fail-under`` on its own. Switching it on
+
+  * lets each test environment write its own data file
+    (``COVERAGE_FILE=.coverage.{envname}``),
+  * turns ``[testenv:coverage]`` into an environment which only runs
+    ``coverage erase`` and ``coverage combine``, with a ``depends`` on all
+    environments contributing data,
+  * sets ``relative_files = true`` in ``[tool.coverage.run]``, so data files
+    written on different machines can be combined,
+  * and makes the ``coverage`` job in ``tests.yml`` run the test environments,
+    because each job gets its own machine and there would be nothing to
+    combine otherwise.
+
+  Anything the package configures itself — ``coverage-command``,
+  ``coverage-setenv``, ``testenv-setenv``, a ``depends`` line in
+  ``coverage-additional``, ``[github-actions] test-commands`` — keeps
+  precedence. Not supported for the ``c-code`` template, which has its own
+  ``tests.yml``.
+
+  Note that the tests then run twice in CI: once in their own job and once in
+  the ``coverage`` job. The ``fail-under`` check should be disabled in
+  ``testenv-commands`` so a single version failing to reach it does not fail
+  its own job.
 
 
 Coverage:run options
@@ -713,6 +743,24 @@ pre-commit options
 ``````````````````
 
 The corresponding section is named: ``[pre-commit]``.
+
+additional-config
+  Additional repositories and hooks to be added at the end of the ``repos``
+  list in ``.pre-commit-config.yaml``, e. g. a ``mypy`` hook. This option has
+  to be a list of strings without leading whitespace, the first line of each
+  repository entry has to start with a hyphen; relative indentation of the
+  following lines is preserved. It defaults to an empty list. Example:
+
+  .. code-block:: toml
+
+    [pre-commit]
+    additional-config = [
+        "- repo: https://github.com/pre-commit/mirrors-mypy",
+        "  rev: v2.1.0",
+        "  hooks:",
+        "    - id: mypy",
+        "      pass_filenames: false",
+        ]
 
 teyit-exclude
   Regex for files to be hidden from teyit. It fails on files containing syntax

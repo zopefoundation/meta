@@ -105,8 +105,8 @@ jobs:
 {% endfor %}
 {% endif %}
     - name: Install uv + caching
-      # astral/setup-uv@9.0.0
-      uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+      # astral/setup-uv@10.0.0
+      uses: astral-sh/setup-uv@ae62891fec2bb8e7d6c99fc78c9fec3a63790f8d
       with:
         enable-cache: true
         cache-dependency-glob: |
@@ -126,6 +126,12 @@ jobs:
       {% for line in gha_test_commands %}
         %(line)s
       {% endfor %}
+{% elif coverage_combine %}
+      # The `coverage` environment combines the data written by the test
+      # environments, so it has to run them: each job gets its own machine
+      # and there would be nothing to combine otherwise.
+      run: |
+        uvx --with tox-uv tox ${{ matrix.config[1] == 'coverage' && '--skip-env "%(gha_skip_env_regex)s"' || format('-e {0}', matrix.config[1]) }}
 {% else %}
       run: uvx --with tox-uv tox -e ${{ matrix.config[1] }}
 {% endif %}
@@ -192,7 +198,7 @@ jobs:
           ls -lR dist/
 
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
         with:
           skip-existing: true
           packages-dir: dist/
