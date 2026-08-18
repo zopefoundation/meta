@@ -4,6 +4,20 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add the ``check-case-conflict``, ``check-merge-conflict``, ``check-toml``,
+  ``check-yaml``, ``end-of-file-fixer`` and ``trailing-whitespace`` hooks from
+  ``pre-commit-hooks`` and the ``sphinx-lint`` hook to
+  ``.pre-commit-config.yaml``. Add ``whitespace-exclude`` and
+  ``sphinx-lint-exclude`` to the ``[pre-commit]`` section in ``.meta.toml`` to
+  hide files from them.
+  (`#284 <https://github.com/zopefoundation/meta/issues/284>`_)
+
+- Stop rendering a blank line at the end of ``tests.yml`` for packages which do
+  not use trusted publishing.
+
+- Fix the ``[pre-commit]`` example in the documentation: a backslash in a TOML
+  basic string has to be escaped, so ``"error\.py"`` is not valid TOML.
+
 - Add ``[pre-commit] additional-config`` option to append additional
   repositories and hooks (e. g. ``mypy``) to ``.pre-commit-config.yaml``.
   (`#439 <https://github.com/zopefoundation/meta/issues/439>`_)
@@ -13,7 +27,7 @@ Change log
 
 - Use pinned commit hash for GH Action pypa/gh-action-pypi-publish.
   (`#441 <https://github.com/zopefoundation/meta/issues/441>`_)
-  
+
 - Fix disappearing top comment in ``pyproject.toml`` with newer ``tomlkit``.
   (`#440 <https://github.com/zopefoundation/meta/issues/440>`_)
 
@@ -21,7 +35,7 @@ Change log
   Python versions instead of a single one. It turns the ``coverage`` tox
   environment into one which combines the data written by the test
   environments, and makes the ``coverage`` job in ``tests.yml`` run them.
-  
+
 - Rotate the pip cache key weekly in the ``c-code`` test workflow template.
   ``actions/cache`` never replaces an existing key, so a corrupt cache entry
   used to break every run restoring it until GitHub evicted the entry. A

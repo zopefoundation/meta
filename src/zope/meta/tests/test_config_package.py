@@ -103,7 +103,9 @@ PRE_COMMIT_CONTEXT = {
     'oldest_python_version': '310',
     'pre_commit_additional_config': [],
     'pyupgrade_exclude': '',
+    'sphinx_lint_exclude': '',
     'teyit_exclude': '',
+    'whitespace_exclude': '',
 }
 
 DEFAULT_TEST_COMMAND = (
@@ -155,7 +157,10 @@ class PreCommitAdditionalConfigTests(unittest.TestCase):
         config = render('pre-commit-config.yaml.j2', **PRE_COMMIT_CONTEXT)
 
         self.assertTrue(config.endswith(
-            '        - flake8-debugger == 4.1.2\n'))
+            '  - repo: https://github.com/sphinx-contrib/sphinx-lint\n'
+            '    rev: v1.0.2\n'
+            '    hooks:\n'
+            '    - id: sphinx-lint\n'))
 
 
 class CombinedCoverageTests(unittest.TestCase):

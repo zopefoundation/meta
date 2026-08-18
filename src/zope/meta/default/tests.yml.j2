@@ -169,8 +169,8 @@ jobs:
       with:
         name: %(package_name)s.tar.gz
         path: dist/*gz
-
 {% if use_trusted_publishing %}
+
   publish:
     name: Publish to PyPI
     runs-on: ubuntu-latest
