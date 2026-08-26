@@ -1,0 +1,6 @@
+          # PyPI downloads are occasionally cut off mid-transfer, which makes
+          # pip fail with ``IncompleteRead``. pip does not retry a truncated
+          # download, so retry the complete command. Purge pip's cache before
+          # the last attempt: should a truncated download ever get *cached*,
+          # it would fail every attempt in the same way.
+          retry() { for i in 1 2; do "$@" && return 0; echo "Attempt $i failed, retrying in 15s ..."; sleep 15; done; pip cache purge || true; "$@"; }
