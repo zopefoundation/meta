@@ -40,7 +40,7 @@ Change log
   ``actions/cache`` never replaces an existing key, so a corrupt cache entry
   used to break every run restoring it until GitHub evicted the entry. A
   rotating key abandons such an entry within a week instead.
-  
+
 - Retry the ``pip install`` steps in the ``c-code`` test workflow template.
   PyPI downloads are occasionally cut off mid-transfer, and ``pip`` does not
   retry a truncated download, so the whole command is retried instead. This
