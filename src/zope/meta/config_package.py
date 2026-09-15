@@ -437,6 +437,10 @@ class PackageConfiguration:
         teyit_exclude = self.meta_cfg["pre-commit"].get("teyit-exclude", "")
         pyupgrade_exclude = self.meta_cfg["pre-commit"].get(
             "pyupgrade-exclude", "")
+        whitespace_exclude = self.meta_cfg["pre-commit"].get(
+            "whitespace-exclude", "")
+        sphinx_lint_exclude = self.meta_cfg["pre-commit"].get(
+            "sphinx-lint-exclude", "")
         additional_config = self.cfg_option("pre-commit", "additional-config")
 
         self.copy_with_meta(
@@ -446,6 +450,8 @@ class PackageConfiguration:
             oldest_python_version=self.oldest_python.replace(".", ""),
             teyit_exclude=teyit_exclude,
             pyupgrade_exclude=pyupgrade_exclude,
+            whitespace_exclude=whitespace_exclude,
+            sphinx_lint_exclude=sphinx_lint_exclude,
             pre_commit_additional_config=additional_config,
         )
 
