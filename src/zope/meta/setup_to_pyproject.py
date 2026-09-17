@@ -355,9 +355,13 @@ def rewrite_pyproject_toml(path, toml_dict):
         p_toml['project']['requires-python'] = f'>={OLDEST_PYTHON_VERSION}'
 
     # Create a fresh TOMLDocument instance so I can control section sorting
-    with open(path.absolute().parent / '.meta.toml', 'rb') as fp:
-        meta_cfg = tomlkit.load(fp)
-    config_type = meta_cfg['meta'].get('template')
+    meta_toml_path = path.absolute().parent / '.meta.toml'
+    if meta_toml_path.exists():
+        with open(meta_toml_path, 'rb') as fp:
+            meta_cfg = tomlkit.load(fp)
+        config_type = meta_cfg['meta'].get('template')
+    else:
+        config_type = '<none>'
     new_doc = tomlkit.loads(META_HINT.format(config_type=config_type))
     for key in sorted(p_toml.keys()):
         new_doc[key] = p_toml.get(key)
@@ -414,7 +418,6 @@ def package_sanity_check(path):
 
     if not (path / '.meta.toml').exists():
         print(' - no .meta.toml found, cannot convert package.')
-        sane = False
 
     return sane
 

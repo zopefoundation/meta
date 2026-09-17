@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Allow ``setup-to-pyproject`` to run on a repository which is not controlled
+  by ``zope.meta``.
+
 - Add the ``check-case-conflict``, ``check-merge-conflict``, ``check-toml``,
   ``check-yaml``, ``end-of-file-fixer`` and ``trailing-whitespace`` hooks from
   ``pre-commit-hooks`` and the ``sphinx-lint`` hook to
