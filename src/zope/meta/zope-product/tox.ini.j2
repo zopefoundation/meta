@@ -64,6 +64,9 @@ setenv =
 deps =
     {[testenv]deps}
     coverage[toml]
+{% for line in coverage_deps %}
+    %(line)s
+{% endfor %}
 commands =
     mkdir -p {toxinidir}/parts/htmlcov
 {% if coverage_command %}

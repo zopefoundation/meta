@@ -42,6 +42,7 @@ TOX_CONTEXT = {
     'coverage_additional': [],
     'coverage_basepython': 'python3',
     'coverage_command': [],
+    'coverage_deps': [],
     'coverage_setenv': [],
     'docs_deps': [],
     'flake8_additional_sources': '',
@@ -240,6 +241,26 @@ class CombinedCoverageTests(unittest.TestCase):
             coverage_env)
         self.assertNotIn('coverage combine', coverage_env)
         self.assertNotIn('depends', coverage_env)
+
+    def test_config_package__tox_ini__3(self):
+        """It adds `coverage-deps` only to the coverage environment."""
+
+        tox_ini = render('tox.ini.j2', **dict(
+            TOX_CONTEXT,
+            coverage_deps=['coverage-only-dep'],
+            testenv_deps=['zope.testrunner'],
+        ))
+        testenv, coverage_env = tox_ini.split('[testenv:coverage]')
+
+        self.assertIn(
+            'deps =\n'
+            '    coverage[toml]\n'
+            '    zope.testrunner\n'
+            '    coverage-only-dep\n',
+            coverage_env)
+        # It does not leak into `[testenv]` or `[testenv:setuptools-latest]`:
+        self.assertIn('    zope.testrunner\n', testenv)
+        self.assertNotIn('coverage-only-dep', testenv)
 
     def test_config_package__tests_yml__1(self):
         """It runs the test environments in the coverage job."""

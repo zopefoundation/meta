@@ -22,6 +22,9 @@ deps =
 {% for line in testenv_deps %}
     %(line)s
 {% endfor %}
+{% for line in coverage_deps %}
+    %(line)s
+{% endfor %}
 commands =
     mkdir -p {toxinidir}/parts/htmlcov
     coverage erase

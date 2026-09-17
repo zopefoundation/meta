@@ -544,6 +544,7 @@ class PackageConfiguration:
         if isinstance(coverage_command, str):
             coverage_command = [coverage_command]
         coverage_additional = self.tox_option('coverage-additional')
+        coverage_deps = self.tox_option('coverage-deps')
         testenv_deps = self.tox_option('testenv-deps')
         coverage_setenv = self.tox_option('coverage-setenv')
         lint_diff_on_failure = self.tox_option('lint-diff-on-failure', True)
@@ -589,6 +590,7 @@ class PackageConfiguration:
             coverage_additional=coverage_additional,
             coverage_basepython=coverage_basepython,
             coverage_command=coverage_command,
+            coverage_deps=coverage_deps,
             coverage_run_source=self.coverage_run_source,
             coverage_setenv=coverage_setenv,
             coverage_fail_under=self.coverage_fail_under,
