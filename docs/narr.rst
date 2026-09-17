@@ -290,6 +290,9 @@ updated. Example:
     coverage-additional = [
         "depends = py312,docs",
         ]
+    coverage-deps = [
+        "setuptools >= 78.1.1,< 82",
+        ]
     docs-deps = [
         "urllib3 < 2",
         ]
@@ -549,6 +552,14 @@ coverage-setenv
 coverage-additional
   This option allows to add additional lines below ``[testenv:coverage]`` in
   ``tox.ini``. This option has to be a list of strings.
+
+coverage-deps
+  This option allows to add additional install dependencies for
+  ``[testenv:coverage]`` in ``tox.ini``. This option has to be a list of
+  strings and is empty by default. Unlike ``docs-deps`` the values are *added*
+  to the ones coming from ``testenv-deps``, they do not replace them. Use it
+  for dependencies which must not also end up in ``[testenv]`` and
+  ``[testenv:setuptools-latest]``.
 
 docs-deps
   This option allows to add additional install dependencies for

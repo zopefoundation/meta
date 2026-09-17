@@ -39,6 +39,11 @@ Change log
   environment into one which combines the data written by the test
   environments, and makes the ``coverage`` job in ``tests.yml`` run them.
 
+- Add ``[tox] coverage-deps`` option for dependencies only
+  ``[testenv:coverage]`` needs, without them also landing in ``[testenv]`` and
+  ``[testenv:setuptools-latest]``.
+  (`#449 <https://github.com/zopefoundation/meta/issues/449>`_)
+
 - Rotate the pip cache key weekly in the ``c-code`` test workflow template.
   ``actions/cache`` never replaces an existing key, so a corrupt cache entry
   used to break every run restoring it until GitHub evicted the entry. A
