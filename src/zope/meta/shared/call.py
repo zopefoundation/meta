@@ -29,13 +29,14 @@ def wait_for_accept():
     input()
 
 
-def call(*args, capture_output=False, cwd=None, allowed_return_codes=(0, )):
+def call(*args, capture_output=False, cwd=None, allowed_return_codes=(0, ),
+         input: str | None = None):
     """Call `args` as a subprocess.
 
     If it fails exit the process.
     """
     result = subprocess.run(
-        args, capture_output=capture_output, text=True, cwd=cwd)
+        args, capture_output=capture_output, text=True, cwd=cwd, input=input)
     if result.returncode not in allowed_return_codes:
         if capture_output:
             abort_text = textwrap.dedent(f'''
@@ -44,5 +45,6 @@ def call(*args, capture_output=False, cwd=None, allowed_return_codes=(0, )):
                 stdout: {result.stdout}''')
         else:
             abort_text = result.returncode
-        abort(abort_text)
+        print(abort_text)
+        abort(result.returncode)
     return result

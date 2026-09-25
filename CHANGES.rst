@@ -4,6 +4,8 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add ability to run ``bin/update-python-support`` in CI.
+
 - Allow ``setup-to-pyproject`` to run on a repository which is not controlled
   by ``zope.meta``.
 
