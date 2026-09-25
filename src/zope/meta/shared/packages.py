@@ -47,14 +47,11 @@ https://github.com/zopefoundation/meta/tree/master/src/zope/meta/{config_type}
 -->"""
 
 
-def get_pyproject_toml(path: pathlib.Path, comment='') -> TOMLDocument:
+def get_pyproject_toml(path: pathlib.Path) -> TOMLDocument:
     """Parse ``pyproject.toml`` and return its values as ``TOMLDocument``.
 
     Args:
         path (str, pathlib.Path): Filesystem path to a pyproject.toml file.
-
-    Kwargs:
-        comment (str): Optional comment added to the top of the file.
 
     Returns:
         A TOMLDocument instance from the pyproject.toml file.
@@ -64,11 +61,6 @@ def get_pyproject_toml(path: pathlib.Path, comment='') -> TOMLDocument:
             toml_contents = fp.read()
     else:
         toml_contents = ''
-
-    if comment and not\
-       (toml_contents.startswith(comment) or
-            toml_contents.startswith(f'# \n{comment}')):
-        toml_contents = f'{comment}\n{toml_contents}'
 
     return tomlkit.loads(toml_contents)
 

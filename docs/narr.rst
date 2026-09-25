@@ -125,7 +125,9 @@ The script does the following steps:
    ``$PATH`` or in the ``bin`` subfolder of the current working directory.
 #. Create a branch and a pull request. (Prevent an automatic commit of all
    changes with the command line switch ``--no-commit``, or an automatic push
-   to GitHub using the command line switch ``--no-push``.)
+   to GitHub using the command line switch ``--no-push``.) Creating the pull
+   request requires being logged in via ``gh auth login``, the script asks
+   before doing so.
 
 After running the script you should manually do the following steps:
 
@@ -226,7 +228,7 @@ commit id of the *meta* repository at the time of the run. This file is
 generated during the configuration run, if it does not exist or at least gets
 updated. Example:
 
-.. code-block:: ini
+.. code-block:: toml
 
     [meta]
     template = "pure-python"
@@ -242,6 +244,7 @@ updated. Example:
 
     [coverage]
     fail-under = 98
+    combine = true
 
     [coverage-run]
     additional-config = [
@@ -286,6 +289,9 @@ updated. Example:
         ]
     coverage-additional = [
         "depends = py312,docs",
+        ]
+    coverage-deps = [
+        "setuptools >= 78.1.1,< 82",
         ]
     docs-deps = [
         "urllib3 < 2",
@@ -367,6 +373,9 @@ updated. Example:
         "cd ..",
         ]
 
+    [pypi]
+    trusted-publishing = true
+
     [zest-releaser]
     options = [
         "prereleaser.before =",
@@ -379,8 +388,10 @@ updated. Example:
         ]
 
     [pre-commit]
-    teyit-exclude = "App/tests/fixtures/error\.py"
-    pyupgrade-exclude = "^src/zope/proxy/__init__\.py$"
+    teyit-exclude = "App/tests/fixtures/error\\.py"
+    pyupgrade-exclude = "^src/zope/proxy/__init__\\.py$"
+    whitespace-exclude = "^src/zope/i18n/locales/data/.*\\.xml$"
+    sphinx-lint-exclude = "^docs/articles/old-guide/.*\\.rst$"
 
 
     [readthedocs]
@@ -432,6 +443,33 @@ The corresponding section is named: ``[coverage]``.
 
 fail-under
   A minimal value of code coverage below which a test failure is issued.
+
+combine
+  Measure coverage across all supported Python versions instead of a single
+  one: true/false, default: false. Use it when no single version reaches
+  ``fail-under`` on its own. Switching it on
+
+  * lets each test environment write its own data file
+    (``COVERAGE_FILE=.coverage.{envname}``),
+  * turns ``[testenv:coverage]`` into an environment which only runs
+    ``coverage erase`` and ``coverage combine``, with a ``depends`` on all
+    environments contributing data,
+  * sets ``relative_files = true`` in ``[tool.coverage.run]``, so data files
+    written on different machines can be combined,
+  * and makes the ``coverage`` job in ``tests.yml`` run the test environments,
+    because each job gets its own machine and there would be nothing to
+    combine otherwise.
+
+  Anything the package configures itself — ``coverage-command``,
+  ``coverage-setenv``, ``testenv-setenv``, a ``depends`` line in
+  ``coverage-additional``, ``[github-actions] test-commands`` — keeps
+  precedence. Not supported for the ``c-code`` template, which has its own
+  ``tests.yml``.
+
+  Note that the tests then run twice in CI: once in their own job and once in
+  the ``coverage`` job. The ``fail-under`` check should be disabled in
+  ``testenv-commands`` so a single version failing to reach it does not fail
+  its own job.
 
 
 Coverage:run options
@@ -514,6 +552,14 @@ coverage-setenv
 coverage-additional
   This option allows to add additional lines below ``[testenv:coverage]`` in
   ``tox.ini``. This option has to be a list of strings.
+
+coverage-deps
+  This option allows to add additional install dependencies for
+  ``[testenv:coverage]`` in ``tox.ini``. This option has to be a list of
+  strings and is empty by default. Unlike ``docs-deps`` the values are *added*
+  to the ones coming from ``testenv-deps``, they do not replace them. Use it
+  for dependencies which must not also end up in ``[testenv]`` and
+  ``[testenv:setuptools-latest]``.
 
 docs-deps
   This option allows to add additional install dependencies for
@@ -664,6 +710,23 @@ manylinux-aarch64-tests
   to be a list of strings and defaults to testing using ``tox`` against all
   supported Python versions, which could be too slow for some packages.
 
+PyPI options
+````````````
+
+The corresponding section is named: ``[pypi]`` and its options configure the
+package publishing process to the PyPI Python package repository at
+https://pypi.org/.
+
+trusted-publishing
+  Explicitly enable or disable automated building and publishing of release
+  packages to PyPI using the Trusted Publishing process when a tag is pushed
+  to GitHub. Defaults to ``false``.
+  This option has no meaning for ``c-code`` template projects, those always
+  build and publish release packages using Trusted Publishing.
+  See https://docs.pypi.org/trusted-publishers/ for details on the Trusted
+  Publishing process and :doc:`othertopics` for how to configure a package for
+  Trusted Publishing.
+
 
 zest.releaser options
 `````````````````````
@@ -692,6 +755,24 @@ pre-commit options
 
 The corresponding section is named: ``[pre-commit]``.
 
+additional-config
+  Additional repositories and hooks to be added at the end of the ``repos``
+  list in ``.pre-commit-config.yaml``, e. g. a ``mypy`` hook. This option has
+  to be a list of strings without leading whitespace, the first line of each
+  repository entry has to start with a hyphen; relative indentation of the
+  following lines is preserved. It defaults to an empty list. Example:
+
+  .. code-block:: toml
+
+    [pre-commit]
+    additional-config = [
+        "- repo: https://github.com/pre-commit/mirrors-mypy",
+        "  rev: v2.1.0",
+        "  hooks:",
+        "    - id: mypy",
+        "      pass_filenames: false",
+        ]
+
 teyit-exclude
   Regex for files to be hidden from teyit. It fails on files containing syntax
   errors. This option has to be a string and is omitted when not defined.
@@ -700,6 +781,21 @@ pyupgrade-exclude
   Regex for files to be hidden from pyupgrade. It might be a bit overly
   optimistic with its changes. This option has to be a string and is omitted
   when not defined.
+
+whitespace-exclude
+  Regex for files to be hidden from both ``trailing-whitespace`` and
+  ``end-of-file-fixer``. Use it for files whose exact bytes matter, such as
+  vendored data files, reference output compared by tests, and doctests whose
+  expected output contains trailing whitespace. This option has to be a string
+  and is omitted when not defined.
+
+sphinx-lint-exclude
+  Regex for files to be hidden from sphinx-lint. This option has to be a string
+  and is omitted when not defined.
+
+  A ``.rst`` file listed in ``whitespace-exclude`` usually has to be listed here
+  as well: sphinx-lint reports the very trailing whitespace that
+  ``trailing-whitespace`` is no longer allowed to remove.
 
 ReadTheDocs options
 ```````````````````
@@ -720,124 +816,3 @@ Configuration script hints
 
 * Call ``bin/check-python-versions <path-to-package> -h`` to see how to fix
   version mismatches in the *lint* tox environment.
-
-
-Other helper scripts
-====================
-
-Updating to the currently supported Python versions
----------------------------------------------------
-
-There is a script `update-python-support` for updating a repository to
-the currently supported Python versions as defined in ``shared/package.py``.
-
-
-Usage
-+++++
-
-To update a repository to the currently supported Python versions call::
-
-    $ bin/update-python-support <path-to-package>
-
-It supports a parameter ``--interactive`` to gather user input for its changes
-and not automatically commit them. It also supports a parameter ``--no-commit``
-that prevents automatic commits but attempts to cut down on interactively
-asking for user input. Some of that still happens due to limitations
-of the ``zest.releaser`` scripts used by ``update-python-support``.
-
-Moving package metadata from setup.py to pyproject.toml
--------------------------------------------------------
-
-The script ``setup-to-pyproject`` parses package metadata out of the call to
-the ``setup`` function in ``setup.py`` and moves it to ``pyproject.toml``.
-The ``setup`` call in ``setup.py`` is then replaced with an invocation that
-only uses those function arguments that have not been moved, such as arguments
-related to building C code modules. These are currently not fully supported in
-``pyproject.toml``.
-
-.. note::
-
-    The format and code of a ``setup.py`` file can vary widely. This script is
-    a best effort attempt to cover the most common cases. Your mileage may
-    vary. You should always view the conversion results yourself.
-
-Usage
-+++++
-
-To convert package metadata from ``setup.py`` and move it to ``pyproject.toml``
-call::
-
-    $ bin/setup-to-pyproject <path-to-package>
-
-The script supports these parameters:
-
-- ``--dry-run``: Do not make any changes but print the contents of ``setup.py``
-  and ``pyproject.toml`` with all changes to the console.
-- ``--commit-msg``: To provide a custom commit message for the git commit.
-- ``--no-commit``: Make changes, but do not commit them with git.
-- ``--no-push``: Make changes and commit them, but do not push the commit.
-- ``--no-tests``: Do not run the packages' ``tox`` tests after making changes.
-- ``--branch``: Use a custom branch name for the change branch.
-- ``--interactive``: Make changes and open the changed ``setup.py``
-  and ``pyproject.toml`` files in the console text editor.
-
-
-Calling a script on multiple repositories
------------------------------------------
-
-The ``config-package`` script only runs on a single repository. To update
-multiple repositories at once you can use ``multi-call``. It runs a given
-script on all repositories listed in a ``packages.txt`` file.
-
-
-Usage
-+++++
-
-To run a script on all packages listed in a ``packages.txt`` file call
-``multi-call`` the following way::
-
-    $ bin/multi-call <name-of-the-script> <path-to-packages.txt> <path-to-clones> <arguments-for-script>
-
-See ``--help`` for details.
-
-The script does the following steps:
-
-#. It does the following steps for each line in the given ``packages.txt``
-   which does not start with ``#``.
-#. Check if there is a repository in ``<path-to-clones>`` with the name of the
-   repository. If it does not exist: clone it. If it exists: clean the clone
-   from changes, switch to ``master`` branch and pull from origin.
-#. Call the given script with the package name and arguments for the script.
-
-.. caution::
-
-  Running this script stashes any uncommitted changes in the repositories,
-  run `git stash pop` to recover them.
-
-
-Re-enabling GitHub Actions
---------------------------
-
-After a certain period of time (currently 60 days) without commits GitHub
-automatically disables Actions. They can be re-enabled manually per repository.
-There is a script to do this for all repositories. It does no harm if Actions
-is already enabled for a repository.
-
-
-Preparation
-+++++++++++
-
-* Install GitHub's CLI application, see https://github.com/cli/cli.
-
-* Authorize using the application:
-
-  - ``gh auth login``
-  - It is probably enough to do it once.
-
-
-Usage
-+++++
-
-To run the script just call it::
-
-    $ bin/re-enable-actions

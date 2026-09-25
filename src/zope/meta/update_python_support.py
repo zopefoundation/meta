@@ -22,6 +22,7 @@ import tomlkit
 
 from .shared.call import call
 from .shared.call import wait_for_accept
+from .shared.git import create_pull_request
 from .shared.git import get_branch_name
 from .shared.git import git_branch
 from .shared.packages import FUTURE_PYTHON_VERSION
@@ -232,21 +233,10 @@ def main():
                 if updating:
                     print('Updated the previously created PR.')
                 else:
-                    create_pr = False
                     if args.auto_update:
-                        create_pr = True
-                    else:
-                        print(
-                            'Are you logged in via `gh auth login` to'
-                            ' create a PR? (y/N)?', end=' ')
-                        if input().lower() == 'y':
-                            create_pr = True
-                    if create_pr:
                         call('gh', 'pr', 'create', '--fill', '--title',
                              'Update Python version support.')
                     else:
-                        if not args.auto_update:
-                            print('If everything went fine up to here:')
-                            print('Create a PR, using the URL shown above.')
+                        create_pull_request('Update Python version support.')
             else:
                 print('Applied all changes. Please check and commit manually.')

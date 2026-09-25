@@ -8,16 +8,19 @@ package = wheel
 wheel_build_env = .pkg
 {% endif %}
 {% if with_future_python %}
+  {% if with_free_threaded_python %}
+pip_pre =
+    py%(future_python_shortversion)s: true
+    py%(future_python_shortversion)st: true
+  {% else %}
 pip_pre = py%(future_python_shortversion)s: true
+  {% endif %}
 {% endif %}
 deps =
     setuptools %(setuptools_version_spec)s
   {% for line in testenv_deps %}
     %(line)s
   {% endfor %}
-  {% if with_sphinx_doctests and with_future_python %}
-    Sphinx
-  {% endif %}
 {% if testenv_setenv %}
 setenv =
   {% for line in testenv_setenv %}

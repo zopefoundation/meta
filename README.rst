@@ -10,7 +10,7 @@
 
 .. image:: https://coveralls.io/repos/github/zopefoundation/meta/badge.svg?branch=master
     :target: https://coveralls.io/github/zopefoundation/meta?branch=master
-        
+
 .. image:: https://readthedocs.org/projects/zopemeta/badge/?version=latest
     :target: https://zopemeta.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status

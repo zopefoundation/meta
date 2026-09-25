@@ -10,6 +10,8 @@ Contents:
    :maxdepth: 2
 
    narr
+   helperscripts
+   othertopics
    api
    hacking
 
@@ -21,4 +23,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

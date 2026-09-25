@@ -15,6 +15,7 @@ import pathlib
 import shutil
 
 from .shared.call import call
+from .shared.git import create_pull_request
 from .shared.git import git_branch
 from .shared.path import change_dir
 from .shared.script_args import get_shared_parser
@@ -100,15 +101,7 @@ def main():
                 if updating:
                     print("Updated the previously created PR.")
                 else:
-                    print(
-                        "Are you logged in via `gh auth login` to create a PR?"
-                        " (y/N)?", end=" ",
-                    )
-                    if input().lower() == "y":
-                        call("gh", "pr", "create", "--fill", "--title", msg)
-                    else:
-                        print("If everything went fine up to here:")
-                        print("Create a PR, using the URL shown above.")
+                    create_pull_request(msg)
             print("Applied all changes. Please push manually.")
         else:
             print("Applied all changes. Please check and commit manually.")

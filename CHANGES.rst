@@ -6,6 +6,89 @@ Change log
 
 - Add ability to run ``bin/update-python-support`` in CI.
 
+- Allow ``setup-to-pyproject`` to run on a repository which is not controlled
+  by ``zope.meta``.
+
+- Add the ``check-case-conflict``, ``check-merge-conflict``, ``check-toml``,
+  ``check-yaml``, ``end-of-file-fixer`` and ``trailing-whitespace`` hooks from
+  ``pre-commit-hooks`` and the ``sphinx-lint`` hook to
+  ``.pre-commit-config.yaml``. Add ``whitespace-exclude`` and
+  ``sphinx-lint-exclude`` to the ``[pre-commit]`` section in ``.meta.toml`` to
+  hide files from them.
+  (`#284 <https://github.com/zopefoundation/meta/issues/284>`_)
+
+- Stop rendering a blank line at the end of ``tests.yml`` for packages which do
+  not use trusted publishing.
+
+- Fix the ``[pre-commit]`` example in the documentation: a backslash in a TOML
+  basic string has to be escaped, so ``"error\.py"`` is not valid TOML.
+
+- Add ``[pre-commit] additional-config`` option to append additional
+  repositories and hooks (e. g. ``mypy``) to ``.pre-commit-config.yaml``.
+  (`#439 <https://github.com/zopefoundation/meta/issues/439>`_)
+
+- Offer to create a pull request via ``gh`` at the end of a ``config-package``
+  run, like ``update-python-support`` already does.
+
+- Use pinned commit hash for GH Action pypa/gh-action-pypi-publish.
+  (`#441 <https://github.com/zopefoundation/meta/issues/441>`_)
+
+- Fix disappearing top comment in ``pyproject.toml`` with newer ``tomlkit``.
+  (`#440 <https://github.com/zopefoundation/meta/issues/440>`_)
+
+- Add ``[coverage] combine`` option to measure coverage across all supported
+  Python versions instead of a single one. It turns the ``coverage`` tox
+  environment into one which combines the data written by the test
+  environments, and makes the ``coverage`` job in ``tests.yml`` run them.
+
+- Add ``[tox] coverage-deps`` option for dependencies only
+  ``[testenv:coverage]`` needs, without them also landing in ``[testenv]`` and
+  ``[testenv:setuptools-latest]``.
+  (`#449 <https://github.com/zopefoundation/meta/issues/449>`_)
+
+- Rotate the pip cache key weekly in the ``c-code`` test workflow template.
+  ``actions/cache`` never replaces an existing key, so a corrupt cache entry
+  used to break every run restoring it until GitHub evicted the entry. A
+  rotating key abandons such an entry within a week instead.
+
+- Retry the ``pip install`` steps in the ``c-code`` test workflow template.
+  PyPI downloads are occasionally cut off mid-transfer, and ``pip`` does not
+  retry a truncated download, so the whole command is retried instead. This
+  replaces the weekly pip cache key rotation, which did not address the actual
+  cause.
+  (`#436 <https://github.com/zopefoundation/meta/issues/436>`_)
+
+- Also set ``pip_pre`` for the free-threaded variant of a future Python
+  version in ``tox.ini``, as its dependencies are only available as
+  pre-releases just like those of the non-free-threaded variant.
+
+- Upgrade ``pip`` via ``python -m pip`` in the ``c-code`` test workflow
+  template, as the ``pip.exe`` shim on Windows refuses to replace itself.
+  Run all workflow steps under ``bash`` so that a failing command in a
+  multi-command block is no longer swallowed on Windows, and collapse the
+  now-redundant OS-split pip cache steps.
+  (`#436 <https://github.com/zopefoundation/meta/issues/436>`_)
+
+- Configure ``zest.releaser`` to not add an extra message when using
+  trusted publishing.
+
+- Restrict ``readme-renderer`` dependency to versions older than 45 for
+  the internal tests. This restriction can be removed when ``readme-renderer``
+  and its dependencies install cleanly under Python 3.15.
+
+- Expand free-threaded Python CI testing from Linux-only to all platforms
+  (macOS, Windows) in ``c-code`` templates. Add future Python free-threaded
+  variant (e.g. ``3.15t``) support to the test matrix, manylinux build
+  scripts, and tox configuration.
+
+- Pre-install ``cffi`` and ``pycparser`` for future Python builds.
+
+- Switch to ``coverallsapp/github-action@v2`` in the ``c-code`` test workflow
+  template.
+
+- Add an option to enable releases to be built and published automatically
+  using PyPI Trusted Publishing for non-``c-code`` projects.
+
 - Move ``zest.releaser`` configuration from ``setup.cfg`` to
   ``pyproject.toml`` where it is the ``[tool.zest-releaser]`` section.
 
@@ -21,8 +104,8 @@ Change log
   after the ``check-python-versions`` package was fixed.
   (See `#396 <https://github.com/zopefoundation/meta/issues/396>`_)
 
-- Pin "teyit" in `precommitconfig.yaml.j2` to use Python 3.13 
-  (must be available locally, like in path or via pyenv/uv). 
+- Pin "teyit" in `precommitconfig.yaml.j2` to use Python 3.13
+  (must be available locally, like in path or via pyenv/uv).
   teyit does not support Python 3.14 yet.
   (`#398 <https://github.com/zopefoundation/meta/issues/398>`_)
 

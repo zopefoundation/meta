@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/src/zope/meta/pure-python
 [meta]
 template = "pure-python"
-commit-id = "af946ff8"
+commit-id = "9333ca19"
 
 [python]
 with-windows = false
@@ -13,8 +13,13 @@ with-sphinx-doctests = false
 with-macos = false
 with-free-threaded-python = false
 
+[pre-commit]
+# The template fragments are included into other templates, their trailing
+# blank line separates them from the next fragment.
+whitespace-exclude = "^src/zope/meta/.*\\.j2$"
+
 [coverage]
-fail-under = 10
+fail-under = 18
 
 [coverage-run]
 source = "zope.meta"
@@ -32,4 +37,9 @@ additional-rules = [
 [check-manifest]
 additional-ignores = [
     "docs/_build/html/_static/scripts/*",
+    ]
+
+[tox]
+testenv-deps = [
+    "readme-renderer < 45",
     ]
