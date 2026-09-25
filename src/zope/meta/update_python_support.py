@@ -17,6 +17,7 @@ import os
 import pathlib
 import shutil
 import sys
+import sysconfig
 
 import tomlkit
 
@@ -74,8 +75,9 @@ def main():
 
     args = parser.parse_args()
     path = args.path.absolute()
-    zope_meta_dir = pathlib.Path(sys.argv[0]).absolute().parent.parent
-    bin_dir = zope_meta_dir / 'bin'
+    # Scripts of zope.meta and its dependencies (e.g. zest.releaser) live
+    # next to the Python executable of the environment zope.meta runs in:
+    bin_dir = pathlib.Path(sysconfig.get_path('scripts'))
 
     if not (path / '.git').exists():
         raise ValueError(
@@ -84,8 +86,6 @@ def main():
         raise ValueError('The repository `path` points to has no .meta.toml!')
 
     with change_dir(path) as cwd_str:
-        cwd = pathlib.Path(cwd_str)
-        bin_dir = cwd / 'bin'
         with open('.meta.toml', 'rb') as meta_f:
             meta_toml = collections.defaultdict(dict, **tomlkit.load(meta_f))
         config_type = meta_toml['meta']['template']
