@@ -238,8 +238,11 @@ def main():
                     print('Updated the previously created PR.')
                 else:
                     if args.auto_update:
-                        call('gh', 'pr', 'create', '--fill', '--title',
-                             'Update Python version support.')
+                        # No `--fill` as it needs the history of the base
+                        # branch which a shallow checkout in CI does not have:
+                        call('gh', 'pr', 'create',
+                             '--title', 'Update Python version support.',
+                             '--body', 'Created by `update-python-support`.')
                     else:
                         create_pull_request('Update Python version support.')
             else:

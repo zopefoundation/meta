@@ -18,6 +18,9 @@ import textwrap
 def abort(exitcode):
     """Ask the user to abort."""
     print('ABORTING: Please fix the errors shown above.')
+    if not sys.stdin.isatty():
+        # Nobody can answer the question, e.g. in CI:
+        sys.exit(exitcode)
     print('Proceed anyway (y/N)?', end=' ')
     if input().lower() != 'y':
         sys.exit(exitcode)
