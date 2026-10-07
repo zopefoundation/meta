@@ -71,9 +71,13 @@ def main():
         dest='auto_update',
         action='store_true',
         default=False,
-        help='Run without any questions asked. Only to be used by CI.')
+        help='Run without any questions asked and without running the tests.'
+        ' Only to be used by CI.')
 
     args = parser.parse_args()
+    if args.auto_update:
+        # Test failures surface in the created PR:
+        args.run_tests = False
     path = args.path.absolute()
     # Scripts of zope.meta and its dependencies (e.g. zest.releaser) live
     # next to the Python executable of the environment zope.meta runs in:
