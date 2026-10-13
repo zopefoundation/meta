@@ -485,8 +485,6 @@ class PackageConfiguration:
             stop_at = None
             if not self.with_future_python:
                 stop_at = NEWEST_PYTHON_SHORTVERSION
-                if self.with_free_threaded_python:
-                    stop_at = f'{NEWEST_PYTHON_SHORTVERSION}t'
 
             pkg_name_pattern = re.sub(r"[-_.]+", "?", self.path.name).lower()
             self.copy_with_meta(

@@ -122,9 +122,9 @@ def supported_python_versions(oldest_version=OLDEST_PYTHON_VERSION,
         OLDEST_FREETHREADED_PYTHON_VERSION)
     newest_python = parse_version(NEWEST_PYTHON_VERSION)
     for minor in range(oldest_python.minor, newest_python.minor + 1):
-        minor_versions.append(minor)
         if freethreaded and minor >= oldest_freethreaded_python.minor:
             minor_versions.append(f'{minor}t')
+        minor_versions.append(minor)
     supported = [f'{oldest_python.major}.{minor}' for minor in minor_versions]
 
     if short_version:

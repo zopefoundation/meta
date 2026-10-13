@@ -16,7 +16,7 @@
 {% else %}
         os: [ubuntu-latest, macos-latest]
 {% endif %}
-{% if with_pypy or gha_additional_exclude or with_windows %}
+{% if with_pypy or gha_additional_exclude %}
         exclude:
 {% endif %}
 {% if with_pypy %}
@@ -29,6 +29,7 @@
           %(line)s
 {% endfor %}
 {% if with_free_threaded_python and with_future_python %}
+        include:
           - python-version: "%(future_python_version)st"
             os: ubuntu-latest
           - python-version: "%(future_python_version)st"
