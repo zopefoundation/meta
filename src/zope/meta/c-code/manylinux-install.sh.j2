@@ -47,6 +47,7 @@ for PYBIN in /opt/python/*/bin; do
     if \
 {% for py_version in supported_python_versions %}
        [[ "${PYBIN}" == *"cp%(py_version)s/"* ]] {% if py_version != stop_at %}|| \
+{% else %} ; then
 {% endif %}
 {% endfor %}
 {% if with_free_threaded_python and with_future_python %}
