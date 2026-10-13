@@ -27,9 +27,10 @@ from .script_args import get_shared_parser
 TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
 ORG = 'zopefoundation'
 BASE_PATH = pathlib.Path(__file__).parent.parent
-OLDEST_PYTHON_VERSION = '3.10'
-NEWEST_PYTHON_VERSION = '3.14'
-FUTURE_PYTHON_VERSION = '3.15'
+OLDEST_FREETHREADED_PYTHON_VERSION = '3.14'
+OLDEST_PYTHON_VERSION = '3.11'
+NEWEST_PYTHON_VERSION = '3.15'
+FUTURE_PYTHON_VERSION = ''
 PYPY_VERSION = '3.11'  # pypy-3.11
 SETUPTOOLS_VERSION_SPEC = '>= 78.1.1,< 82'
 MANYLINUX_PYTHON_VERSION = '3.13'
@@ -96,7 +97,8 @@ def parse_additional_config(cfg):
 
 
 def supported_python_versions(oldest_version=OLDEST_PYTHON_VERSION,
-                              short_version=False):
+                              short_version=False,
+                              freethreaded=False):
     """Create a list containing all supported Python versions
 
     Uses the configured oldest and newest Python versions to compute a list
@@ -109,11 +111,19 @@ def supported_python_versions(oldest_version=OLDEST_PYTHON_VERSION,
 
         short_version (bool):
             Return short versions like "313" instead of "3.13". Default False.
+
+        freethreaded (bool):
+            Whether free-threaded Python versions (ending with `t`) should be
+            added to the matrix. Defaults to False.
     """
     minor_versions = []
     oldest_python = parse_version(oldest_version)
+    oldest_freethreaded_python = parse_version(
+        OLDEST_FREETHREADED_PYTHON_VERSION)
     newest_python = parse_version(NEWEST_PYTHON_VERSION)
     for minor in range(oldest_python.minor, newest_python.minor + 1):
+        if freethreaded and minor >= oldest_freethreaded_python.minor:
+            minor_versions.append(f'{minor}t')
         minor_versions.append(minor)
     supported = [f'{oldest_python.major}.{minor}' for minor in minor_versions]
 
