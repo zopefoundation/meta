@@ -304,7 +304,7 @@ class PackageConfiguration:
         value = self._set_python_config_value('future-python')
 
         if not FUTURE_PYTHON_VERSION:
-            return 'false'
+            return False
 
         return value
 
