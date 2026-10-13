@@ -4,6 +4,9 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Drop support for Python 3.10, which reached end-of-life status
+  on October 1, 2026.
+
 - Make Python 3.15 the newest released Python version.
 
 - Remove the future Python version value until Python 3.16 prereleases

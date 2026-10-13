@@ -27,7 +27,7 @@ from .script_args import get_shared_parser
 TYPES = ['buildout-recipe', 'c-code', 'pure-python', 'zope-product', 'toolkit']
 ORG = 'zopefoundation'
 BASE_PATH = pathlib.Path(__file__).parent.parent
-OLDEST_PYTHON_VERSION = '3.10'
+OLDEST_PYTHON_VERSION = '3.11'
 NEWEST_PYTHON_VERSION = '3.15'
 FUTURE_PYTHON_VERSION = ''
 PYPY_VERSION = '3.11'  # pypy-3.11
