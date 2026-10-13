@@ -119,7 +119,7 @@ def supported_python_versions(oldest_version=OLDEST_PYTHON_VERSION,
     minor_versions = []
     oldest_python = parse_version(oldest_version)
     oldest_freethreaded_python = parse_version(
-                                    OLDEST_FREETHREADED_PYTHON_VERSION)
+        OLDEST_FREETHREADED_PYTHON_VERSION)
     newest_python = parse_version(NEWEST_PYTHON_VERSION)
     for minor in range(oldest_python.minor, newest_python.minor + 1):
         minor_versions.append(minor)

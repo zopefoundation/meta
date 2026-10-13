@@ -633,13 +633,13 @@ class PackageConfiguration:
         gha_test_commands = self.gh_option('test-commands')
         py_version_matrix = [
             x for x in zip(supported_python_versions(
-                            self.oldest_python,
-                            short_version=False,
-                            freethreaded=self.with_free_threaded_python),
-                           supported_python_versions(
-                            self.oldest_python,
-                            short_version=True,
-                            freethreaded=self.with_free_threaded_python))]
+                self.oldest_python,
+                short_version=False,
+                freethreaded=self.with_free_threaded_python),
+                supported_python_versions(
+                self.oldest_python,
+                short_version=True,
+                freethreaded=self.with_free_threaded_python))]
         pypi_tp = self.meta_cfg['pypi'].get('trusted-publishing', False)
 
         self.copy_with_meta(
