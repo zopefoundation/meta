@@ -25,10 +25,6 @@
           - os: windows-11-arm
             python-version: "pypy-%(pypy_version)s"
 {% endif %}
-{% if with_windows %}
-          - os: windows-11-arm
-            python-version: "3.10"
-{% endif %}
 {% for line in gha_additional_exclude %}
           %(line)s
 {% endfor %}
