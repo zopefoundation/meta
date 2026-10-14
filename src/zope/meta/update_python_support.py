@@ -167,10 +167,10 @@ def main():
                 *non_interactive_params)
 
         if no_longer_supported or not_yet_supported:
-            if args.interactive:
-                input_text = None
-            else:
+            if args.auto_update:
                 input_text = 'Y\nY\n'
+            else:
+                input_text = None
             call(bin_dir / 'check-python-versions', '--only=setup.py',
                  *python_versions_args, input=input_text)
             if not args.auto_update:
