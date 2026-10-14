@@ -38,6 +38,24 @@ from .shared.path import change_dir
 from .shared.script_args import get_shared_parser
 
 
+PR_TITLE = 'Update Python version support.'
+
+
+def get_pending_update(branch_name) -> str | None:
+    """Return why an update by a previous run is still pending, else None."""
+    if call('git', 'ls-remote', '--exit-code', '--heads', 'origin',
+            branch_name, capture_output=True,
+            allowed_return_codes=(0, 2)).returncode == 0:
+        return f'Branch {branch_name} already exists.'
+    pr_urls = call(
+        'gh', 'pr', 'list', '--state', 'open',
+        '--search', f'"{PR_TITLE}" in:title', '--json', 'url',
+        '--jq', '.[].url', capture_output=True).stdout.split()
+    if pr_urls:
+        return f'Pull request {pr_urls[0]} is still open.'
+    return None
+
+
 def get_tox_ini_python_versions(path) -> set:
     config = configparser.ConfigParser()
     config.read(path)
@@ -100,6 +118,11 @@ def main():
         oldest_python_version = meta_toml['python'].get('oldest-python',
                                                         OLDEST_PYTHON_VERSION)
         branch_name = get_branch_name(args.branch_name, config_type)
+        if args.auto_update:
+            pending_update = get_pending_update(branch_name)
+            if pending_update:
+                print(f'Skipping: {pending_update}')
+                sys.exit(0)
         updating = branch_exists(branch_name)
         if updating:
             # Compare against the state of the previous run on this branch:
@@ -249,16 +272,16 @@ def main():
             if args.commit:
                 print('Adding, committing and pushing all changes ...')
                 call('git', 'add', '.')
-                call('git', 'commit', '-m', 'Update Python version support.')
+                call('git', 'commit', '-m', PR_TITLE)
                 call('git', 'push', '--set-upstream', 'origin', branch_name)
                 if updating:
                     print('Updated the previously created PR.')
                 elif args.auto_update:
                     create_pull_request(
-                        'Update Python version support.',
+                        PR_TITLE,
                         body='Created by `update-python-support`.')
                 else:
-                    create_pull_request('Update Python version support.')
+                    create_pull_request(PR_TITLE)
                 if args.auto_update:
                     # Only after the push, so a failing run does not leave
                     # `master` requiring checks nobody provides.
