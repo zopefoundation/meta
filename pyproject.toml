@@ -37,6 +37,7 @@ dependencies = [
     "check-python-versions",
     "Jinja2",
     "packaging",
+    "pre-commit",
     "pyupgrade",
     "requests",
     "tomlkit>0.15",

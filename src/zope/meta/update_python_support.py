@@ -226,6 +226,12 @@ def main():
                         1))
                 wait_for_accept()
 
+            if args.auto_update:
+                # Apply the fixes of the pre-commit hooks, remaining problems
+                # surface in the created PR:
+                call(bin_dir / 'pre-commit', 'run', '--all-files',
+                     allowed_return_codes=(0, 1))
+
             if args.run_tests:
                 tox_path = shutil.which('tox') or (bin_dir / 'tox')
                 call(tox_path, '-p', 'auto')
