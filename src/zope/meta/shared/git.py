@@ -73,8 +73,6 @@ def create_pull_request(title, body=None):
     If `body` is given, create the PR without asking, e.g. in CI.
     """
     if body is not None:
-        # No `--fill` as it needs the history of the base branch which a
-        # shallow checkout in CI does not have:
         call('gh', 'pr', 'create', '--title', title, '--body', body)
         return
     print(
