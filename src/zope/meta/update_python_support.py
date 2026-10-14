@@ -20,6 +20,7 @@ import sys
 import sysconfig
 
 import tomlkit
+from zest.releaser import choose
 
 from .set_branch_protection_rules import get_package_name
 from .set_branch_protection_rules import set_branch_protection
@@ -127,33 +128,39 @@ def main():
         else:
             args.commit = False
 
+        # zest.releaser fails on packages without change log, e.g. zopetoolkit:
+        with_history = choose.version_control().history_file() is not None
         if no_longer_supported or not_yet_supported:
             if not updating:
                 git_branch(branch_name)
-            call(bin_dir / 'bumpversion', '--feature', *non_interactive_params)
+            if with_history:
+                call(bin_dir / 'bumpversion', '--feature',
+                     *non_interactive_params)
         else:
             print('No changes required.')
             sys.exit(0)
 
         if no_longer_supported:
             version_spec = ', '.join(sorted(no_longer_supported))
-            call(bin_dir / 'addchangelogentry',
-                 f'Drop support for Python {version_spec}.',
-                 *non_interactive_params)
+            if with_history:
+                call(bin_dir / 'addchangelogentry',
+                     f'Drop support for Python {version_spec}.',
+                     *non_interactive_params)
             python_versions_args.append(
                 '--drop=' + ','.join(no_longer_supported))
 
         if not_yet_supported:
             version_spec = ', '.join(sorted(not_yet_supported))
-            call(
-                bin_dir / 'addchangelogentry',
-                f'Add support for Python {version_spec}.',
-                *non_interactive_params)
+            if with_history:
+                call(
+                    bin_dir / 'addchangelogentry',
+                    f'Add support for Python {version_spec}.',
+                    *non_interactive_params)
             python_versions_args.append(
                 '--add=' +
                 ','.join(supported_python_versions(oldest_python_version))
             )
-        if args.with_future_python:
+        if args.with_future_python and with_history:
             call(
                 bin_dir / 'addchangelogentry',
                 f'Add preliminary support for Python {FUTURE_PYTHON_VERSION}.',
@@ -195,8 +202,10 @@ def main():
 
             src = path.resolve() / 'src'
             py_ver_plus = f'--py{oldest_python_version.replace(".", "")}-plus'
-            call('find', src, '-name', '*.py', '-exec', bin_dir / 'pyupgrade',
-                 '--py3-plus', py_ver_plus, '{}', ';')
+            if src.exists():  # e.g. zopetoolkit has no code
+                call('find', src, '-name', '*.py', '-exec',
+                     bin_dir / 'pyupgrade', '--py3-plus', py_ver_plus, '{}',
+                     ';')
             call(bin_dir / 'pyupgrade',
                  '--py3-plus',
                  py_ver_plus,

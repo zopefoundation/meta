@@ -81,6 +81,8 @@ jobs:
         repository: zopefoundation/${{ matrix.repo }}
         # config-package derives the package name from the directory name:
         path: ${{ matrix.repo }}
+        # zest.releaser needs the tags to decide about the version bump:
+        fetch-depth: 0
         token: ${{ steps.app-token.outputs.token }}
     - name: Install uv
       # astral/setup-uv@10.0.1
