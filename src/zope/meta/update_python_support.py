@@ -21,6 +21,8 @@ import sysconfig
 
 import tomlkit
 
+from .set_branch_protection_rules import get_package_name
+from .set_branch_protection_rules import set_branch_protection
 from .shared.call import call
 from .shared.call import wait_for_accept
 from .shared.git import create_pull_request
@@ -185,11 +187,10 @@ def main():
                 config_package_args.append(
                     f'--overrides={args.overrides_path}')
             call(*config_package_args, cwd=cwd_str)
-            # GitHub does not allow this inside the workflow, at least I did
-            # not find a way to do it:
-            # if args.auto_update:
-            #     set_branch_protection(
-            #         get_package_name(), path / '.meta.toml')
+            if args.auto_update:
+                # Requires a token with administration permission:
+                set_branch_protection(
+                    get_package_name(), path / '.meta.toml')
 
             src = path.resolve() / 'src'
             py_ver_plus = f'--py{oldest_python_version.replace(".", "")}-plus'
