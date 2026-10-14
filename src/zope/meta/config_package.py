@@ -210,7 +210,7 @@ def skip_env_regex(with_docs=True):
 class PackageConfiguration:
     add_manylinux = False
 
-    def __init__(self, args, in_checkout=False):
+    def __init__(self, args):
         self.args = args
         self.path = args.path.absolute()
         self.meta_cfg = {}
@@ -222,8 +222,7 @@ class PackageConfiguration:
 
         self.meta_cfg = self._read_meta_configuration()
         self.meta_cfg['meta']['template'] = self.config_type
-        commit_id = get_commit_id() if in_checkout else 'auto-update'
-        self.meta_cfg['meta']['commit-id'] = commit_id
+        self.meta_cfg['meta']['commit-id'] = get_commit_id()
 
     def _read_meta_configuration(self):
         """Read and update meta configuration"""
@@ -962,9 +961,5 @@ class PackageConfiguration:
 
 def main():
     args = handle_command_line_arguments()
-    # `.git` is in the root of the zope.meta checkout:
-    meta_root = pathlib.Path(__file__).absolute().parents[3]
-    in_checkout = (meta_root / '.git').exists()
-
-    package = PackageConfiguration(args, in_checkout)
+    package = PackageConfiguration(args)
     package.configure()

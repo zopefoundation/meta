@@ -10,18 +10,27 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+import os
 import pathlib
 
 from .call import call
-from .path import change_dir
 
 
 def get_commit_id():
-    """Return the first 8 digits of the commit id of this repository."""
-    with change_dir(pathlib.Path(__file__).parent):
-        return call(
+    """Return the first 8 digits of the commit id of the meta repository.
+
+    If zope.meta does not run from a checkout, fall back to the commit CI
+    checked out or to a placeholder.
+    """
+    # `.git` is in the root of the zope.meta checkout:
+    meta_root = pathlib.Path(__file__).absolute().parents[4]
+    if (meta_root / '.git').exists():
+        result = call(
             'git', 'rev-parse', '--short=8', 'HEAD',
-            capture_output=True).stdout.strip()
+            capture_output=True, cwd=meta_root, allowed_return_codes=(0, 128))
+        if result.returncode == 0:
+            return result.stdout.strip()
+    return os.environ.get('GITHUB_SHA', 'unknown')[:8]
 
 
 def get_branch_name(override, config_type):
