@@ -13,7 +13,6 @@ zc.beforestorage
 zope.mkzeoinstance
 grokcore.component
 zc.relationship
-bobo
 megrok.strictrequire
 grokcore.catalog
 grokcore.chameleon
