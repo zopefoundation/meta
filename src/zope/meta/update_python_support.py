@@ -206,10 +206,10 @@ def main():
                 f'--branch={branch_name}',
                 '--no-push',
             ]
-            if args.auto_update:
-                # Admin commands require more permissions than a workflow might
-                # be able to get:
-                config_package_args.append('--no-admin')
+            if not args.auto_update:
+                # `--auto-update` updates the branch protection rules itself
+                # after pushing:
+                config_package_args.append('--admin')
             if args.with_future_python:
                 config_package_args.append('--with-future-python')
             if args.with_free_threaded_python:

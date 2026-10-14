@@ -135,11 +135,12 @@ def handle_command_line_arguments():
         help='type of the configuration to be used, see README.rst. '
         'Only required when running on a repository for the first time.')
     parser.add_argument(
-        '--no-admin',
+        '--admin',
         dest='admin',
-        action='store_false',
-        default=True,
-        help='Do not try to do steps that require GitHub admin rights.')
+        action='store_true',
+        default=False,
+        help='Offer to do steps that require GitHub admin rights, like'
+        ' updating the branch protection rules.')
 
     args = parser.parse_args()
     return args
