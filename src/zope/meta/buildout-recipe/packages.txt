@@ -6,5 +6,3 @@ z3c.recipe.mkdir
 zc.recipe.cmmi
 zdaemon
 z3c.recipe.compattest
-zc.relation
-zc.sourcefactory
