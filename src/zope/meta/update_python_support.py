@@ -191,10 +191,13 @@ def main():
 
         if no_longer_supported or not_yet_supported:
             if args.auto_update:
-                input_text = 'Y\nY\n'
+                # Classifiers and required version, per file:
+                input_text = 'Y\n' * 4
             else:
                 input_text = None
-            call(bin_dir / 'check-python-versions', '--only=setup.py',
+            # The metadata is in `pyproject.toml` if `setup-to-pyproject` ran:
+            call(bin_dir / 'check-python-versions',
+                 '--only=setup.py,pyproject.toml',
                  *python_versions_args, input=input_text)
             if not args.auto_update:
                 print('Look through .meta.toml to see if it needs changes.')
