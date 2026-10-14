@@ -34,15 +34,20 @@ def get_branch_name(override, config_type):
         or f"config-with-{config_type}-template-{get_commit_id()}")
 
 
+def branch_exists(branch_name) -> bool:
+    """Return whether a local branch named `branch_name` exists."""
+    branches = call(
+        'git', 'branch', '--format', '%(refname:short)',
+        capture_output=True).stdout.splitlines()
+    return branch_name in branches
+
+
 def git_branch(branch_name) -> bool:
     """Switch to existing or create new branch.
 
     Return `True` if updating.
     """
-    branches = call(
-        'git', 'branch', '--format', '%(refname:short)',
-        capture_output=True).stdout.splitlines()
-    if branch_name in branches:
+    if branch_exists(branch_name):
         call('git', 'checkout', branch_name)
         updating = True
     else:
@@ -51,11 +56,18 @@ def git_branch(branch_name) -> bool:
     return updating
 
 
-def create_pull_request(title):
+def create_pull_request(title, body=None):
     """Offer to create a pull request for the current branch.
 
     Requires the user to be logged in via `gh auth login`.
+
+    If `body` is given, create the PR without asking, e.g. in CI.
     """
+    if body is not None:
+        # No `--fill` as it needs the history of the base branch which a
+        # shallow checkout in CI does not have:
+        call('gh', 'pr', 'create', '--title', title, '--body', body)
+        return
     print(
         'Are you logged in via `gh auth login` to'
         ' create a PR? (y/N)?', end=' ')

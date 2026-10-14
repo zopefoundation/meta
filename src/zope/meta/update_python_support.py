@@ -25,6 +25,7 @@ from .set_branch_protection_rules import get_package_name
 from .set_branch_protection_rules import set_branch_protection
 from .shared.call import call
 from .shared.call import wait_for_accept
+from .shared.git import branch_exists
 from .shared.git import create_pull_request
 from .shared.git import get_branch_name
 from .shared.git import git_branch
@@ -97,6 +98,11 @@ def main():
         config_type = meta_toml['meta']['template']
         oldest_python_version = meta_toml['python'].get('oldest-python',
                                                         OLDEST_PYTHON_VERSION)
+        branch_name = get_branch_name(args.branch_name, config_type)
+        updating = branch_exists(branch_name)
+        if updating:
+            # Compare against the state of the previous run on this branch:
+            git_branch(branch_name)
         to_be_supported = set(supported_python_versions(oldest_python_version))
 
         current_python_versions = get_tox_ini_python_versions('tox.ini')
@@ -122,8 +128,8 @@ def main():
             args.commit = False
 
         if no_longer_supported or not_yet_supported:
-            branch_name = get_branch_name(args.branch_name, config_type)
-            updating = git_branch(branch_name)
+            if not updating:
+                git_branch(branch_name)
             call(bin_dir / 'bumpversion', '--feature', *non_interactive_params)
         else:
             print('No changes required.')
@@ -173,8 +179,7 @@ def main():
             if args.auto_update:
                 # Admin commands require more permissions than a workflow might
                 # be able to get:
-                config_package_args.extend(
-                    ['--no-admin', '--started-from-auto-update'])
+                config_package_args.append('--no-admin')
             if args.with_future_python:
                 config_package_args.append('--with-future-python')
             if args.with_free_threaded_python:
@@ -187,10 +192,6 @@ def main():
                 config_package_args.append(
                     f'--overrides={args.overrides_path}')
             call(*config_package_args, cwd=cwd_str)
-            if args.auto_update:
-                # Requires a token with administration permission:
-                set_branch_protection(
-                    get_package_name(), path / '.meta.toml')
 
             src = path.resolve() / 'src'
             py_ver_plus = f'--py{oldest_python_version.replace(".", "")}-plus'
@@ -243,14 +244,17 @@ def main():
                 call('git', 'push', '--set-upstream', 'origin', branch_name)
                 if updating:
                     print('Updated the previously created PR.')
+                elif args.auto_update:
+                    create_pull_request(
+                        'Update Python version support.',
+                        body='Created by `update-python-support`.')
                 else:
-                    if args.auto_update:
-                        # No `--fill` as it needs the history of the base
-                        # branch which a shallow checkout in CI does not have:
-                        call('gh', 'pr', 'create',
-                             '--title', 'Update Python version support.',
-                             '--body', 'Created by `update-python-support`.')
-                    else:
-                        create_pull_request('Update Python version support.')
+                    create_pull_request('Update Python version support.')
+                if args.auto_update:
+                    # Only after the push, so a failing run does not leave
+                    # `master` requiring checks nobody provides.
+                    # Requires a token with administration permission:
+                    set_branch_protection(
+                        get_package_name(), path / '.meta.toml')
             else:
                 print('Applied all changes. Please check and commit manually.')

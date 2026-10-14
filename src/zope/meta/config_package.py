@@ -11,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import argparse
 import collections
 import pathlib
 import re
@@ -141,17 +140,8 @@ def handle_command_line_arguments():
         action='store_false',
         default=True,
         help='Do not try to do steps that require GitHub admin rights.')
-    parser.add_argument(
-        '--started-from-auto-update',
-        dest='started_from_auto_update',
-        action='store_true',
-        default=False,
-        help=argparse.SUPPRESS  # no to be used by humans
-    )
 
     args = parser.parse_args()
-    if args.started_from_auto_update:
-        args.run_tests = False
     return args
 
 
@@ -972,7 +962,9 @@ class PackageConfiguration:
 
 def main():
     args = handle_command_line_arguments()
-    in_checkout = (pathlib.Path(__file__).absolute().parent / '.git').exists()
+    # `.git` is in the root of the zope.meta checkout:
+    meta_root = pathlib.Path(__file__).absolute().parents[3]
+    in_checkout = (meta_root / '.git').exists()
 
     package = PackageConfiguration(args, in_checkout)
     package.configure()
