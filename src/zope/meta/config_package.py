@@ -322,7 +322,7 @@ class PackageConfiguration:
         value = self._set_python_config_value('future-python')
 
         if not FUTURE_PYTHON_VERSION:
-            return 'false'
+            return False
 
         return value
 
@@ -501,9 +501,9 @@ class PackageConfiguration:
                 'manylinux.sh', self.path / '.manylinux.sh', self.config_type)
             (self.path / '.manylinux.sh').chmod(0o755)
             stop_at = None
-            if not self.with_future_python \
-                    and not self.with_free_threaded_python:
+            if not self.with_future_python:
                 stop_at = NEWEST_PYTHON_SHORTVERSION
+
             pkg_name_pattern = re.sub(r"[-_.]+", "?", self.path.name).lower()
             self.copy_with_meta(
                 'manylinux-install.sh.j2', self.path / '.manylinux-install.sh',
@@ -517,7 +517,8 @@ class PackageConfiguration:
                 future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
                 newest_python_shortversion=NEWEST_PYTHON_SHORTVERSION,
                 supported_python_versions=supported_python_versions(
-                    self.oldest_python, short_version=True),
+                    self.oldest_python, short_version=True,
+                    freethreaded=self.with_free_threaded_python),
                 stop_at=stop_at,
             )
             (self.path / '.manylinux-install.sh').chmod(0o755)
@@ -632,7 +633,8 @@ class PackageConfiguration:
             future_python_shortversion=FUTURE_PYTHON_SHORTVERSION,
             newest_python_shortversion_t=NEWEST_PYTHON_SHORTVERSION_T,
             supported_python_versions=supported_python_versions(
-                self.oldest_python, short_version=True),
+                self.oldest_python, short_version=True,
+                freethreaded=self.with_free_threaded_python),
             build_requirements=build_requirements,
         )
 
@@ -648,10 +650,14 @@ class PackageConfiguration:
         gha_test_environment = self.gh_option('test-environment')
         gha_test_commands = self.gh_option('test-commands')
         py_version_matrix = [
-            x for x in zip(supported_python_versions(self.oldest_python,
-                                                     short_version=False),
-                           supported_python_versions(self.oldest_python,
-                                                     short_version=True))]
+            x for x in zip(supported_python_versions(
+                self.oldest_python,
+                short_version=False,
+                freethreaded=self.with_free_threaded_python),
+                supported_python_versions(
+                self.oldest_python,
+                short_version=True,
+                freethreaded=self.with_free_threaded_python))]
         pypi_tp = self.meta_cfg['pypi'].get('trusted-publishing', False)
 
         self.copy_with_meta(

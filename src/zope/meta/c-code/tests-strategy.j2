@@ -16,7 +16,7 @@
 {% else %}
         os: [ubuntu-latest, macos-latest]
 {% endif %}
-{% if with_pypy or gha_additional_exclude or with_windows %}
+{% if with_pypy or gha_additional_exclude %}
         exclude:
 {% endif %}
 {% if with_pypy %}
@@ -25,24 +25,11 @@
           - os: windows-11-arm
             python-version: "pypy-%(pypy_version)s"
 {% endif %}
-{% if with_windows %}
-          - os: windows-11-arm
-            python-version: "3.10"
-{% endif %}
 {% for line in gha_additional_exclude %}
           %(line)s
 {% endfor %}
-{% if with_free_threaded_python %}
+{% if with_free_threaded_python and with_future_python %}
         include:
-          - python-version: "%(newest_python_version)st"
-            os: ubuntu-latest
-          - python-version: "%(newest_python_version)st"
-            os: macos-latest
-{% if with_windows %}
-          - python-version: "%(newest_python_version)st"
-            os: windows-latest
-{% endif %}
-{% if with_future_python %}
           - python-version: "%(future_python_version)st"
             os: ubuntu-latest
           - python-version: "%(future_python_version)st"
@@ -50,6 +37,5 @@
 {% if with_windows %}
           - python-version: "%(future_python_version)st"
             os: windows-latest
-{% endif %}
 {% endif %}
 {% endif %}
