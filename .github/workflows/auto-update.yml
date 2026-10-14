@@ -98,4 +98,5 @@ jobs:
       run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
-        uvx --from ../meta update-python-support . --auto-update --branch=update-python-support-$(date +'%Y-%m-%d')
+        # Editable install from the checkout, so `commit-id` gets the commit of meta:
+        uv run --project ../meta update-python-support . --auto-update --branch=update-python-support-$(date +'%Y-%m-%d')
