@@ -1,0 +1,97 @@
+# Run `update-python-support --auto-update` on all packages from here, so the
+# private key of the GitHub App is only stored in this repository.
+name: auto-update
+
+permissions:
+  contents: read
+
+on:
+  # Schedule follows once `update-python-support --auto-update` is on master.
+  # Allow to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      repos:
+        description: 'Space separated repository names (default: all packages)'
+        required: false
+        default: ''
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    name: list packages
+    outputs:
+      repos: ${{ steps.list.outputs.repos }}
+    steps:
+    # actions/checkout@v7.0.1
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        persist-credentials: false
+    - name: List packages
+      id: list
+      env:
+        REPOS: ${{ inputs.repos }}
+      run: |
+        if [ -n "$REPOS" ]; then
+          printf '%s\n' $REPOS
+        else
+          cat src/zope/meta/*/packages.txt | grep -v '^#'
+        fi | grep . | jq -R . | jq -sc . > repos.json
+        # GitHub allows at most 256 jobs per matrix:
+        if [ "$(jq length repos.json)" -gt 256 ]; then
+          echo "::error::Too many packages for a single matrix."
+          exit 1
+        fi
+        echo "repos=$(cat repos.json)" >> "$GITHUB_OUTPUT"
+
+  update:
+    needs: list
+    runs-on: ubuntu-latest
+    # Restrict this environment to `master` in the repository settings, so
+    # only reviewed code gets access to the private key of the GitHub App:
+    environment: auto-update
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        repo: ${{ fromJSON(needs.list.outputs.repos) }}
+    name: ${{ matrix.repo }}
+    steps:
+    # actions/checkout@v7.0.1
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        path: meta
+        persist-credentials: false
+    - name: Create GitHub App token
+      # actions/create-github-app-token@v3.3.0
+      uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510
+      id: app-token
+      with:
+        app-id: ${{ vars.ZOPE_META_APP_ID }}
+        private-key: ${{ secrets.ZOPE_META_APP_PRIVATE_KEY }}
+        owner: zopefoundation
+        repositories: ${{ matrix.repo }}
+        permission-administration: write
+        permission-contents: write
+        permission-pull-requests: write
+        permission-workflows: write
+    # actions/checkout@v7.0.1
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        repository: zopefoundation/${{ matrix.repo }}
+        path: package
+        token: ${{ steps.app-token.outputs.token }}
+    - name: Install uv
+      # astral/setup-uv@10.0.1
+      uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      with:
+        enable-cache: false
+        python-version: 3.13
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: update-python-support
+      working-directory: package
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        uvx --from ../meta update-python-support . --auto-update --branch=update-python-support-$(date +'%Y-%m-%d')
