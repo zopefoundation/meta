@@ -639,15 +639,14 @@ class PackageConfiguration:
         gha_additional_install = self.gh_option('additional-install')
         gha_test_environment = self.gh_option('test-environment')
         gha_test_commands = self.gh_option('test-commands')
-        py_version_matrix = [
-            x for x in zip(supported_python_versions(
-                self.oldest_python,
-                short_version=False,
-                freethreaded=self.with_free_threaded_python),
-                supported_python_versions(
-                self.oldest_python,
-                short_version=True,
-                freethreaded=self.with_free_threaded_python))]
+        py_version_matrix = [*zip(supported_python_versions(
+            self.oldest_python,
+            short_version=False,
+            freethreaded=self.with_free_threaded_python),
+            supported_python_versions(
+            self.oldest_python,
+            short_version=True,
+            freethreaded=self.with_free_threaded_python))]
         pypi_tp = self.meta_cfg['pypi'].get('trusted-publishing', False)
 
         self.copy_with_meta(
