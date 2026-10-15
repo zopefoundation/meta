@@ -4,6 +4,11 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add ability to run ``bin/update-python-support`` in CI.
+
+- ``config-package`` only offers to update the branch protection rules when
+  called with the new ``--admin`` option.
+
 - Drop support for Python 3.10, which reached end-of-life status
   on October 1, 2026.
 

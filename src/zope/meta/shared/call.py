@@ -18,6 +18,9 @@ import textwrap
 def abort(exitcode):
     """Ask the user to abort."""
     print('ABORTING: Please fix the errors shown above.')
+    if not sys.stdin.isatty():
+        # Nobody can answer the question, e.g. in CI:
+        sys.exit(exitcode)
     print('Proceed anyway (y/N)?', end=' ')
     if input().lower() != 'y':
         sys.exit(exitcode)
@@ -29,13 +32,14 @@ def wait_for_accept():
     input()
 
 
-def call(*args, capture_output=False, cwd=None, allowed_return_codes=(0, )):
+def call(*args, capture_output=False, cwd=None, allowed_return_codes=(0, ),
+         input: str | None = None):
     """Call `args` as a subprocess.
 
     If it fails exit the process.
     """
     result = subprocess.run(
-        args, capture_output=capture_output, text=True, cwd=cwd)
+        args, capture_output=capture_output, text=True, cwd=cwd, input=input)
     if result.returncode not in allowed_return_codes:
         if capture_output:
             abort_text = textwrap.dedent(f'''
@@ -44,5 +48,6 @@ def call(*args, capture_output=False, cwd=None, allowed_return_codes=(0, )):
                 stdout: {result.stdout}''')
         else:
             abort_text = result.returncode
-        abort(abort_text)
+        print(abort_text)
+        abort(result.returncode)
     return result

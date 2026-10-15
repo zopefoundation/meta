@@ -22,6 +22,7 @@ import tomlkit
 from packaging.version import InvalidVersion
 from packaging.version import parse as parse_version
 
+from .set_branch_protection_rules import get_package_name
 from .set_branch_protection_rules import set_branch_protection
 from .shared.call import abort
 from .shared.call import call
@@ -133,6 +134,13 @@ def handle_command_line_arguments():
         dest='type',
         help='type of the configuration to be used, see README.rst. '
         'Only required when running on a repository for the first time.')
+    parser.add_argument(
+        '--admin',
+        dest='admin',
+        action='store_true',
+        default=False,
+        help='Offer to do steps that require GitHub admin rights, like'
+        ' updating the branch protection rules.')
 
     args = parser.parse_args()
     return args
@@ -930,20 +938,18 @@ class PackageConfiguration:
                     call('git', 'push', '--set-upstream',
                          'origin', self.branch_name)
                     pushed = True
-            print()
-            print('If you are an admin and are logged in via `gh auth login`')
-            print('update branch protection rules? (y/N)?', end=' ')
-            if input().lower() == 'y':
-                remote_url = call(
-                    'git', 'config', '--get', 'remote.origin.url',
-                    capture_output=True).stdout.strip()
-                package_name = remote_url.rsplit('/')[-1].removesuffix('.git')
-                success = set_branch_protection(
-                    package_name, self.path / '.meta.toml')
-                if success:
-                    print('Successfully updated branch protection rules.')
-                else:
-                    abort(-1)
+            if self.args.admin:
+                print()
+                print('If you are an admin and are logged in via `gh auth'
+                      ' login`')
+                print('update branch protection rules? (y/N)?', end=' ')
+                if input().lower() == 'y':
+                    success = set_branch_protection(
+                        get_package_name(), self.path / '.meta.toml')
+                    if success:
+                        print('Successfully updated branch protection rules.')
+                    else:
+                        abort(-1)
             print()
             if updating:
                 print('Updated the previously created PR.')
@@ -956,6 +962,5 @@ class PackageConfiguration:
 
 def main():
     args = handle_command_line_arguments()
-
     package = PackageConfiguration(args)
     package.configure()

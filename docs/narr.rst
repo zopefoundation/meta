@@ -161,6 +161,10 @@ The following arguments are supported.
   Define a specific git branch name to be created for the changes. By default
   the script creates one which includes the name of the configuration type.
 
+--admin
+  Offer to update the branch protection rules of the repository. Requires
+  admin rights on GitHub and being logged in via ``gh auth login``.
+
 The following options are only needed one time as their values are stored in
 ``.meta.toml.``.
 

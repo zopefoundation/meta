@@ -6,7 +6,8 @@ permissions:
   contents: read
 
 on:
-  # Schedule follows once `update-python-support --auto-update` is on master.
+  schedule:
+    - cron: '0 12 * * 0'  # run once a week on Sunday
   # Allow to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
@@ -66,7 +67,7 @@ jobs:
       uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510
       id: app-token
       with:
-        app-id: ${{ vars.ZOPE_META_APP_ID }}
+        client-id: ${{ vars.ZOPE_META_APP_CLIENT_ID }}
         private-key: ${{ secrets.ZOPE_META_APP_PRIVATE_KEY }}
         owner: zopefoundation
         repositories: ${{ matrix.repo }}
@@ -78,20 +79,24 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       with:
         repository: zopefoundation/${{ matrix.repo }}
-        path: package
+        # config-package derives the package name from the directory name:
+        path: ${{ matrix.repo }}
+        # zest.releaser needs the tags to decide about the version bump:
+        fetch-depth: 0
         token: ${{ steps.app-token.outputs.token }}
     - name: Install uv
-      # astral/setup-uv@10.0.1
-      uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      # astral/setup-uv@10.3.0
+      uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884
       with:
         enable-cache: false
         python-version: 3.13
         github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: update-python-support
-      working-directory: package
+      working-directory: ${{ matrix.repo }}
       env:
         GH_TOKEN: ${{ steps.app-token.outputs.token }}
       run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
-        uvx --from ../meta update-python-support . --auto-update --branch=update-python-support-$(date +'%Y-%m-%d')
+        # Editable install from the checkout, so `commit-id` gets the commit of meta:
+        uv run --project ../meta update-python-support . --auto-update --branch=update-python-support-$(date +'%Y-%m-%d')
