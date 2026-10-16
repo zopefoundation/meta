@@ -22,6 +22,8 @@ Change log
 - Add ``.venv`` to ``.gitignore``: tox 4.64+ writes a PEP 832 ``.venv``
   redirect file into the project root.
 
+- Add ``uv.lock`` to ``.gitignore``.
+
 - Allow ``setup-to-pyproject`` to run on a repository which is not controlled
   by ``zope.meta``.
 
