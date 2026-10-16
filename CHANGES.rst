@@ -4,6 +4,8 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Publish C extension packages to PyPI only after the tests passed.
+
 - Add ability to run ``bin/update-python-support`` in CI.
 
 - ``config-package`` only offers to update the branch protection rules when

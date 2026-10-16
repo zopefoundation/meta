@@ -290,3 +290,37 @@ class CombinedCoverageTests(unittest.TestCase):
 
         self.assertIn('      run: |\n        make test\n', tests_yml)
         self.assertNotIn('--skip-env', tests_yml)
+
+
+class CCodePublishTests(unittest.TestCase):
+    """Tests for the ``publish`` job of the `c-code` ``tests.yml``."""
+
+    context = dict(
+        TESTS_YML_CONTEXT,
+        config_type='c-code',
+        manylinux_aarch64='manylinux2014_aarch64',
+        manylinux_i686='manylinux2014_i686',
+        manylinux_python_version='3.13',
+        manylinux_x86_64='manylinux2014_x86_64',
+    )
+
+    def test_config_package__tests_yml__c_code__1(self):
+        """It publishes only after all builds, tests and checks passed."""
+
+        tests_yml = render('tests.yml.j2', **self.context)
+
+        self.assertIn(
+            '    needs:'
+            ' [build-package, manylinux, test, docs, release-check]\n',
+            tests_yml)
+
+    def test_config_package__tests_yml__c_code__2(self):
+        """It does not wait for a `docs` job if there is none."""
+
+        tests_yml = render('tests.yml.j2', **dict(
+            self.context, with_docs=False))
+
+        self.assertIn(
+            '    needs: [build-package, manylinux, test, release-check]\n',
+            tests_yml)
+        self.assertNotIn('  docs:\n', tests_yml)
