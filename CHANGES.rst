@@ -4,6 +4,8 @@ Change log
 2.2 (unreleased)
 ----------------
 
+- Add support for Python 3.15.
+
 - Publish C extension packages to PyPI only after the tests passed.
 
 - Add ability to run ``bin/update-python-support`` in CI.
@@ -21,6 +23,8 @@ Change log
 
 - Add ``.venv`` to ``.gitignore``: tox 4.64+ writes a PEP 832 ``.venv``
   redirect file into the project root.
+
+- Add ``uv.lock`` to ``.gitignore``.
 
 - Allow ``setup-to-pyproject`` to run on a repository which is not controlled
   by ``zope.meta``.
