@@ -15,6 +15,7 @@ import collections
 import configparser
 import os
 import pathlib
+import re
 import shutil
 import sys
 import sysconfig
@@ -60,16 +61,13 @@ def get_tox_ini_python_versions(path) -> set:
     config = configparser.ConfigParser()
     config.read(path)
     envs = config['tox']['envlist'].split()
-    raw_versions = {
-        env.replace('py3', '3.') for env in envs
-        if env.startswith('py') and env != 'pypy3'
+    # Only plain envs like `py313`, `py313-pure` (c-code template),
+    # `py313-watch` or `py314t` (free-threaded); factor envs like
+    # `py{313,314}-extra` repeat versions which are listed as plain envs:
+    return {
+        f'3.{match[1]}' for env in envs
+        if (match := re.match(r'py3(\d+)t?(?:[,-]|$)', env))
     }
-    # c-code template uses `py313,py313-pure`, get rid of the pure version:
-    versions = {v.partition(',')[0] for v in raw_versions}
-    # some packages use `py38-watch` or similar, get rid of the suffix:
-    versions = {v.partition('-')[0] for v in versions}
-    # free-threaded envs like py314t should map to 3.14:
-    return {v.rstrip('t') for v in versions}
 
 
 def main():
@@ -138,7 +136,8 @@ def main():
             to_be_supported -
             current_python_versions
         )
-        if (meta_toml['python'].get('with-future-python', True) and
+        if (FUTURE_PYTHON_VERSION and
+                meta_toml['python'].get('with-future-python', True) and
                 NEWEST_PYTHON_VERSION in to_be_supported):
             # If with-future-python is enabled, the newest python version is
             # already in `tox.ini` but not yet in `setup.py`:
@@ -275,7 +274,10 @@ def main():
             if args.commit:
                 print('Adding, committing and pushing all changes ...')
                 call('git', 'add', '.')
-                call('git', 'commit', '-m', PR_TITLE)
+                # `config-package` already committed its changes:
+                if call('git', 'diff', '--cached', '--quiet',
+                        allowed_return_codes=(0, 1)).returncode:
+                    call('git', 'commit', '-m', PR_TITLE)
                 call('git', 'push', '--set-upstream', 'origin', branch_name)
                 if updating:
                     print('Updated the previously created PR.')

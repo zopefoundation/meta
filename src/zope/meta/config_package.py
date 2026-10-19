@@ -950,11 +950,12 @@ class PackageConfiguration:
                     else:
                         abort(-1)
             print()
-            if updating:
-                print('Updated the previously created PR.')
-            elif pushed:
-                create_pull_request(self.commit_message)
-            else:
+            if pushed:
+                if updating:
+                    print('Updated the previously created PR.')
+                else:
+                    create_pull_request(self.commit_message)
+            elif not updating:
                 print('If everything went fine up to here:')
                 print('Create a PR, using the URL shown above.')
 
