@@ -10,6 +10,10 @@ Change log
 
 - Add ability to run ``bin/update-python-support`` in CI.
 
+- Fix ``bin/update-python-support --auto-update`` failing when there is
+  nothing left to commit, re-adding support for the newest Python version
+  when there is no future one and choking on factor envs in ``tox.ini``.
+
 - ``config-package`` only offers to update the branch protection rules when
   called with the new ``--admin`` option.
 

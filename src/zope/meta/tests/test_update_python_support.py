@@ -60,3 +60,22 @@ class TestUpdatePythonSupport(unittest.TestCase):
             tox_ini.flush()
             versions = get_tox_ini_python_versions(tox_ini.name)
             self.assertEqual({'3.13', '3.14'}, versions)
+
+    def test_update_python_support__get_tox_ini_python_versions__3(self):
+        """It ignores factor envs using curly braces."""
+
+        with tempfile.NamedTemporaryFile(mode='w') as tox_ini:
+            tox_ini.write(textwrap.dedent("""
+                [tox]
+                minversion = 4.0
+                envlist =
+                    lint
+                    py313
+                    py314
+                    pypy3
+                    py{313}-sqlalchemy{12,13}
+                    py{313,314,py3}-subunit
+                """))
+            tox_ini.flush()
+            versions = get_tox_ini_python_versions(tox_ini.name)
+            self.assertEqual({'3.13', '3.14'}, versions)
