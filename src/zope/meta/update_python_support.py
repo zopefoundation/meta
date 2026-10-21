@@ -21,6 +21,8 @@ import sys
 import sysconfig
 
 import tomlkit
+from check_python_versions.sources import pyproject
+from check_python_versions.sources import setup_py
 from zest.releaser import choose
 
 from .set_branch_protection_rules import get_package_name
@@ -68,6 +70,18 @@ def get_tox_ini_python_versions(path) -> set:
         f'3.{match[1]}' for env in envs
         if (match := re.match(r'py3(\d+)t?(?:[,-]|$)', env))
     }
+
+
+def get_declared_python_versions() -> set:
+    """Return the Python versions declared in the classifiers."""
+    versions = None
+    # The metadata is in `pyproject.toml` if `setup-to-pyproject` ran:
+    if os.path.exists('pyproject.toml'):
+        versions = pyproject.get_supported_python_versions('pyproject.toml')
+    if not versions and os.path.exists('setup.py'):
+        versions = setup_py.get_supported_python_versions(
+            os.path.abspath('setup.py'))
+    return {str(v) for v in versions or ()}
 
 
 def main():
@@ -136,11 +150,12 @@ def main():
             to_be_supported -
             current_python_versions
         )
-        if (FUTURE_PYTHON_VERSION and
-                meta_toml['python'].get('with-future-python', True) and
-                NEWEST_PYTHON_VERSION in to_be_supported):
-            # If with-future-python is enabled, the newest python version is
-            # already in `tox.ini` but not yet in `setup.py`:
+        declared_python_versions = get_declared_python_versions()
+        if (declared_python_versions and
+                NEWEST_PYTHON_VERSION in to_be_supported and
+                NEWEST_PYTHON_VERSION not in declared_python_versions):
+            # The newest Python version is already in `tox.ini` if it was the
+            # future one before, but it is not yet declared as supported:
             not_yet_supported.add(NEWEST_PYTHON_VERSION)
 
         non_interactive_params = []

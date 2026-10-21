@@ -15,6 +15,8 @@ import tempfile
 import textwrap
 import unittest
 
+from zope.meta.shared.path import change_dir
+from zope.meta.update_python_support import get_declared_python_versions
 from zope.meta.update_python_support import get_tox_ini_python_versions
 
 
@@ -79,3 +81,25 @@ class TestUpdatePythonSupport(unittest.TestCase):
             tox_ini.flush()
             versions = get_tox_ini_python_versions(tox_ini.name)
             self.assertEqual({'3.13', '3.14'}, versions)
+
+    def test_update_python_support__get_declared_python_versions__1(self):
+        """It returns the versions declared in `pyproject.toml`."""
+
+        with tempfile.TemporaryDirectory() as tmpdir, change_dir(tmpdir):
+            with open('pyproject.toml', 'w') as pyproject_toml:
+                pyproject_toml.write(textwrap.dedent("""
+                    [project]
+                    classifiers = [
+                        "Programming Language :: Python :: 3.13",
+                        "Programming Language :: Python :: 3.14",
+                    ]
+                    """))
+            versions = get_declared_python_versions()
+        self.assertEqual({'3.13', '3.14'}, versions)
+
+    def test_update_python_support__get_declared_python_versions__2(self):
+        """It returns an empty set if there is no package metadata."""
+
+        with tempfile.TemporaryDirectory() as tmpdir, change_dir(tmpdir):
+            versions = get_declared_python_versions()
+        self.assertEqual(set(), versions)

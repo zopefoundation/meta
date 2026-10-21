@@ -4,7 +4,8 @@ Change log
 2.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Fix ``bin/update-python-support`` not adding support for the newest Python
+  version after it stopped being the future one.
 
 
 2.2 (2026-10-19)
