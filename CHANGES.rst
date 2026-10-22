@@ -4,6 +4,8 @@ Change log
 2.3 (unreleased)
 ----------------
 
+- Update ``pypi-publish`` action to 1.14.3, to fix the certificates security issue.
+
 - Fix ``bin/update-python-support`` not adding support for the newest Python
   version after it stopped being the future one.
 
