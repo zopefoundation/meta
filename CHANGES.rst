@@ -9,6 +9,9 @@ Change log
 - Fix ``bin/update-python-support`` not adding support for the newest Python
   version after it stopped being the future one.
 
+- Publish PyPy wheels for macOS, Windows and manylinux in the ``c-code``
+  template.
+
 
 2.2 (2026-10-19)
 ----------------

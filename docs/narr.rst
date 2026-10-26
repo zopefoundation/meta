@@ -197,7 +197,8 @@ The following options are only needed one time as their values are stored in
   Enable running the tests on Windows on GitHub Actions.
 
 --with-pypy
-  Enable PyPy support.
+  Enable PyPy support. For ``c-code`` packages this also publishes PyPy
+  wheels for macOS, Windows and manylinux.
 
 --with-future-python
   The package supports the next upcoming Python version which does not yet have
@@ -427,7 +428,8 @@ with-windows
   Run the tests also on Windows on GitHub Actions: true/false, default: false
 
 with-pypy
-  Does the package support PyPy: true/false
+  Does the package support PyPy: true/false. For ``c-code`` packages this
+  also publishes PyPy wheels for macOS, Windows and manylinux.
 
 with-docs
   Build the documentation via Sphinx: true/false

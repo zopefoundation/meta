@@ -188,11 +188,11 @@ jobs:
 {% for kind in ('macOS x86_64', 'macOS arm64') %}
       - name: Upload %(package_name)s wheel (%(kind)s)
         if: >
-  {% if kind == 'macOS x86_64' %}
-          startsWith(runner.os, 'Mac')
-  {% elif kind == 'macOS arm64' or kind == 'macOS universal2' %}
+  {% if kind == 'macOS x86_64' or kind == 'macOS universal2' %}
           startsWith(runner.os, 'Mac')
           && !startsWith(matrix.python-version, 'pypy')
+  {% elif kind == 'macOS arm64' %}
+          startsWith(runner.os, 'Mac')
   {% endif %}
         uses: actions/upload-artifact@v7
         with:
@@ -468,8 +468,6 @@ jobs:
 
       - name: Remove undesired wheels (if any were downloaded)
         run: |
-          # PyPy wheels shouldn't be uploaded, remove them if present
-          find dist/ -name "*pypy*" -type f -delete || true
           find dist/ -name "*none-any*" -type f -delete || true
 {% if with_future_python %}
           # Wheels for the not-yet-supported future Python version need to go

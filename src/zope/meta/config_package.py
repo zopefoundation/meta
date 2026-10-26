@@ -510,6 +510,8 @@ class PackageConfiguration:
                     self.oldest_python, short_version=True,
                     freethreaded=self.with_free_threaded_python),
                 stop_at=stop_at,
+                with_pypy=self.with_pypy,
+                pypy_shortversion=PYPY_VERSION.replace('.', ''),
             )
             (self.path / '.manylinux-install.sh').chmod(0o755)
             self.add_manylinux = True
