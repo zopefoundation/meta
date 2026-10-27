@@ -20,8 +20,6 @@
         exclude:
 {% endif %}
 {% if with_pypy %}
-          - os: macos-latest
-            python-version: "pypy-%(pypy_version)s"
           - os: windows-11-arm
             python-version: "pypy-%(pypy_version)s"
 {% endif %}

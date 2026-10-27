@@ -324,3 +324,66 @@ class CCodePublishTests(unittest.TestCase):
             '    needs: [build-package, manylinux, test, release-check]\n',
             tests_yml)
         self.assertNotIn('  docs:\n', tests_yml)
+
+    def test_config_package__tests_yml__c_code__3(self):
+        """It builds, tests and publishes PyPy wheels on all platforms."""
+
+        tests_yml = render('tests.yml.j2', **dict(
+            self.context, with_pypy=True, with_windows=True))
+
+        self.assertNotIn(
+            '          - os: macos-latest\n'
+            '            python-version: "pypy-3.11"\n', tests_yml)
+        self.assertIn(
+            '          - os: windows-11-arm\n'
+            '            python-version: "pypy-3.11"\n', tests_yml)
+        self.assertNotIn('*pypy*', tests_yml)
+        self.assertIn(
+            '      - name: Upload testpackage wheel (macOS arm64)\n'
+            '        if: >\n'
+            "          startsWith(runner.os, 'Mac')\n"
+            '        uses:', tests_yml)
+
+
+#: The values `PackageConfiguration.manylinux_sh()` passes to
+#: `manylinux-install.sh.j2`.
+MANYLINUX_INSTALL_CONTEXT = {
+    'config_type': 'c-code',
+    'future_python_shortversion': '315',
+    'manylinux_aarch64_tests': [],
+    'manylinux_install_setup': [],
+    'newest_python_shortversion': '314',
+    'package_name': 'testpackage',
+    'package_name_pattern': 'testpackage',
+    'pypy_shortversion': '311',
+    'stop_at': None,
+    'supported_python_versions': ['310', '311'],
+    'with_free_threaded_python': False,
+    'with_future_python': True,
+    'with_pypy': False,
+}
+
+
+class ManylinuxInstallTests(unittest.TestCase):
+    """Tests for the `c-code` ``.manylinux-install.sh``."""
+
+    def test_config_package__manylinux_install_sh__1(self):
+        """It builds and tests PyPy wheels if PyPy is supported."""
+
+        script = render(
+            'manylinux-install.sh.j2',
+            **dict(MANYLINUX_INSTALL_CONTEXT, with_pypy=True))
+
+        self.assertIn(
+            '    if \\\n'
+            '       [[ "${PYBIN}" == *"pp311-"* ]] || \\\n'
+            '       [[ "${PYBIN}" == *"cp310/"* ]] || \\\n', script)
+        self.assertIn("""        *"pp311"*) echo 'pypy3';;\n""", script)
+
+    def test_config_package__manylinux_install_sh__2(self):
+        """It does not build PyPy wheels if PyPy is not supported."""
+
+        script = render('manylinux-install.sh.j2', **MANYLINUX_INSTALL_CONTEXT)
+
+        self.assertNotIn('pp311', script)
+        self.assertNotIn('pypy3', script)

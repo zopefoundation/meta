@@ -38,6 +38,9 @@ tox_env_map() {
 {% endif %}
         *"cp%(future_python_shortversion)s"*) echo 'py%(future_python_shortversion)s';;
 {% endif %}
+{% if with_pypy %}
+        *"pp%(pypy_shortversion)s"*) echo 'pypy3';;
+{% endif %}
         *) echo 'py';;
     esac
 }
@@ -45,6 +48,9 @@ tox_env_map() {
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
     if \
+{% if with_pypy %}
+       [[ "${PYBIN}" == *"pp%(pypy_shortversion)s-"* ]] || \
+{% endif %}
 {% for py_version in supported_python_versions %}
        [[ "${PYBIN}" == *"cp%(py_version)s/"* ]] {% if py_version != stop_at %}|| \
 {% else %} ; then
