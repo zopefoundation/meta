@@ -344,6 +344,18 @@ class CCodePublishTests(unittest.TestCase):
             "          startsWith(runner.os, 'Mac')\n"
             '        uses:', tests_yml)
 
+    def test_config_package__tests_yml__c_code__4(self):
+        """It disables seccomp only for the i686 manylinux build."""
+
+        tests_yml = render('tests.yml.j2', **self.context)
+
+        self.assertEqual(1, tests_yml.count(
+            'DOCKER_ARGS: --security-opt seccomp=unconfined'))
+        i686_step = tests_yml.split('- name: Build testpackage (i686)')[1]
+        self.assertIn(
+            'DOCKER_ARGS: --security-opt seccomp=unconfined',
+            i686_step.split('- name:')[0])
+
 
 #: The values `PackageConfiguration.manylinux_sh()` passes to
 #: `manylinux-install.sh.j2`.

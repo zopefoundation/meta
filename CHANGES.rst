@@ -12,6 +12,9 @@ Change log
 - Publish PyPy wheels for macOS, Windows and manylinux in the ``c-code``
   template.
 
+- Fix DNS resolution in the manylinux i686 build on ``ubuntu-26.04`` runners
+  in the ``c-code`` template by disabling seccomp for its container.
+
 
 2.2 (2026-10-19)
 ----------------
