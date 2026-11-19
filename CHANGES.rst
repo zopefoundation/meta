@@ -15,6 +15,9 @@ Change log
 - Fix DNS resolution in the manylinux i686 build on ``ubuntu-26.04`` runners
   in the ``c-code`` template by disabling seccomp for its container.
 
+- Fix the PyPy wheel builds of the ``c-code`` template for packages which do
+  not build their C extension on PyPy.
+
 
 2.2 (2026-10-19)
 ----------------
