@@ -211,6 +211,12 @@ jobs:
   {% endif %}
   {% if kind == 'macOS x86_64' %}
           path: dist/*x86_64.whl
+  {% elif kind == 'macOS arm64' and with_pypy %}
+          # PyPy builds a pure Python wheel if it does not build the C
+          # extension. It is needed by the test job but never published.
+          path: |
+            dist/*arm64.whl
+            dist/*none-any.whl
   {% elif kind == 'macOS arm64' %}
           path: dist/*arm64.whl
   {% elif kind == 'macOS universal2' %}

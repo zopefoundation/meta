@@ -356,6 +356,20 @@ class CCodePublishTests(unittest.TestCase):
             'DOCKER_ARGS: --security-opt seccomp=unconfined',
             i686_step.split('- name:')[0])
 
+    def test_config_package__tests_yml__c_code__5(self):
+        """It uploads a pure Python PyPy wheel on macOS for the test job."""
+
+        with_pypy = render('tests.yml.j2', **dict(
+            self.context, with_pypy=True))
+        without_pypy = render('tests.yml.j2', **self.context)
+
+        self.assertIn(
+            '          path: |\n'
+            '            dist/*arm64.whl\n'
+            '            dist/*none-any.whl\n', with_pypy)
+        self.assertNotIn('dist/*none-any.whl', without_pypy)
+        self.assertIn('          path: dist/*arm64.whl\n', without_pypy)
+
 
 #: The values `PackageConfiguration.manylinux_sh()` passes to
 #: `manylinux-install.sh.j2`.
@@ -399,3 +413,14 @@ class ManylinuxInstallTests(unittest.TestCase):
 
         self.assertNotIn('pp311', script)
         self.assertNotIn('pypy3', script)
+
+    def test_config_package__manylinux_install_sh__3(self):
+        """It does not try to repair pure Python wheels."""
+
+        script = render('manylinux-install.sh.j2', **MANYLINUX_INSTALL_CONTEXT)
+
+        self.assertIn(
+            '    if [[ "$whl" == *"-none-any.whl" ]]; then\n', script)
+        skip, repair = script.split('        continue\n')
+        self.assertIn('auditwheel repair', repair)
+        self.assertNotIn('auditwheel repair', skip)
